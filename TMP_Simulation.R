@@ -233,7 +233,33 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   return(new.bindings)
 }
 
+#########################################################################################################
+#########################################################################################################
 
+rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
+  x<-toupper(x)
+  y<-rep("N",nchar(x))
+  xx<-unlist(strsplit(x,NULL))
+  for (bbb in 1:nchar(x)){
+    if(xx[bbb]=="A") y[bbb]<-"T"        
+    if(xx[bbb]=="C") y[bbb]<-"G"        
+    if(xx[bbb]=="G") y[bbb]<-"C"        
+    if(xx[bbb]=="T") y[bbb]<-"A"
+  }
+  if(rev==FALSE) {
+    for(ccc in (1:nchar(x))){
+      if(ccc==1) yy<-y[ccc] else yy<-paste(yy,y[ccc],sep="")
+    }
+  }
+  if(rev==T){
+    zz<-rep(NA,nchar(x))
+    for(ccc in (1:nchar(x))){
+      zz[ccc]<-y[nchar(x)+1-ccc]
+      if(ccc==1) yy<-zz[ccc] else yy<-paste(yy,zz[ccc],sep="")
+    }
+  }
+  return(tolower(yy))
+}
 #########################################################################################################
 ######################################### Temporary simulation ##########################################
 
@@ -445,46 +471,16 @@ for (r in (detect.rad54+1):str_length(LY)){ #look for consecutive MH at right of
 #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp 
 #N(mean = 0, std = 20)
 
-start.invasion <- 0
+start.zipping <- 0
 threshold <- 225 + rnorm(1, 0, 20)
 if (microhomoligies.left + microhomoligies.right +1 > threshold){
-  start.invasion <- 1
+  start.zipping <- 1
 }
 
-yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
-                                seqtype = 'DNA', as.string = TRUE, 
-                                forceDNAtolower  = TRUE, set.attributes = FALSE)
-
-yeast.genome.chr2 <- yeast_genome_chr2[[1]]
-
-rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
-  x<-toupper(x)
-  y<-rep("N",nchar(x))
-  xx<-unlist(strsplit(x,NULL))
-  for (bbb in 1:nchar(x)){
-    if(xx[bbb]=="A") y[bbb]<-"T"        
-    if(xx[bbb]=="C") y[bbb]<-"G"        
-    if(xx[bbb]=="G") y[bbb]<-"C"        
-    if(xx[bbb]=="T") y[bbb]<-"A"
-  }
-  if(rev==FALSE) {
-    for(ccc in (1:nchar(x))){
-      if(ccc==1) yy<-y[ccc] else yy<-paste(yy,y[ccc],sep="")
-    }
-  }
-  if(rev==T){
-    zz<-rep(NA,nchar(x))
-    for(ccc in (1:nchar(x))){
-      zz[ccc]<-y[nchar(x)+1-ccc]
-      if(ccc==1) yy<-zz[ccc] else yy<-paste(yy,zz[ccc],sep="")
-    }
-  }
-  return(tolower(yy))
-}
-
-
+#invading.fragment : positions of current lys2.fragment that will invade the donor strand
 invading.fragment <- str_sub(lys2.fragment, detect.rad54 -l, r)
 
+#overlapped.rad54 : all the others rad54 overlapped by the macrohomology
 overlapped.rad54 <- c()
 for (pos in pos.rad54){
   if(pos %in% (detect.rad54 - l) : r){
@@ -492,14 +488,30 @@ for (pos in pos.rad54){
   }
 }
 
-last.rad54 <- overlapped.rad54[length(overlap.rad54)]
-nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1)
+
+last.rad54 <- overlapped.rad54[length(overlap.rad54)] #last rad54 occurence in the macrohomology 
+nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1) #the nearest rdh54 from the last rad54 of the macrohomology
+
+#When the macrohomology is ready to be zipped, 
+#it is rad54 that will 'pump' each nucleotide by removing its associated rad51 
+#in order to send it to invade the donor strand, until rad54 meets an rdh54
+
 zipped <- nearby.rdh54 : last.rad54
 
+#Import of the chr2.fa sequence file from the yeast genome (S288) :
+
+yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
+                                seqtype = 'DNA', as.string = TRUE, 
+                                forceDNAtolower  = TRUE, set.attributes = FALSE)
+
+yeast.genome.chr2 <- yeast_genome_chr2[[1]]
+
+
+# LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2
 rev.comp.zipped.MH = rev.comp(str_sub(LY, zipped[1], tail(zipped,1)))
 
 if (str_detect(yeast.genome.chr2, rev.comp.zipped.MH)){
-  print("0")
+  print('0')
 }
 
 
