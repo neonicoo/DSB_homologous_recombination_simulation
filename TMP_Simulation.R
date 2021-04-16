@@ -3,11 +3,9 @@ rm(list=ls())
 ###Set working directory
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
-if (!require("ggplot2")){install.packages("ggplot2")}
 library(ggplot2)
-
-if (!require("stringr")){install.packages("stringr")}
 library(stringr)
+library(seqinr)
 
 if (!require("Biostrings")){source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")}
 library("Biostrings")
@@ -453,5 +451,34 @@ if (microhomoligies.left + microhomoligies.right +1 > threshold){
   start.zipping <- 1
 }
 
+yeast_genome_chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
+                                seqtype = 'DNA', as.string = TRUE, 
+                                forceDNAtolower  = TRUE, set.attributes = FALSE)
 
+yeast_genome_chr2 <- yeast_genome_chr2[[1]]
+
+rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
+  x<-toupper(x)
+  y<-rep("N",nchar(x))
+  xx<-unlist(strsplit(x,NULL))
+  for (bbb in 1:nchar(x)){
+    if(xx[bbb]=="A") y[bbb]<-"T"        
+    if(xx[bbb]=="C") y[bbb]<-"G"        
+    if(xx[bbb]=="G") y[bbb]<-"C"        
+    if(xx[bbb]=="T") y[bbb]<-"A"
+  }
+  if(rev==FALSE) {
+    for(ccc in (1:nchar(x))){
+      if(ccc==1) yy<-y[ccc] else yy<-paste(yy,y[ccc],sep="")
+    }
+  }
+  if(rev==T){
+    zz<-rep(NA,nchar(x))
+    for(ccc in (1:nchar(x))){
+      zz[ccc]<-y[nchar(x)+1-ccc]
+      if(ccc==1) yy<-zz[ccc] else yy<-paste(yy,zz[ccc],sep="")
+    }
+  }
+  return(tolower(yy))
+}
 
