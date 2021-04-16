@@ -273,6 +273,7 @@ search.window = search.window.group[sw]
 kon.name=kon.group.names[kon]
 koff1.name=koff1.group.names[koff]
 
+# Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
 occupied.rad51 = list(bound = "unbound",strand = "negative", donor.invasions = 473927 - 368, lys2.microhomology = 368)
 
 pop.time.series = as.data.frame(matrix(0,num.time.steps*3,3))
@@ -477,42 +478,47 @@ if (microhomoligies.left + microhomoligies.right +1 > threshold){
   start.zipping <- 1
 }
 
-#invading.fragment : positions of current lys2.fragment that will invade the donor strand
-invading.fragment <- str_sub(lys2.fragment, detect.rad54 -l, r)
 
-#overlapped.rad54 : all the others rad54 overlapped by the macrohomology
-overlapped.rad54 <- c()
-for (pos in pos.rad54){
-  if(pos %in% (detect.rad54 - l) : r){
-    overlapped.rad54 = c(overlapped.rad54, pos)
+if(start.zipping == 1){
+  
+  #invading.fragment : positions of current lys2.fragment that will invade the donor strand
+  invading.fragment <- str_sub(lys2.fragment, detect.rad54 -l, r)
+  
+  #overlapped.rad54 : all the others rad54 overlapped by the macrohomology
+  overlapped.rad54 <- c()
+  for (pos in pos.rad54){
+    if(pos %in% (detect.rad54 - l) : r){
+      overlapped.rad54 = c(overlapped.rad54, pos)
+    }
   }
+  
+  last.rad54 <- overlapped.rad54[length(overlap.rad54)] #last rad54 occurence in the macrohomology 
+  nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1) #the nearest rdh54 from the last rad54 of the macrohomology
+  
+  #When the macrohomology is ready to be zipped, 
+  #it is rad54 that will 'pump' each nucleotide by removing its associated rad51 
+  #in order to send it to invade the donor strand, until rad54 meets an rdh54
+  
+  zipped.indexes <- nearby.rdh54 : last.rad54
+  zipped.fragment <- str_sub(lys2.fragment, zipped.indexes[1], tail(zipped.indexes,1))
+  
+  rad51.indexes2remove <- which(occupied.rad51$lys2.microhomology %in% zipped.indexes)
+  occupied.rad51$donor.invasions <- occupied.rad51$donor.invasions[-rad51.indexes2remove]
+  occupied.rad51$lys2.microhomology <- occupied.rad51$lys2.microhomology[-rad51.indexes2remove]
 }
 
 
-last.rad54 <- overlapped.rad54[length(overlap.rad54)] #last rad54 occurence in the macrohomology 
-nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1) #the nearest rdh54 from the last rad54 of the macrohomology
 
-#When the macrohomology is ready to be zipped, 
-#it is rad54 that will 'pump' each nucleotide by removing its associated rad51 
-#in order to send it to invade the donor strand, until rad54 meets an rdh54
-
-zipped <- nearby.rdh54 : last.rad54
 
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
-
 yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
                                 seqtype = 'DNA', as.string = TRUE, 
                                 forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-yeast.genome.chr2 <- yeast_genome_chr2[[1]]
-
+yeast.genome.chr2 <- yeast.genome.chr2[[1]]
 
 # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2
-rev.comp.zipped.MH = rev.comp(str_sub(LY, zipped[1], tail(zipped,1)))
-
-if (str_detect(yeast.genome.chr2, rev.comp.zipped.MH)){
-  print('0')
-}
-
+rev.comp.zipped.MH = rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
+if (str_detect(yeast.genome.chr2, rev.comp.zipped.MH)){print('0')}
 
 
