@@ -445,17 +445,17 @@ for (r in (detect.rad54+1):str_length(LY)){ #look for consecutive MH at right of
 #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp 
 #N(mean = 0, std = 20)
 
-start.zipping <- 0
+start.invasion <- 0
 threshold <- 225 + rnorm(1, 0, 20)
 if (microhomoligies.left + microhomoligies.right +1 > threshold){
-  start.zipping <- 1
+  start.invasion <- 1
 }
 
-yeast_genome_chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
+yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
                                 seqtype = 'DNA', as.string = TRUE, 
                                 forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-yeast_genome_chr2 <- yeast_genome_chr2[[1]]
+yeast.genome.chr2 <- yeast_genome_chr2[[1]]
 
 rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
   x<-toupper(x)
@@ -481,4 +481,26 @@ rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
   }
   return(tolower(yy))
 }
+
+
+invading.fragment <- str_sub(lys2.fragment, detect.rad54 -l, r)
+
+overlapped.rad54 <- c()
+for (pos in pos.rad54){
+  if(pos %in% (detect.rad54 - l) : r){
+    overlapped.rad54 = c(overlapped.rad54, pos)
+  }
+}
+
+last.rad54 <- overlapped.rad54[length(overlap.rad54)]
+nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1)
+zipped <- nearby.rdh54 : last.rad54
+
+rev.comp.MH = rev.comp(str_sub(LY, invading.microhomology.idx[1], invading.microhomology.idx[2]))
+
+if (str_detect(yeast.genome.chr2, rev.comp.MH)){
+  print("0")
+}
+
+
 
