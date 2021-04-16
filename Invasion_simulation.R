@@ -1,7 +1,7 @@
 rm(list=ls())
 
 ###Set working directory
-setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation//")
+setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 if (!require("ggplot2")){install.packages("ggplot2")}
 library(ggplot2)
@@ -11,7 +11,7 @@ library("Biostrings")
 
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
-rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation//datas/";
+rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
 
 # genome-wide microhomology counts
 forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="", header = TRUE)
@@ -231,8 +231,11 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   }
   return(new.bindings)
 }
+
+
 #########################################################################################################
 ######################################### Simulation Start ##############################################
+#########################################################################################################
 
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
 occupied.rad51 = list(bound = "unbound",strand = "negative", donor.invasions = 473927 - 368, lys2.microhomology = 368)
@@ -384,7 +387,7 @@ for(kon in 1:length(kon.group)){
                   
                 }
                 prob.detection = length(which(lys2.occupancy$id == "homology"))
-                prob.detection = prob.detection/500
+                prob.detection = prob.detection/500  #take into a count crosslink density 1/500 ;
               }
               else{
                 prob.detection = 0;
