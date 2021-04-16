@@ -496,9 +496,9 @@ last.rad54 <- overlapped.rad54[length(overlap.rad54)]
 nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1)
 zipped <- nearby.rdh54 : last.rad54
 
-rev.comp.MH = rev.comp(str_sub(LY, invading.microhomology.idx[1], invading.microhomology.idx[2]))
+rev.comp.zipped.MH = rev.comp(str_sub(LY, zipped[1], tail(zipped,1)))
 
-if (str_detect(yeast.genome.chr2, rev.comp.MH)){
+if (str_detect(yeast.genome.chr2, rev.comp.zipped.MH)){
   print("0")
 }
 
