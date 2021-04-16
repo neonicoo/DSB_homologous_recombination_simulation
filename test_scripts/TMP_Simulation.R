@@ -513,7 +513,6 @@ yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]]
 
 # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
-
 revcomp.invading.fragment <- rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
 
 start.dloop <- 0
@@ -521,10 +520,14 @@ if (str_detect(yeast.genome.chr2, revcomp.invading.fragment)){
   start.dloop <- 1
   start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
   end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
-  }
+}
 
-for(i in 1:100){
+#print(start.dloop)
+
+while(end.invasion < 473926){
   new.nt <- str_sub(yeast.genome.chr2, end.invasion+1, end.invasion+1)
   revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
   end.invasion = end.invasion +1
 }
+
+
