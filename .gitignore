@@ -40,8 +40,8 @@ vignettes/*.pdf
 .Renviron
 
 # output data simulation files 
-./datas/
-./datas0/
+/datas/
+/datas0/
 
 # genome datas 
-./yeast-genome
+/yeast-genome
