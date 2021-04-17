@@ -41,4 +41,7 @@ vignettes/*.pdf
 
 # output data simulation files 
 ./datas/
-./datas0
+./datas0/
+
+# genome datas 
+./yeast-genome
