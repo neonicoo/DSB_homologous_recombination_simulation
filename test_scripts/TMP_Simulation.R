@@ -15,12 +15,12 @@ library("Biostrings")
 rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
 
 # genome-wide microhomology counts
-forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="", header = TRUE)
+forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
-# within-lys microhomologies
-L500.self.micros = as.data.frame(matrix(c("attccaact","attccaact",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
+# within-lys microhomologies (misalignments)
+L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
 L1000.selfmicros <- read.delim("L1000_self-microhomologies.txt", stringsAsFactors=FALSE); L1000.selfmicros$position3 = NA
 LY2000.selfmicros <- read.csv("LY2000_self-microhomologies.txt", sep="", stringsAsFactors=FALSE)
 
@@ -506,11 +506,16 @@ if(start.zipping == 1){
 
 
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
-yeast.genome.chr2 <- read.fasta("./Yeast-genome/S288c-R64-2-1 (2014)/chr2.fa" ,
+yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
                                 seqtype = 'DNA', as.string = TRUE, 
                                 forceDNAtolower  = TRUE, set.attributes = FALSE)
 
 yeast.genome.chr2 <- yeast.genome.chr2[[1]]
+
+
+
+
+############A REVOIR CONFUSION ##################
 
 # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
 revcomp.invading.fragment <- rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
@@ -520,14 +525,19 @@ if (str_detect(yeast.genome.chr2, revcomp.invading.fragment)){
   start.dloop <- 1
   start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
   end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
+
+  #print(start.dloop)
+  
+  while(end.invasion < 473926 & start.dloop == 1){
+    new.nt <- str_sub(yeast.genome.chr2, end.invasion+1, end.invasion+1)
+    revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
+    end.invasion = end.invasion +1
+  }
 }
 
-#print(start.dloop)
-
-while(end.invasion < 473926){
-  new.nt <- str_sub(yeast.genome.chr2, end.invasion+1, end.invasion+1)
-  revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
-  end.invasion = end.invasion +1
-}
+invading.fragment <- rev.comp(revcomp.invading.fragment)
+new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1] -1), invading.fragment, sep="")
 
 
+#str_detect(string = lys2.whole.fragment, pattern = revcomp.invading.fragment)
+#str_locate_all(string = lys2.whole.fragment, pattern = rev.comp(LY))
