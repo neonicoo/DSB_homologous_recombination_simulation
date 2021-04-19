@@ -514,7 +514,24 @@ if(start.zipping == 1){
   occupied.rad51$donor.invasions <- occupied.rad51$donor.invasions[-rad51.indexes2remove]
   occupied.rad51$lys2.microhomology <- occupied.rad51$lys2.microhomology[-rad51.indexes2remove]
   
+  
   # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
+  
+  ############################ test###############
+  # seq = "atcg"
+  # rc.seq = rev.comp(seq)
+  # genome = paste(paste("aaaa", rc.seq, sep=""), "tttt", sep="")
+  # start.sei = str_locate_all(pattern = rc.seq, string = genome)[[1]][1]
+  # end.sei = str_locate_all(pattern = rc.seq, string = genome)[[1]][2]
+  # while (start.sei >1) {
+  #   start.sei = start.sei - 1
+  #   new.bp= str_sub(string = genome, start.sei, start.sei)
+  #   rc.seq = paste(new.bp, rc.seq, sep="")
+  # }
+  # str_detect(string = genome, rc.seq)
+  
+  ################################################
+  
   revcomp.invading.fragment <- rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
   
   start.dloop <- 0
@@ -534,9 +551,9 @@ if(start.zipping == 1){
         break
         
       }else{
-        new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
-        revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
         start.invasion = start.invasion-1
+        new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
+        revcomp.invading.fragment  = paste(new.nt, revcomp.invading.fragment, sep="")
       }
     }
   }
@@ -544,4 +561,8 @@ if(start.zipping == 1){
   invading.fragment <- rev.comp(revcomp.invading.fragment)
   new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="")
 }
+
+
+
+
 
