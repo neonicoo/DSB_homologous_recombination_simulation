@@ -514,24 +514,6 @@ if (microhomoligies.left + microhomoligies.right +1 > threshold){
     occupied.rad51$lys2.microhomology <- occupied.rad51$lys2.microhomology[-rad51.indexes2remove]
     
     
-    
-    
-    ############################ test###############
-    # seq = "atcg"
-    # rc.seq = rev.comp(seq)
-    # genome = paste(paste("aaaa", rc.seq, sep=""), "tttt", sep="")
-    # start.sei = str_locate_all(pattern = rc.seq, string = genome)[[1]][1]
-    # end.sei = str_locate_all(pattern = rc.seq, string = genome)[[1]][2]
-    # while (start.sei >1) {
-    #   start.sei = start.sei - 1
-    #   new.bp= str_sub(string = genome, start.sei, start.sei)
-    #   rc.seq = paste(new.bp, rc.seq, sep="")
-    # }
-    # str_detect(string = genome, rc.seq)
-    
-    ################################################
-    
-    
     # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
     
     revcomp.invading.fragment <- rev.comp(zipped.fragment)
@@ -549,29 +531,51 @@ if (microhomoligies.left + microhomoligies.right +1 > threshold){
       
       #print(start.dloop)
       
-      #Recombination with template start :
-      while(start.invasion > 469748 & start.dloop == 1){
+      ###Recombination with template start :
+      
+      # If we recombine the left side of the rev.comp zipped fragment (and thus the right side of the initial fragment):
+      if(str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][2] >= 473926){
         
-        preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
-        
-        if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-          print("Dissociation of the D-Loop") #koff2 rick of dissociation 
-          break
+        while(start.invasion > 469748 & start.dloop == 1){
+          preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
           
-        }else{
-          start.invasion = start.invasion-1
-          new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
-          revcomp.invading.fragment  = paste(new.nt, revcomp.invading.fragment, sep="")
+          if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
+            print("Dissociation of the D-Loop") #koff2 rick of dissociation 
+            break
+            
+          }else{
+            start.invasion = start.invasion-1
+            new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
+            revcomp.invading.fragment  = paste(new.nt, revcomp.invading.fragment, sep="")
+          }
+        }
+        
+        invading.fragment <- rev.comp(revcomp.invading.fragment)
+        new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="") #the repaired DSB 
+      
+      # If we recombine the right side of the rev.comp zipped fragment (and thus the left side of the initial fragment) :
+      }else if (str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][1] <= 469748){
+        while(end.invasion < 473926 & start.dloop == 1){
+          preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
+          
+          if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
+            print("Dissociation of the D-Loop")
+            break
+            
+          }else{
+            end.invasion = end.invasion +1 
+            new.nt <- str_sub(yeast.genome.chr2, end.invasion, end.invasion)
+            revcomp.invading.fragment  = paste(revcomp.invading.fragment, new.nt, sep="")
+          }
         }
       }
+      
+      invading.fragment <- rev.comp(revcomp.invading.fragment)
+      new.lys2.fragment <- paste(invading.fragment, str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), sep="")
     }
-    
-    invading.fragment <- rev.comp(revcomp.invading.fragment)
-    
-    #new.lys2.fragment: Our repaired DSB 
-    new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="")
   }
 }
+
 
 
 
