@@ -468,6 +468,14 @@ for (r in (detect.rad54+1):str_length(LY)){ #look for consecutive MH at right of
   }
 }
 
+#Import of the chr2.fa sequence file from the yeast genome (S288) :
+yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
+                                seqtype = 'DNA', as.string = TRUE, 
+                                forceDNAtolower  = TRUE, set.attributes = FALSE)
+
+yeast.genome.chr2 <- yeast.genome.chr2[[1]]
+
+
 #threshold : consecutive bp necessary to enable zipping
 #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp 
 #N(mean = 0, std = 20)
@@ -480,7 +488,7 @@ if (microhomoligies.left + microhomoligies.right +1 > threshold){
 
 
 if(start.zipping == 1){
-
+  
   #overlapped.rad54 : all the others rad54 overlapped by the macrohomology
   overlapped.rad54 <- c()
   for (pos in pos.rad54){
@@ -502,42 +510,26 @@ if(start.zipping == 1){
   rad51.indexes2remove <- which(occupied.rad51$lys2.microhomology %in% zipped.indexes)
   occupied.rad51$donor.invasions <- occupied.rad51$donor.invasions[-rad51.indexes2remove]
   occupied.rad51$lys2.microhomology <- occupied.rad51$lys2.microhomology[-rad51.indexes2remove]
-}
-
-
-#Import of the chr2.fa sequence file from the yeast genome (S288) :
-yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
-                                seqtype = 'DNA', as.string = TRUE, 
-                                forceDNAtolower  = TRUE, set.attributes = FALSE)
-
-yeast.genome.chr2 <- yeast.genome.chr2[[1]]
-
-
-
-
-############A REVOIR CONFUSION ##################
-
-# LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
-revcomp.invading.fragment <- rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
-
-start.dloop <- 0
-if (str_detect(yeast.genome.chr2, revcomp.invading.fragment)){
-  start.dloop <- 1
-  start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
-  end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
-
-  #print(start.dloop)
   
-  while(end.invasion < 473926 & start.dloop == 1){
-    new.nt <- str_sub(yeast.genome.chr2, end.invasion+1, end.invasion+1)
-    revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
-    end.invasion = end.invasion +1
+  # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
+  revcomp.invading.fragment <- rev.comp(str_sub(LY, zipped.indexes[1], tail(zipped.indexes,1)))
+  
+  start.dloop <- 0
+  if (str_detect(yeast.genome.chr2, revcomp.invading.fragment)){
+    start.dloop <- 1
+    start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
+    end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
+    
+    #print(start.dloop)
+    
+    while(start.invasion > 469748 & start.dloop == 1){
+      new.nt <- str_sub(yeast.genome.chr2, start.invasion-1, start.invasion-1)
+      revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
+      start.invasion = start.invasion-1
+    }
   }
+  
+  invading.fragment <- rev.comp(revcomp.invading.fragment)
+  new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1] -1), invading.fragment, sep="")
+  
 }
-
-invading.fragment <- rev.comp(revcomp.invading.fragment)
-new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1] -1), invading.fragment, sep="")
-
-
-#str_detect(string = lys2.whole.fragment, pattern = revcomp.invading.fragment)
-#str_locate_all(string = lys2.whole.fragment, pattern = rev.comp(LY))
