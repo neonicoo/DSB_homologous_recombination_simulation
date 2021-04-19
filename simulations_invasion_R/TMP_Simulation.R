@@ -412,13 +412,16 @@ for (trial in 1:test.replicates){
 } #end process
 
 
-#########################################################################################################
-######################################### Random Tests ##################################################
+########################################################################################################
+######################################### D-LOOP Tests ##################################################
+########################################################################################################
 
 nb.rad54 <- floor(0.025*str_length(LY)) #number of rad54 to be placed into the invading strand ;
 nb.rdh54 <- floor(0.25 * nb.rad54) # number of rdh54 to be placed into the invading strand;
 pos.rad54 <- c() #positions of rad54 in the invading strand;
 pos.rdh54 <- c() #positions of rdh54 in the invading strand;
+
+koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
 
 while (nb.rad54 > 0){ #place the requiered rad54 randomly (according uniform distro) over the invading fragment ;
   pos.rad54 = c(pos.rad54, floor(runif(1, min = 0, max=str_length(LY))))
@@ -523,13 +526,22 @@ if(start.zipping == 1){
     #print(start.dloop)
     
     while(start.invasion > 469748 & start.dloop == 1){
-      new.nt <- str_sub(yeast.genome.chr2, start.invasion-1, start.invasion-1)
-      revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
-      start.invasion = start.invasion-1
+      
+      preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
+      
+      if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
+        print("Dissociation of the D-Loop")
+        break
+        
+      }else{
+        new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
+        revcomp.invading.fragment  = paste(revcomp.invading.fragment , new.nt, sep="")
+        start.invasion = start.invasion-1
+      }
     }
   }
   
   invading.fragment <- rev.comp(revcomp.invading.fragment)
-  new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1] -1), invading.fragment, sep="")
-  
+  new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="")
 }
+
