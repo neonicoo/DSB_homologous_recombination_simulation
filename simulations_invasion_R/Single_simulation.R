@@ -343,7 +343,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
   # If we recombine the left side of the rev.comp zipped fragment (and thus the right side of the initial fragment):
   if(str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][2] >= 473926){
     
-    while(start > 469748 && start.dloop == 1){
+    while(start > 469748){
       preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2))
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
@@ -362,7 +362,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
     
     # If we recombine the right side of the rev.comp zipped fragment (and thus the left side of the initial fragment) :
   }else if (str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][1] <= 469748){
-    while(end < 473926 && start.dloop == 1){
+    while(end < 473926){
       preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2))
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
@@ -445,6 +445,9 @@ for (trial in 1:test.replicates){
     pos.rad54 <- c() #positions of rad54 in the invading strand;
     pos.rdh54 <- c() #positions of rdh54 in the invading strand;
     detect.rad54 <- 0 #the pos where a rad54 is overlapped by a rad51-MH complex
+    
+    start.dloop <- 0 #statement variable to engage a dloop invasion
+    consecutive.micros <- c() #list of consecutive MHs around an overlapped rad54 it occurs
     
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
@@ -553,42 +556,48 @@ for (trial in 1:test.replicates){
 
       # If a protein rad54 is overlaped by a micro-homology's donor AND we somewhere in the invading strand more than 200bp homologies :
       
-      consecutive.micros <- c()
-      for (pos in pos.rad54){
-        if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
-          consecutive.micros <- count.consecutive.micros(pos)
-        }
-      }
       
-      #threshold: consecutive bp necessary to enable zipping
+      if (start.dloop == 0){
+        for (pos in pos.rad54){
+          if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
+            consecutive.micros <- count.consecutive.micros(pos)
+          }
+        }
+      
+     
+      
+      #limit: consecutive bp necessary to enable zipping
       #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp
       #N(mean = 0, std = 20)
       
-      threshold <- 225 + rnorm(1, 0, 20)
-      if (sum(consecutive.micros) + 1 > threshold){
-        zip <- zipping(pos,l=consecutive.micros[1], r=consecutive.micros[2])
-        
-        # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
-        revcomp.invading.fragment <- rev.comp(zip[[2]]) #zipped.fragment
-        start.dloop <- 1
-        
-        if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #engage invasion
-          start.dloop <- 0
-        }else{
+      
+        limit <- 225 + rnorm(1, 0, 20)
+        if (sum(consecutive.micros) + 1 > limit){
+          start.dloop <- 1
+          zip <- zipping(pos,l=consecutive.micros[1], r=consecutive.micros[2])
           
-          #Get the first position (on the genome) of the alignement between the rev-comp-zipped fragment
-          #and the genome/chr the during the D-LOOP invasion step :
-          start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
+          # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
+          revcomp.invading.fragment <- rev.comp(zip[[2]]) #zipped.fragment
           
-          #Get the last position of the invasion matches
-          end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
-          recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], start = start.invasion, end = end.invasion)
-          
+          if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #engage invasion
+            start.dloop <- 0
+            consecutive.micros <- c()
+          }else{
+            
+            #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
+            #and the genome/chr the during the D-LOOP invasion step :
+            start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
+            end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
+            
+            recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], start = start.invasion, end = end.invasion)
+            
+          }
         }
       }
- 
       ###################################################
-    print(time.step)
+      
+    print(c(ly.type, trial, time.step))
+      
     }#next time step
   }#next fragment
   
