@@ -561,7 +561,7 @@ for (trial in 1:test.replicates){
       
       
       if (start.dloop == 0){
-        consecutive.micros <-0  #list of consecutive MHs around an overlapped rad54, when it occurs
+        consecutive.micros <-c()  #list of consecutive MHs around an overlapped rad54, when it occurs
         for (pos in pos.rad54){
           if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
             consecutive.micros <- count.consecutive.micros(pos)
@@ -599,6 +599,8 @@ for (trial in 1:test.replicates){
               start.dloop <- 0
               invasion.trials = invasion.trials+1
               
+            }else{
+              break #if the recombination successes, get out the time-set search homologie loop 
             }
           }
           
