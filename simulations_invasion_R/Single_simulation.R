@@ -271,32 +271,29 @@ rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
 #########################################################################################################
 #########################################################################################################
 count.consecutive.micros <- function(detect.rad54){
+  # We have to know before zipping if the 200 MHs are consecutive or not ,
+  # If not, it means that we have a "gap" between 2 homologies, and it's not a good thing if we want to zipp using rad54...
+  
+  microhomologies.left <- 0
+  microhomologies.right <- 0
+  
   if(detect.rad54 != 0){
-    # We have to know before zipping if the 200 MHs are consecutive or not ,
-    # If not, it means that we have a "gap" between 2 homologies, and it's not a good thing if we want to zipp using rad54...
     
-    microhomoligies.left <- 0
-    microhomoligies.right <- 0
-    
-    for (l in 1:(detect.rad54-1)){ #look for consecutive MH at left of the bp overlaping the rad54 protein
-      if (lys2.occupancy$bound[detect.rad54 - l] == "yes" && lys2.occupancy$id[detect.rad54 -l] == "homology"){
-        microhomoligies.left = microhomoligies.left +1
-      }else{
-        break
-      }
+    left <- 1
+    while(lys2.occupancy$bound[detect.rad54 - left] == "yes" && lys2.occupancy$id[detect.rad54 - left] == "homology" && left < detect.rad54){
+      microhomologies.left = microhomologies.left +1
+      left = left+1
     }
     
-    for (r in (detect.rad54+1):str_length(lys2.fragment)){ #look for consecutive MH at right of the bp overlaping the rad54 protein
-      if (lys2.occupancy$bound[r] == "yes" && lys2.occupancy$id[r] == "homology"){
-        microhomoligies.right = microhomoligies.right+1
-      }else{
-        break
-      }
+    right <- 1
+    while(lys2.occupancy$bound[detect.rad54 + right] == "yes" && lys2.occupancy$id[detect.rad54 + right] == "homology" && (detect.rad54 + right) < str_length(lys2.fragment)){
+      microhomologies.right = microhomologies.right +1
+      right = right+1
     }
   }
-  
-  return(c(microhomoligies.left, microhomoligies.right))
+  return(c(microhomologies.left, microhomologies.right))
 }
+
 #########################################################################################################
 #########################################################################################################
 
@@ -433,6 +430,7 @@ for (trial in 1:test.replicates){
     bigtracker=bigtracker+1
     ly.type = ly.names[fragment]
     lys2.fragment = ly.sequences[fragment]
+    recombined.lys2.fragment <- ""
     if (fragment == 1){
       self.micros =L500.self.micros
     }else{
@@ -455,7 +453,11 @@ for (trial in 1:test.replicates){
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
     while (nb.rad54 > 0){ #place the requiered rad54 randomly (according uniform distro) over the invading fragment ;
-      pos.rad54 = c(pos.rad54, floor(runif(1, min = 0, max=str_length(lys2.fragment))))
+      new.pos <- 0
+      while (new.pos == 0 || new.pos %in% pos.rad54){
+        new.pos <- floor(runif(1, min = 0, max=str_length(lys2.fragment)))
+      }
+      pos.rad54 = c(pos.rad54, new.pos)
       nb.rad54 = nb.rad54 - 1
     }
     
@@ -560,10 +562,11 @@ for (trial in 1:test.replicates){
       # If a protein rad54 is overlaped by a micro-homology's donor AND we somewhere in the invading strand more than 200bp homologies :
       
       
-      if (start.dloop == 0){
+      if (start.dloop == 0 && twoh ==1){
         consecutive.micros <-c()  #list of consecutive MHs around an overlapped rad54, when it occurs
         for (pos in pos.rad54){
-          if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
+          if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology"){
+            #print(c("pos :", pos))
             consecutive.micros <- count.consecutive.micros(pos)
           }
         }
@@ -580,29 +583,24 @@ for (trial in 1:test.replicates){
           
           # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
           revcomp.invading.fragment <- rev.comp(zip[[2]]) #zipped.fragment
+
+          #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
+          #and the genome/chr the during the D-LOOP invasion step :
+          start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
+          end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
           
-          if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #find the zipped rev-comp fragment in the genome
+          recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
+                                                       start = start.invasion, end = end.invasion)
+          
+          if(recombined.lys2.fragment==0){
             start.dloop <- 0
             invasion.trials = invasion.trials+1
             
           }else{
-            
-            #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
-            #and the genome/chr the during the D-LOOP invasion step :
-            start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
-            end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
-            
-            recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
-                                                         start = start.invasion, end = end.invasion)
-            
-            if(recombined.lys2.fragment==0){
-              start.dloop <- 0
-              invasion.trials = invasion.trials+1
-              
-            }else{
-              break #if the recombination successes, get out the time-set search homologie loop 
-            }
+            print(nchar(recombined.lys2.fragment))
+            break #if the recombination successes, get out the time-set search homologie loop 
           }
+          
           
         }else{
           start.dloop <- 0
@@ -611,14 +609,14 @@ for (trial in 1:test.replicates){
       }
       ###################################################
       
-      print(c(ly.type, trial, time.step))
+      #print(c(ly.type, trial, time.step))
       
     }#next time step
     
     invasion.stats$length[bigtracker] = ly.type
     invasion.stats$replicate.trial[bigtracker] = trial
     invasion.stats$invasion.trials[bigtracker] = invasion.trials
-    invasion.stats$recombine.success[bigtracker] = ifelse(str_detect(pattern = lys2.fragment, string = recombined.lys2.fragment), "yes", "no")
+    invasion.stats$recombine.success[bigtracker] = ifelse(nchar(recombined.lys2.fragment)>=4179, "yes", "no")
     
   }#next fragment
   
