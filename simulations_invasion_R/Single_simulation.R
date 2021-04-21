@@ -348,7 +348,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
         #print("Dissociation of the D-Loop") #koff2 rick of dissociation
-        break
+        return(0)
         
       }else{
         start = start-1
@@ -367,7 +367,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
         #print("Dissociation of the D-Loop")
-        break
+        return(0)
         
       }else{
         end = end +1
@@ -566,9 +566,9 @@ for (trial in 1:test.replicates){
       
      
       
-      #limit: consecutive bp necessary to enable zipping
-      #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp
-      #N(mean = 0, std = 20)
+        #limit: consecutive bp necessary to enable zipping
+        #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp
+        #N(mean = 0, std = 20)
       
       
         limit <- 225 + rnorm(1, 0, 20)
@@ -579,7 +579,7 @@ for (trial in 1:test.replicates){
           # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
           revcomp.invading.fragment <- rev.comp(zip[[2]]) #zipped.fragment
           
-          if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #engage invasion
+          if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #find the zipped rev-comp fragment in the genome
             start.dloop <- 0
             consecutive.micros <- c()
           }else{
@@ -589,9 +589,20 @@ for (trial in 1:test.replicates){
             start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
             end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
             
-            recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], start = start.invasion, end = end.invasion)
-            
+            if(template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], start = start.invasion, end = end.invasion)==0){
+              start.dloop <- 0
+              consecutive.micros <- c()
+              
+            }else{
+              recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], 
+                                                           zipped.fragment = zip[[2]], 
+                                                           start = start.invasion, 
+                                                           end = end.invasion)
+            }
           }
+        }else{
+          start.dloop <- 0
+          consecutive.micros <- c()
         }
       }
       ###################################################
