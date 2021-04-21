@@ -347,7 +347,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
       preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2))
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-        #print("Dissociation of the D-Loop") #koff2 rick of dissociation
+        #print("Dissociation of the D-Loop") #koff2 risk of dissociation
         return(0)
         
       }else{
@@ -447,7 +447,7 @@ for (trial in 1:test.replicates){
     detect.rad54 <- 0 #the pos where a rad54 is overlapped by a rad51-MH complex
     
     start.dloop <- 0 #statement variable to engage a dloop invasion
-    consecutive.micros <- c() #list of consecutive MHs around an overlapped rad54 it occurs
+    invasion.trials <- 0
     
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
@@ -553,24 +553,23 @@ for (trial in 1:test.replicates){
       }
       
       ########  DLOOP invasion #########################
-
+      
       # If a protein rad54 is overlaped by a micro-homology's donor AND we somewhere in the invading strand more than 200bp homologies :
       
       
       if (start.dloop == 0){
+        consecutive.micros <- c() #list of consecutive MHs around an overlapped rad54 it occurs
         for (pos in pos.rad54){
           if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
             consecutive.micros <- count.consecutive.micros(pos)
           }
         }
-      
-     
-      
+        
         #limit: consecutive bp necessary to enable zipping
         #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp
         #N(mean = 0, std = 20)
-      
-      
+        
+        
         limit <- 225 + rnorm(1, 0, 20)
         if (sum(consecutive.micros) + 1 > limit){
           start.dloop <- 1
@@ -581,7 +580,8 @@ for (trial in 1:test.replicates){
           
           if (!str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #find the zipped rev-comp fragment in the genome
             start.dloop <- 0
-            consecutive.micros <- c()
+            invasion.trials = invasion.trials+1
+            
           }else{
             
             #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
@@ -589,25 +589,24 @@ for (trial in 1:test.replicates){
             start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
             end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
             
-            if(template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], start = start.invasion, end = end.invasion)==0){
+            recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
+                                                         start = start.invasion, end = end.invasion)
+            
+            if(recombined.lys2.fragment==0){
               start.dloop <- 0
-              consecutive.micros <- c()
+              invasion.trials = invasion.trials+1
               
-            }else{
-              recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], 
-                                                           zipped.fragment = zip[[2]], 
-                                                           start = start.invasion, 
-                                                           end = end.invasion)
             }
           }
+          
         }else{
           start.dloop <- 0
-          consecutive.micros <- c()
+          invasion.trials = invasion.trials+1
         }
       }
       ###################################################
       
-    print(c(ly.type, trial, time.step))
+      print(c(ly.type, trial, time.step))
       
     }#next time step
   }#next fragment
