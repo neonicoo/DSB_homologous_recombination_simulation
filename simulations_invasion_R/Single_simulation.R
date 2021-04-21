@@ -3,13 +3,19 @@ rm(list=ls())
 ###Set working directory
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
+
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.12")
+# 
+# if (!require("Biostrings")){
+#   BiocManager::install("Biostrings")
+# }
+
 library(ggplot2)
 library(stringr)
 library(seqinr)
-
-if (!require("Biostrings")){source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")}
 library("Biostrings")
-
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
