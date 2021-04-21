@@ -310,7 +310,7 @@ zipping <- function(detect.rad54, l, r){
   if (length(which(pos.rdh54 < last.rad54) != 0)){
     nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1) #the nearest rdh54 from the last rad54 of the macrohomology
   }else{
-    nearby.rdh54 <- 0
+    nearby.rdh54 <- 1
   }
   
   #When the macrohomology is ready to be zipped,
@@ -337,15 +337,16 @@ zipping <- function(detect.rad54, l, r){
 template.copying <- function(zipped.indexes, zipped.fragment, start, end){
   ###Recombination with template start :
   
+  revcomp.invading.fragment <- rev.comp(zipped.fragment)
+  
   # If we recombine the left side of the rev.comp zipped fragment (and thus the right side of the initial fragment):
   if(str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][2] >= 473926){
     
     while(start > 469748){
       preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2))
       
-      if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-        #print("Dissociation of the D-Loop") #koff2 risk of dissociation
-        return(0)
+      if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){ #koff2 risk of dissociation
+        break
         
       }else{
         start = start-1
@@ -353,6 +354,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
         revcomp.invading.fragment  = paste(new.nt, revcomp.invading.fragment, sep="")
       }
     }
+    
     
     invading.fragment <- rev.comp(revcomp.invading.fragment)
     new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="") #the repaired DSB
@@ -363,8 +365,7 @@ template.copying <- function(zipped.indexes, zipped.fragment, start, end){
       preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2))
       
       if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-        #print("Dissociation of the D-Loop")
-        return(0)
+        break
         
       }else{
         end = end +1
@@ -566,7 +567,6 @@ for (trial in 1:test.replicates){
         consecutive.micros <-c()  #list of consecutive MHs around an overlapped rad54, when it occurs
         for (pos in pos.rad54){
           if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology"){
-            #print(c("pos :", pos))
             consecutive.micros <- count.consecutive.micros(pos)
           }
         }
@@ -580,25 +580,31 @@ for (trial in 1:test.replicates){
         if (sum(consecutive.micros) + 1 > limit){
           start.dloop <- 1
           zip <- zipping(pos,l=consecutive.micros[1], r=consecutive.micros[2])
-          
           # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
-          revcomp.invading.fragment <- rev.comp(zip[[2]]) #zipped.fragment
-
-          #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
-          #and the genome/chr the during the D-LOOP invasion step :
-          start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
-          end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
           
-          recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
-                                                       start = start.invasion, end = end.invasion)
-          
-          if(recombined.lys2.fragment==0){
+          if(length(zip[[1]]) > 50){
+            #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
+            #and the genome/chr the during the D-LOOP invasion step ;
+            #rev.comp(zip[[2]]) : reverse complement of the zipped fragment
+            first.match.invasion <- as.integer(str_locate_all(pattern = rev.comp(zip[[2]]), str = yeast.genome.chr2)[[1]][1])
+            last.match.invasion <- as.integer(str_locate_all(pattern = rev.comp(zip[[2]]), str = yeast.genome.chr2)[[1]][2])
+            #print(c("pos :", pos, "start :", first.match.invasion, "end : ", last.match.invasion))
+            
+            recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
+                                                         start = first.match.invasion, end = last.match.invasion)
+          }else{
             start.dloop <- 0
             invasion.trials = invasion.trials+1
-            
-          }else{
+          }
+          
+          if(recombined.lys2.fragment != 0){
             print(nchar(recombined.lys2.fragment))
             break #if the recombination successes, get out the time-set search homologie loop 
+            
+            
+          }else{
+            start.dloop <- 0
+            invasion.trials = invasion.trials+1
           }
           
           
