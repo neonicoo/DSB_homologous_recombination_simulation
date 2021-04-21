@@ -408,6 +408,10 @@ names(pop.time.series) = c("time.step","prob.detect","length")
 pop.time.series$length = rep(ly.names, each = num.time.steps)
 pop.time.series$time.step = rep(seq(1,num.time.steps,1),3)
 
+
+invasion.stats <- as.data.frame(matrix(0,3*test.replicates,4))
+names(invasion.stats) <- c('replicate.trial', 'length', 'invasion.trials', 'recombine.success')
+
 saver = 0
 bigtracker = 0
 summary.stats = as.data.frame(matrix(0,3*test.replicates,3))
@@ -415,7 +419,6 @@ names(summary.stats) = c('length','first.time','twoh.time')
 
 for (trial in 1:test.replicates){ 
   # initialize tabulation of bound microhomologies/heterologies
-  # print(trial)
   
   if(saver < 3){
     # ly.binding.ts : over the course of an invasion round, 
@@ -558,7 +561,7 @@ for (trial in 1:test.replicates){
       
       
       if (start.dloop == 0){
-        consecutive.micros <- c() #list of consecutive MHs around an overlapped rad54 it occurs
+        consecutive.micros <-0  #list of consecutive MHs around an overlapped rad54, when it occurs
         for (pos in pos.rad54){
           if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology" && twoh == 1 && pos !=0){
             consecutive.micros <- count.consecutive.micros(pos)
@@ -609,6 +612,12 @@ for (trial in 1:test.replicates){
       print(c(ly.type, trial, time.step))
       
     }#next time step
+    
+    invasion.stats$length[bigtracker] = ly.type
+    invasion.stats$replicate.trial[bigtracker] = trial
+    invasion.stats$invasion.trials[bigtracker] = invasion.trials
+    invasion.stats$recombine.success[bigtracker] = ifelse(str_detect(pattern = lys2.fragment, string = recombined.lys2.fragment), "yes", "no")
+    
   }#next fragment
   
   if(saver < 3){
