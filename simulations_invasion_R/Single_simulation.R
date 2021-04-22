@@ -627,7 +627,7 @@ for (trial in 1:test.replicates){
     
     invasion.stats$length[bigtracker] = ly.type
     invasion.stats$replicate.trial[bigtracker] = trial
-    invasion.stats$time.step[bigtracker] = time.step-1
+    invasion.stats$time.step[bigtracker] = time.step
     invasion.stats$invasion.trials[bigtracker] = invasion.trials
     invasion.stats$recombine.success[bigtracker] = ifelse(invasion.trials < num.time.steps, "yes", "no")
     
