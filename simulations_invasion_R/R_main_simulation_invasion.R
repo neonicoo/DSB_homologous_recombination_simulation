@@ -3,23 +3,37 @@ rm(list=ls())
 ###Set working directory
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
-if (!require("ggplot2")){install.packages("ggplot2")}
+
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.12")
+# 
+# if (!require("Biostrings")){
+#   BiocManager::install("Biostrings")
+# }
+
 library(ggplot2)
-
-if (!require("Biostrings")){source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")}
+library(stringr)
+library(seqinr)
 library("Biostrings")
-
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
 
+#Import of the chr2.fa sequence file from the yeast genome (S288) :
+yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
+                                seqtype = 'DNA', as.string = TRUE, 
+                                forceDNAtolower  = TRUE, set.attributes = FALSE)
+
+yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
+
 # genome-wide microhomology counts
-forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="", header = TRUE)
+forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
-# within-lys microhomologies
-L500.self.micros = as.data.frame(matrix(c("attccaact","attccaact",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
+# within-lys microhomologies (misalignments)
+L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
 L1000.selfmicros <- read.delim("L1000_self-microhomologies.txt", stringsAsFactors=FALSE); L1000.selfmicros$position3 = NA
 LY2000.selfmicros <- read.csv("LY2000_self-microhomologies.txt", sep="", stringsAsFactors=FALSE)
 
@@ -38,6 +52,7 @@ test.replicates = 5 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
 koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
+koff2.group <-c(0,0.0005,0.001,0.05, 0.1)
 m.group = c(2,5) #bindings allowed to occur per tethering
 search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
 
@@ -46,9 +61,11 @@ search.window.group = c(250,500) #the genomic distance of the tethering effect (
 # For example 0005 is really 0.005
 kon.group.names<- gsub("\\.", "", as.character(kon.group))
 koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
+koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
 
 print(kon.group.names)
 print(koff1.group.names)
+
 
 #########################################################################################################
 #################################### FUNCTIONS ##########################################################
