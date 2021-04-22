@@ -588,32 +588,32 @@ for (trial in 1:test.replicates){
           zip <- zipping(pos,l=consecutive.micros[1], r=consecutive.micros[2])
           # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
           
-          if(length(zip[[1]]) > 50){
+          if (length(zip[[1]]) > 16){
             #Get the first and the last position (on the genome) of the alignement between the rev-comp-zipped fragment
             #and the genome/chr the during the D-LOOP invasion step ;
             #rev.comp(zip[[2]]) : reverse complement of the zipped fragment
-            first.match.invasion <- as.integer(str_locate_all(pattern = rev.comp(zip[[2]]), str = yeast.genome.chr2)[[1]][1])
-            last.match.invasion <- as.integer(str_locate_all(pattern = rev.comp(zip[[2]]), str = yeast.genome.chr2)[[1]][2])
+            donors.locations <- as.data.frame(str_locate_all(pattern = rev.comp(zip[[2]]), str = yeast.genome.chr2))
+            first.match.invasion <- donors.locations$start[which(donors.locations$start %in% 469748:473927  & donors.locations$end %in% 469748:473927)]
+            last.match.invasion <- donors.locations$end[which(donors.locations$start %in% 469748:473927  & donors.locations$end %in% 469748:473927)]
             #print(c("pos :", pos, "start :", first.match.invasion, "end : ", last.match.invasion))
             
             recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
                                                          start = first.match.invasion, end = last.match.invasion)
+            if(recombined.lys2.fragment != 0){
+              print(nchar(recombined.lys2.fragment))
+              break #if the recombination successes, get out the time-set search homologies loop 
+              
+              
+            }else{
+              start.dloop <- 0
+              invasion.trials = invasion.trials+1
+            }
+            
           }else{
             start.dloop <- 0
             invasion.trials = invasion.trials+1
           }
-          
-          if(recombined.lys2.fragment != 0){
-            print(nchar(recombined.lys2.fragment))
-            break #if the recombination successes, get out the time-set search homologie loop 
-            
-            
-          }else{
-            start.dloop <- 0
-            invasion.trials = invasion.trials+1
-          }
-          
-          
+
         }else{
           start.dloop <- 0
           invasion.trials = invasion.trials+1
@@ -621,14 +621,14 @@ for (trial in 1:test.replicates){
       }
       ###################################################
       
-      #print(c(ly.type, trial, time.step))
+      print(c(ly.type, trial, time.step))
       
     }#next time step
     
     invasion.stats$length[bigtracker] = ly.type
     invasion.stats$replicate.trial[bigtracker] = trial
     invasion.stats$invasion.trials[bigtracker] = invasion.trials
-    invasion.stats$recombine.success[bigtracker] = ifelse(nchar(recombined.lys2.fragment)>=4179, "yes", "no")
+    invasion.stats$recombine.success[bigtracker] = ifelse(invasion.trials < num.time.steps, "yes", "no")
     
   }#next fragment
   
