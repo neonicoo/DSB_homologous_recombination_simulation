@@ -413,8 +413,8 @@ pop.time.series$length = rep(ly.names, each = num.time.steps)
 pop.time.series$time.step = rep(seq(1,num.time.steps,1),3)
 
 
-invasion.stats <- as.data.frame(matrix(0,3*test.replicates,4))
-names(invasion.stats) <- c('replicate.trial', 'length', 'invasion.trials', 'recombine.success')
+invasion.stats <- as.data.frame(matrix(0,3*test.replicates,5))
+names(invasion.stats) <- c('replicate.trial', 'length', 'time.step', 'invasion.trials', 'recombine.success')
 
 saver = 0
 bigtracker = 0
@@ -455,7 +455,7 @@ for (trial in 1:test.replicates){
     detect.rad54 <- 0 #the pos where a rad54 is overlapped by a rad51-MH complex
     
     start.dloop <- 0 #statement variable to engage a dloop invasion
-    invasion.trials <- 0
+    invasion.trials <- 1
     
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
@@ -600,7 +600,7 @@ for (trial in 1:test.replicates){
             recombined.lys2.fragment <- template.copying(zipped.indexes = zip[[1]], zipped.fragment = zip[[2]], 
                                                          start = first.match.invasion, end = last.match.invasion)
             if(recombined.lys2.fragment != 0){
-              print(nchar(recombined.lys2.fragment))
+              #print(nchar(recombined.lys2.fragment))
               break #if the recombination successes, get out the time-set search homologies loop 
               
               
@@ -627,6 +627,7 @@ for (trial in 1:test.replicates){
     
     invasion.stats$length[bigtracker] = ly.type
     invasion.stats$replicate.trial[bigtracker] = trial
+    invasion.stats$time.step[bigtracker] = time.step-1
     invasion.stats$invasion.trials[bigtracker] = invasion.trials
     invasion.stats$recombine.success[bigtracker] = ifelse(invasion.trials < num.time.steps, "yes", "no")
     
