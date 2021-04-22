@@ -10,6 +10,7 @@ library(seqinr)
 if (!require("Biostrings")){source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")}
 library("Biostrings")
 
+'%!in%' <- function(x,y)!('%in%'(x,y)) #negate operator for %in%
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
@@ -33,6 +34,12 @@ L500 = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACAT
 ly.names = c("500", "1000", "2000")
 ly.sequences = c(L500, L, LY)
 
+#Import of the chr2.fa sequence file from the yeast genome (S288) :
+yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
+                                seqtype = 'DNA', as.string = TRUE, 
+                                forceDNAtolower  = TRUE, set.attributes = FALSE)
+
+yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
 test.replicates = 5 # How many times to simulate, replicates
@@ -50,6 +57,8 @@ koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
 
 print(kon.group.names)
 print(koff1.group.names)
+
+
 
 #########################################################################################################
 #################################### FUNCTIONS ##########################################################
@@ -416,72 +425,115 @@ for (trial in 1:test.replicates){
 ######################################### D-LOOP Tests ##################################################
 ########################################################################################################
 
-nb.rad54 <- floor(0.025*str_length(LY)) #number of rad54 to be placed into the invading strand ;
+nb.rad54 <- floor(0.025*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
 nb.rdh54 <- floor(0.25 * nb.rad54) # number of rdh54 to be placed into the invading strand;
 pos.rad54 <- c() #positions of rad54 in the invading strand;
 pos.rdh54 <- c() #positions of rdh54 in the invading strand;
+detect.rad54 <- 0 #the pos where a rad54 is overlapped by a rad51-MH complex
+
+start.dloop <- 0 #statement variable to engage a dloop invasion
+invasion.trials <- 1
 
 koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
 
 while (nb.rad54 > 0){ #place the requiered rad54 randomly (according uniform distro) over the invading fragment ;
-  pos.rad54 = c(pos.rad54, floor(runif(1, min = 0, max=str_length(LY))))
+  new.pos <- 0
+  while (new.pos == 0 || new.pos %in% pos.rad54){
+    new.pos <- floor(runif(1, min = 0, max=str_length(lys2.fragment)))
+  }
+  pos.rad54 = c(pos.rad54, new.pos)
   nb.rad54 = nb.rad54 - 1
 }
 
 while (nb.rdh54 > 0){ #Consider that a proportion of rad54 becomes rdh54
   new.pos <- sample(pos.rad54, size = 1)
-  pos.rdh54 = c(pos.rdh54, new.pos) #pos.rad54 becomes pos.rdh54
-  pos.rad54 = pos.rad54[-which(pos.rad54 == new.pos)] #remove the new pos.rdh54 from the pos.rad54 vector
+  pos.rdh54 = sort(c(pos.rdh54, new.pos)) #pos.rad54 becomes pos.rdh54
+  pos.rad54 = sort(pos.rad54[-which(pos.rad54 == new.pos)]) #remove the new pos.rdh54 from the pos.rad54 vector
   nb.rdh54 = nb.rdh54 - 1
 }
 
 # If a protein rad54 is overlaped by a micro-homology's donor AND we somewhere in the invading strand more than 200bp homologies :
 
-for (pos in pos.rad54){
-  if (lys2.occupancy$bound[pos] == "yes" && lys2.occupancy$id[pos] == "homology"){
-    if (twoh == 1){
-      detect.rad54 <- pos #the pos where a rad54 is overlapped by a rad51-MH complex
+check.length.micros <- function(current.rad54){
+  microhomologies.left <- 0
+  microhomologies.right <- 0
+  left <- 1
+  right <- 1
+  if (lys2.occupancy$bound[current.rad54] == "yes" && lys2.occupancy$id[current.rad54] == "homology"){
+    for (i in 1:20){
+      if(lys2.occupancy$bound[current.rad54 - left] == "yes" && lys2.occupancy$id[current.rad54 - left] == "homology" && left < current.rad54){
+        microhomologies.left = microhomologies.left +1
+        left = left+1
+      }
+      
+      if(lys2.occupancy$bound[current.rad54 + right] == "yes" && lys2.occupancy$id[current.rad54 + right] == "homology" && (current.rad54 + right) < str_length(lys2.fragment)){
+        microhomologies.right = microhomologies.right +1
+        right = right+1
+      }
     }
   }
+  return(sum(microhomologies.left + 1 + microhomologies.right))
 }
 
-# Once we have start.zipping == 1, and thus more than 200 homologies bp ,
-# We have to know before zipping if the 200 MHs are consecutive or not ,
-# If not, it means that we have a "gap" between 2 homologies, and it's not a good thing if we want to zipp using rad54...
+####ZIPPING####
 
-microhomoligies.left = 0 
-microhomoligies.right = 0
 
-for (l in 1:(detect.rad54-1)){ #look for consecutive MH at left of the bp overlaping the rad54 protein
-  if (lys2.occupancy$bound[detect.rad54 - l] == "yes" && lys2.occupancy$id[detect.rad54 -l] == "homology"){
-    microhomoligies.left = microhomoligies.left +1
-  }else{
+zipping <- function(rad54, zipping.list){
+  
+  pos <- rad54
+  zip.indexe <- c()
+  zip.fragment <-"" 
+  
+  while(pos %!in% pos.rdh54  && lys2.occupancy$id[pos] == "homology" && pos < nchar(lys2.fragment)+1){
+    new.nt <- substr(lys2.fragment, pos, pos)
+    zip.indexe = c(zip.indexe, pos)
+    zip.fragment = paste(zip.fragment, new.nt, sep="")
+    pos = pos+1
+  }
+  
+  zip.list  = rbind(zipping.list , c(zip.indexe[1], tail(zip.indexe,1), zip.fragment))
+  names(zip.list ) = c("start", "end", "sequences")
+  current.rad54 <- pos.rad54[which(pos.rad54 == current.rad54 ) +1]
+  
+  return(zip.list)
+}
+
+zip.list <- as.data.frame(matrix(0,0,3))
+
+for (pos in pos.rad54){
+  if(check.length.micros(pos) >= 20){
+    current.rad54 <- pos
+    zip.list <- zipping(current.rad54, zip.list)
+    remaining.rad54 <- pos.rad54[which( pos.rad54 > as.integer(tail(zip.list, 1)$end))]
     break
   }
 }
 
-for (r in (detect.rad54+1):str_length(LY)){ #look for consecutive MH at right of the bp overlaping the rad54 protein
-  if (lys2.occupancy$bound[r] == "yes" && lys2.occupancy$id[r] == "homology"){
-    microhomoligies.right = microhomoligies.right+1
-  }else{
+for (pos in remaining.rad54){
+  if(check.length.micros(pos) >= 20){
+    current.rad54 <- pos
+    zip.list <- zipping(current.rad54, zip.list)
+    
+  }
+  remaining.rad54 = remaining.rad54[-1]
+  if(as.integer(tail(zip.list, 1)$end) == nchar(lys2.fragment) ){
     break
   }
 }
 
-#Import of the chr2.fa sequence file from the yeast genome (S288) :
-yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
-                                seqtype = 'DNA', as.string = TRUE, 
-                                forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
+
+##################################
+##################################
 
 #225 + rnorm(1, 0, 20): consecutive bp necessary to enable zipping
 #As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp 
 #N(mean = 0, std = 20)
 
 
-if (microhomoligies.left + microhomoligies.right +1 > 225 + rnorm(1, 0, 20)){
+
+if (microhomologies.left + microhomologies.right +1 > 225 + rnorm(1, 0, 20)){
   #overlapped.rad54 : all the others rad54 overlapped by the macrohomology
   overlapped.rad54 <- c()
   for (pos in pos.rad54){
