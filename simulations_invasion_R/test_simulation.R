@@ -510,115 +510,13 @@ for (pos in pos.rad54){
 }
 
 for (pos in remaining.rad54){
-  if(check.length.micros(pos) >= 20){
+  if(check.length.micros(pos) >= 20 && pos > as.integer(tail(zip.list, 1)$end)){
     current.rad54 <- pos
     zip.list <- zipping(current.rad54, zip.list)
-    
   }
   remaining.rad54 = remaining.rad54[-1]
   if(as.integer(tail(zip.list, 1)$end) == nchar(lys2.fragment) ){
     break
   }
 }
-
-
-
-
-##################################
-##################################
-
-#225 + rnorm(1, 0, 20): consecutive bp necessary to enable zipping
-#As we know this cut-off is between 200 - 250 bp, we define it randomly using a draw from normal distribution that we will add to 225 bp 
-#N(mean = 0, std = 20)
-
-
-
-if (microhomologies.left + microhomologies.right +1 > 225 + rnorm(1, 0, 20)){
-  #overlapped.rad54 : all the others rad54 overlapped by the macrohomology
-  overlapped.rad54 <- c()
-  for (pos in pos.rad54){
-    if(pos %in% (detect.rad54 - l) : r){
-      overlapped.rad54 = c(overlapped.rad54, pos)
-    }
-  }
-  
-  last.rad54 <- tail(sort(overlapped.rad54),1) #last rad54 position in the macrohomology 
-  nearby.rdh54 <- tail(sort(pos.rdh54[which(pos.rdh54 < last.rad54)]),1) #the nearest rdh54 from the last rad54 of the macrohomology
-  
-  #When the macrohomology is ready to be zipped, 
-  #it is rad54 that will 'pump' each nucleotide by removing its associated rad51 
-  #in order to send it to invade the donor strand, until rad54 meets an rdh54
-  
-  zipped.indexes <- nearby.rdh54 : last.rad54 #start and end indexes of the zipping
-  zipped.fragment <- str_sub(lys2.fragment, zipped.indexes[1], tail(zipped.indexes,1)) #the zipped fragment
-  
-  #We have to remove all the associated RAD51 from the zipped nucléotides :
-  rad51.indexes2remove <- which(occupied.rad51$lys2.microhomology %in% zipped.indexes)
-  occupied.rad51$donor.invasions <- occupied.rad51$donor.invasions[-rad51.indexes2remove]
-  occupied.rad51$lys2.microhomology <- occupied.rad51$lys2.microhomology[-rad51.indexes2remove]
-  
-  
-  # LY/L/L500 are in fact the reverse complements of the corresponding fragment in lys2 gene from the chr2 :
-  
-  revcomp.invading.fragment <- rev.comp(zipped.fragment)
-  
-  start.dloop <- 0
-  if (str_detect(yeast.genome.chr2, revcomp.invading.fragment)){ #engage invasion
-    start.dloop <- 1
-    
-    #Get the first position (on the genome) of the alignement between the rev-comp-zipped fragment
-    #And the genome the during the D-LOOP invasion step :
-    start.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][1])
-    
-    #Get the last position
-    end.invasion <- as.integer(str_locate_all(pattern = revcomp.invading.fragment, str = yeast.genome.chr2)[[1]][2])
-    
-    #print(start.dloop)
-    
-    ###Recombination with template start :
-    
-    # If we recombine the left side of the rev.comp zipped fragment (and thus the right side of the initial fragment):
-    if(str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][2] >= 473926){
-      
-      while(start.invasion > 469748 & start.dloop == 1){
-        preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
-        
-        if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-          print("Dissociation of the D-Loop") #koff2 rick of dissociation 
-          break
-          
-        }else{
-          start.invasion = start.invasion-1
-          new.nt <- str_sub(yeast.genome.chr2, start.invasion, start.invasion)
-          revcomp.invading.fragment  = paste(new.nt, revcomp.invading.fragment, sep="")
-        }
-      }
-      
-      invading.fragment <- rev.comp(revcomp.invading.fragment)
-      new.lys2.fragment <- paste(str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), invading.fragment, sep="") #the repaired DSB 
-      
-      # If we recombine the right side of the rev.comp zipped fragment (and thus the left side of the initial fragment) :
-    }else if (str_locate_all(string = yeast.genome.chr2, pattern = rev.comp(lys2.fragment))[[1]][1] <= 469748){
-      while(end.invasion < 473926 & start.dloop == 1){
-        preserved2 = sample(c(TRUE, FALSE), size = nchar(revcomp.invading.fragment), replace = TRUE, prob = c(koff2,1-koff2)) 
-        
-        if (length(which(preserved2 == TRUE)) > floor(0.05*nchar(revcomp.invading.fragment))){
-          print("Dissociation of the D-Loop")
-          break
-          
-        }else{
-          end.invasion = end.invasion +1 
-          new.nt <- str_sub(yeast.genome.chr2, end.invasion, end.invasion)
-          revcomp.invading.fragment  = paste(revcomp.invading.fragment, new.nt, sep="")
-        }
-      }
-      
-      invading.fragment <- rev.comp(revcomp.invading.fragment)
-      new.lys2.fragment <- paste(invading.fragment, str_sub(lys2.fragment, start = 1, end = zipped.indexes[1]-1), sep="")
-    }
-  }
-}
-
-
-
 
