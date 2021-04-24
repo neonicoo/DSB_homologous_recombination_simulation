@@ -567,8 +567,7 @@ for (trial in 1:test.replicates){
       ########  DLOOP invasion #########################
       
       # If a protein rad54 is overlaped by a micro-homology's donor AND we somewhere in the invading strand more than 200bp homologies :
-      
-      
+
       if (start.dloop == 0 && twoh ==1){
         consecutive.micros <-c()  #list of consecutive MHs around an overlapped rad54, when it occurs
         for (pos in pos.rad54){
