@@ -216,7 +216,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     }
     bindings = c(bindings, current.bindings)
   } #end binding.index loop
-  
+    
   # donor.ids : same as in the genome.wide.sei function  ;
   donor.ids = bindings
   for (index in which(donor.ids %in% self.micros$position1)){
@@ -288,34 +288,46 @@ rad54.rdh54.placement <- function(nb.rad54, nb.rdh54){
   while (nb.rdh54 > 0){ #Consider that a proportion of rad54 becomes rdh54
     new.location <- sample(location.rad54, size = 1)
     location.rdh54 = c(location.rdh54, new.location) #location.rad54 becomes location.rdh54
-    location.rad54 = location.rad54[-which(location.rad54 == new.location)] #remove the new location.rdh54 from the location.rad54 vector
+    
+    #remove the location.rdh54 from the location.rad54 vector
+    location.rad54 = location.rad54[-which(location.rad54 == new.location)] 
     nb.rdh54 = nb.rdh54 - 1
   }
-  
+
   return(list(sort(location.rad54), sort(location.rdh54)))
 }
 #########################################################################################################
 #########################################################################################################
-check.length.micros <- function(current.rad54){
+check.before.zipping <- function(current.rad54){
+  
   microhomologies.left <- 0
   microhomologies.right <- 0
   left <- 1
   right <- 1
+  
   if (lys2.occupancy$bound[current.rad54] == "yes" && lys2.occupancy$id[current.rad54] == "homology"){
-    for (i in 1:20){
-      if(lys2.occupancy$bound[current.rad54 - left] == "yes" && lys2.occupancy$id[current.rad54 - left] == "homology" && left < current.rad54){
-        microhomologies.left = microhomologies.left +1
-        left = left+1
+    while(left !=0 && right != 0){
+      while(left != 0){
+        if (lys2.occupancy$bound[current.rad54 - left] == "yes" && lys2.occupancy$id[current.rad54 - left] == "homology" && left < current.rad54){
+          microhomologies.left = microhomologies.left +1
+          left = left+1
+        }else{
+          left = 0
+        }
       }
       
-      if(lys2.occupancy$bound[current.rad54 + right] == "yes" && lys2.occupancy$id[current.rad54 + right] == "homology" && (current.rad54 + right) < str_length(lys2.fragment)){
-        microhomologies.right = microhomologies.right +1
-        right = right+1
+      while(right != 0){
+        if(lys2.occupancy$bound[current.rad54 + right] == "yes" && lys2.occupancy$id[current.rad54 + right] == "homology" && (current.rad54 + right) < str_length(lys2.fragment)){
+          microhomologies.right = microhomologies.right +1
+          right = right+1
+        }else{
+          right = 0
+        }
       }
     }
-  }
+  } 
   return(sum(microhomologies.left + 1 + microhomologies.right))
-}
+} 
 
 #########################################################################################################
 #########################################################################################################
@@ -332,9 +344,8 @@ zipping <- function(rad54, zipping.list){
     pos = pos+1
   }
   
-  zip.list  = rbind(zipping.list , c(zip.indexe[1], tail(zip.indexe,1), zip.fragment))
+  zip.list  = rbind(zipping.list , c(as.integer(zip.indexe[1]), as.integer(tail(zip.indexe,1)), zip.fragment))
   names(zip.list ) = c("start", "end", "sequences")
-  current.rad54 <- pos.rad54[which(pos.rad54 == current.rad54 ) +1]
   
   return(zip.list)
 }
@@ -415,9 +426,22 @@ for (trial in 1:1){
     
     rad54 <- floor(0.025*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
     rdh54 <- floor(0.25 * rad54) # number of rdh54 to be placed into the invading strand;
-    pos.rad54 <- rad54.rdh54.placement(rad54, rdh54)[[1]]  #positions of rad54 in the invading strand;
-    pos.rdh54 <- rad54.rdh54.placement(rad54, rdh54)[[2]] #positions of rdh54 in the invading strand;
+    rad54.rdh54.locations <- rad54.rdh54.placement(rad54, rdh54) 
+    pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
+    pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
+    
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
+    
+    zip.list <- as.data.frame(matrix(0,0,3))
+    
+    lys2.zipped = as.data.frame(matrix(0, nchar(lys2.fragment),2))
+    names(lys2.zipped) = c('bp', 'zipped')
+    lys2.zipped$bp = 1:nchar(lys2.fragment)
+    lys2.zipped$zipped = "no"
+    
+    start.zipping <- 0
+    current.overlapped.rad54 <- 0
+    unzipped.rad54 <- pos.rad54 
     
     for (time.step in 1:num.time.steps){
       
@@ -426,6 +450,20 @@ for (trial in 1:1){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
+        }
+      }
+      
+      if(twoh == 1 && length(unzipped.rad54 > 0)){
+        for (pos in unzipped.rad54){
+          if(check.before.zipping(pos) >= 16){
+            current.overlapped.rad54 <- pos
+            zip.list <- zipping(current.overlapped.rad54, zip.list)
+            current.zip.start <- as.integer(tail(zip.list,1)$start)
+            current.zip.end <- as.integer(tail(zip.list,1)$end)
+            lys2.zipped$zipped[current.zip.start : current.zip.end] = "yes" 
+            unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == current.overlapped.rad54)]
+            break
+          }
         }
       }
       
@@ -499,32 +537,3 @@ for (trial in 1:1){
   }
   
 } #end process
-
-
-########################################################################################################
-######################################### D-LOOP Tests ##################################################
-########################################################################################################
-
-
-# zip.list <- as.data.frame(matrix(0,0,3))
-# 
-# for (pos in pos.rad54){
-#   if(check.length.micros(pos) >= 20){
-#     current.rad54 <- pos
-#     zip.list <- zipping(current.rad54, zip.list)
-#     remaining.rad54 <- pos.rad54[which( pos.rad54 > as.integer(tail(zip.list, 1)$end))]
-#     break
-#   }
-# }
-# 
-# for (pos in remaining.rad54){
-#   if(check.length.micros(pos) >= 20 && pos > as.integer(tail(zip.list, 1)$end)){
-#     current.rad54 <- pos
-#     zip.list <- zipping(current.rad54, zip.list)
-#   }
-#   remaining.rad54 = remaining.rad54[-1]
-#   if(as.integer(tail(zip.list, 1)$end) == nchar(lys2.fragment) ){
-#     break
-#   }
-# }
-
