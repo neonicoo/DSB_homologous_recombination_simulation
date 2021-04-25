@@ -71,7 +71,7 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
   indices = 1:(nchar(lys2.fragment) -7)
   if (occupied.rad51$bound=="unbound"){
     return(indices)
-    }
+  }
   #remove  occupied 8-bp sites along single end
   remove = c(occupied.rad51$lys2.microhomology)
   for (i in 1:7){
@@ -79,11 +79,15 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
                (occupied.rad51$lys2.microhomology + i))}
   if (lower.window != "none"){remove=c(remove, 0:lower.window)}
   if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))}
-  if (additional.removals[1] != "none"){  for (i in 0:7){
-    remove = c(remove, (additional.removals - i), (additional.removals + i))}}
+  if (additional.removals[1] != "none"){ 
+    for (i in 0:7){
+      remove = c(remove, (additional.removals - i), (additional.removals + i))
+    }
+  }
   remove = remove[which(remove > 0)]
   return(indices[-remove])
 }
+
 #########################################################################################################
 #########################################################################################################
 
@@ -190,8 +194,10 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     }else{
         additionals = bindings
     }
+    
+    
     # We look if we have available open sites around the current MH locus, i.e into the search windows around it;
-    open.sites = find.occupancies(lower.window = current.selocus - window, 
+    open.sites = find.occupancies(lower.window = current.selocus - window,
                                   upper.window = current.selocus + window, 
                                   additional.removals = additionals)
     
@@ -336,22 +342,32 @@ zipping <- function(rad54, zipping.list){
   pos <- rad54
   zip.indexe <- c()
   zip.fragment <-"" 
+  zip.junction <- 0
+  new.zipping.list <- zipping.list
   
-  while(pos %!in% pos.rdh54  && lys2.occupancy$id[pos] == "homology" && pos < nchar(lys2.fragment)+1){
-    new.nt <- substr(lys2.fragment, pos, pos)
-    zip.indexe = c(zip.indexe, pos)
-    zip.fragment = paste(zip.fragment, new.nt, sep="")
-    pos = pos+1
+  while(pos %!in% pos.rdh54 && lys2.occupancy$id[pos] == "homology" && pos < nchar(lys2.fragment)+1){
+    if (pos %in% zipping.list$start){
+      zip.junction = 1
+      zip.fragment = paste(zip.fragment, zipping.list$sequences[which(zipping.list$start == pos)], sep = "")
+      new.zipping.list$start[which(zipping.list$start == pos)] = rad54
+      new.zipping.list$sequences[which(zipping.list$start == pos)] = zip.fragment
+      break
+      
+    }else{
+      new.nt <- substr(lys2.fragment, pos, pos)
+      zip.indexe = c(zip.indexe, pos)
+      zip.fragment = paste(zip.fragment, new.nt, sep="")
+      pos = pos+1
+    }
   }
   
-  zip.list  = rbind(zipping.list , c(as.integer(zip.indexe[1]), as.integer(tail(zip.indexe,1)), zip.fragment))
-  names(zip.list ) = c("start", "end", "sequences")
-  
-  return(zip.list)
+  if(zip.junction == 0){
+    new.zipping.list  = rbind(zipping.list , c(as.integer(zip.indexe[1]), as.integer(tail(zip.indexe,1)), zip.fragment))
+    names(new.zipping.list ) = c("start", "end", "sequences")
+    
+  }
+  return(new.zipping.list)
 }
-
-
-
 
 #########################################################################################################
 ######################################### Temporary simulation ##########################################
@@ -417,10 +433,12 @@ for (trial in 1:1){
     firster = 0 
     twoh = 0
     
-    lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),3));names(lys2.occupancy) = c('bp', 'bound', "id")
+    lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
+    names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
     lys2.occupancy$bp = 1:nchar(lys2.fragment)
     lys2.occupancy$bound = "no"
     lys2.occupancy$id = "heterology"
+    lys2.occupancy$zipped = "no"
     # Loop through the time-steps
     
     
@@ -432,12 +450,9 @@ for (trial in 1:1){
     
     koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
-    zip.list <- as.data.frame(matrix(0,0,3))
+    zipped.fragments.list <- as.data.frame(matrix(0,0,3))
+    names(zipped.fragments.list ) = c("start", "end", "sequences")
     
-    lys2.zipped = as.data.frame(matrix(0, nchar(lys2.fragment),2))
-    names(lys2.zipped) = c('bp', 'zipped')
-    lys2.zipped$bp = 1:nchar(lys2.fragment)
-    lys2.zipped$zipped = "no"
     
     start.zipping <- 0
     current.overlapped.rad54 <- 0
@@ -455,14 +470,21 @@ for (trial in 1:1){
       
       if(twoh == 1 && length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
-          if(check.before.zipping(pos) >= 16){
+          if(lys2.occupancy$zipped[pos] != "yes" && check.before.zipping(pos) >= 16){
             current.overlapped.rad54 <- pos
-            zip.list <- zipping(current.overlapped.rad54, zip.list)
-            current.zip.start <- as.integer(tail(zip.list,1)$start)
-            current.zip.end <- as.integer(tail(zip.list,1)$end)
-            lys2.zipped$zipped[current.zip.start : current.zip.end] = "yes" 
-            unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == current.overlapped.rad54)]
-            break
+            zipped.fragments.list <- zipping(current.overlapped.rad54, zipped.fragments.list)
+            
+            if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
+              zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
+              break
+              
+            }else{
+              current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
+              current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
+              lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes" 
+              unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == current.overlapped.rad54)]
+              break
+            }
           }
         }
       }
