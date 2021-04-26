@@ -603,3 +603,9 @@ for (trial in 1:5){
   }
   
 } #end process
+
+pop.plot<-ggplot(data = pop.time.series) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
+  labs(x = "time step", y = "Probability of Detection") + theme_minimal()+ theme(text = element_text(size = 16))+
+  scale_y_continuous(limits = c(0, test.replicates))
+
+pop.plot
