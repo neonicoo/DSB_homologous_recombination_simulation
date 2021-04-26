@@ -49,6 +49,7 @@ koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound pa
 m.group = c(2,5) #bindings allowed to occur per tethering
 search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
 
+koff2 <- 0.05 #probability for a SEI to be dissociated during the D-LOOP
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -448,7 +449,6 @@ for (trial in 1:1){
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
     pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
     
-    koff2 <- 0.00075 #probability for a SEI to be dissociated during the D-LOOP
     
     zipped.fragments.list <- as.data.frame(matrix(0,0,3))
     names(zipped.fragments.list ) = c("start", "end", "sequences")
@@ -456,7 +456,7 @@ for (trial in 1:1){
     
     start.zipping <- 0
     current.overlapped.rad54 <- 0
-    unzipped.rad54 <- pos.rad54 
+    unzipped.rad54 <- pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
     
     for (time.step in 1:num.time.steps){
       
@@ -473,7 +473,7 @@ for (trial in 1:1){
           if(lys2.occupancy$zipped[pos] != "yes" && check.before.zipping(pos) >= 16){
             zipped.fragments.list = zipping(pos, zipped.fragments.list)
             
-            if(dim(zipped.fragments.list)[1] > 0){
+            if(nrow(zipped.fragments.list) > 0){
               if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
                 zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
                 break
@@ -482,13 +482,26 @@ for (trial in 1:1){
                 current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
                 current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
                 lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes" 
-                unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == pos)]
+                unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
                 break
               }
             }
           }
         }
       }
+      
+      if(nrow(zipped.fragments.list) > 0){
+        for(i in 1:nrow(zipped.fragments.list)){
+          preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2,1-koff2))
+          if(!preserved.zip){
+            current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
+            current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
+            lys2.occupancy$zipped[current.zip.start : current.zip.end] = "no"
+            unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
+          }
+        }
+      }
+      
       
       new.bindings = genome.wide.sei(SEI.binding.tries)
       
