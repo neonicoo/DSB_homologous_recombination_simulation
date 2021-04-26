@@ -3,11 +3,18 @@ rm(list=ls())
 ###Set working directory
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
+
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install(version = "3.12")
+# 
+# if (!require("Biostrings")){
+#   BiocManager::install("Biostrings")
+# }
+
 library(ggplot2)
 library(stringr)
 library(seqinr)
-
-if (!require("Biostrings")){source("https://bioconductor.org/biocLite.R"); biocLite("Biostrings")}
 library("Biostrings")
 
 '%!in%' <- function(x,y)!('%in%'(x,y)) #negate operator for %in%
@@ -17,6 +24,7 @@ rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_s
 
 # genome-wide microhomology counts
 forward.sequences <- read.table("./Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
+forward.sequences = forward.sequences[,c("start", "sequence", "total")]
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
@@ -34,6 +42,7 @@ L500 = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACAT
 ly.names = c("500", "1000", "2000")
 ly.sequences = c(L500, L, LY)
 
+
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
 yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
                                 seqtype = 'DNA', as.string = TRUE, 
@@ -42,7 +51,7 @@ yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
-test.replicates = 5 # How many times to simulate, replicates
+test.replicates = 3 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
 koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
@@ -58,8 +67,7 @@ koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
 
 print(kon.group.names)
 print(koff1.group.names)
-
-
+print(koff2.group.names)
 
 #########################################################################################################
 #################################### FUNCTIONS ##########################################################
@@ -159,7 +167,7 @@ genome.wide.sei = function(initial.binding.tries){
     sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
     if(!is.na(self.micros$position3[y])){
       sampling.micros = c(sampling.micros,self.micros$position3[y])
-      }
+    }
     donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
   
@@ -192,7 +200,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   # Check for unbound sites :
   if (length(find.occupancies()) == 0){
     return(new.bindings)
-    }
+  }
   
   # bindings : list of sites occupied by another MHs into the search window around the current micros locus ;
   bindings = c()
@@ -202,14 +210,14 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
       if (length(find.occupancies(additional.removals = bindings)) == 0){break}
     }else{ 
       if (length(find.occupancies()) == 0){break} 
-        }
+    }
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
     
     if (length(bindings) <=0){
       additionals = "none"
     }else{
-        additionals = bindings
+      additionals = bindings
     }
     
     
@@ -239,7 +247,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     }
     bindings = c(bindings, current.bindings)
   }
-    
+  
   # donor.ids : same as in the genome.wide.sei function  ;
   donor.ids = bindings
   for (index in which(donor.ids %in% self.micros$position1)){
@@ -299,28 +307,30 @@ rev.comp<-function(x,rev=TRUE){
 #########################################################################################################
 
 rad54.rdh54.placement <- function(nb.rad54, nb.rdh54){
+  
   location.rad54 <- c()
   location.rdh54 <- c()
   while (nb.rad54 > 0){ #place the required rad54 randomly (according uniform distro) over the invading fragment ;
     new.location <- 0
     while (new.location == 0 | new.location %in% location.rad54){
-      new.location <- floor(runif(1, min = 0, max=str_length(lys2.fragment)))
+      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
     }
     location.rad54 = c(location.rad54, new.location)
     nb.rad54 = nb.rad54 - 1
   }
   
-  while (nb.rdh54 > 0){ #Consider that a proportion of rad54 becomes rdh54
-    new.location <- sample(location.rad54, size = 1)
+  while (nb.rdh54 > 0){
+    new.location <-  0
+    while (new.location == 0 | new.location %in% location.rad54 | new.location %in% location.rdh54){
+      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
+    }
     location.rdh54 = c(location.rdh54, new.location) #location.rad54 becomes location.rdh54
-    
-    #remove the location.rdh54 from the location.rad54 vector
-    location.rad54 = location.rad54[-which(location.rad54 == new.location)] 
     nb.rdh54 = nb.rdh54 - 1
   }
-
+  
   return(list(sort(location.rad54), sort(location.rdh54)))
 }
+
 #########################################################################################################
 #########################################################################################################
 check.before.zipping <- function(current.rad54){
@@ -388,6 +398,7 @@ zipping <- function(rad54, zipping.list){
   return(new.zipping.list)
 }
 
+
 #########################################################################################################
 ######################################### Temporary simulation ##########################################
 
@@ -410,26 +421,48 @@ names(pop.time.series) = c("time.step","prob.detect","length")
 pop.time.series$length = rep(ly.names, each = num.time.steps)
 pop.time.series$time.step = rep(seq(1,num.time.steps,1),3)
 
+# Create a variable, saver, that keeps track of how many individual simulations you want to save. 
 saver = 0
 bigtracker = 0
-summary.stats = as.data.frame(matrix(0,3*test.replicates,3))
-names(summary.stats) = c('length','first.time','twoh.time')
 
-for (trial in 1:1){ 
+occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
+names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
+occupancy.firsts$length = rep(ly.names, times = test.replicates)
+
+dirname=paste(num.time.steps,kon.name,koff1.name,bindings.per.tethering,search.window,sep="_")
+
+dirnew=paste(rootdir,dirname,sep="")
+dir.create(dirnew)
+
+# Directory to save single runs
+dirnew_singles=paste(dirnew,"/single_runs",sep="")
+dir.create(dirnew_singles)
+
+# Directory to save the first contact, 200 contact, and time diff between 1st and 200 files
+dirnew_data = paste(dirnew,"/data",sep="")
+dir.create(dirnew_data)
+
+# Directory to save the 1st, 200 contact times, and the 200-1st time difference
+dirnew_plots = paste(dirnew,"/plots",sep="")
+dir.create(dirnew_plots)
+
+print(dirnew)
+
+# Now make all the replicates
+for (trial in 1:test.replicates){ 
   # initialize tabulation of bound microhomologies/heterologies
   # print(trial)
   
   if(saver < 3){
-    # ly.binding.ts : over the course of an invasion round, 
-    # it tabulates the number of bound microhomologies and heterologies for each of the L500, L and LY
     ly.binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,4))
     names(ly.binding.ts) = c('time.step', 'bound', "length", "heterologies")
     ly.binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
     ly.binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
   }
+  
   for (fragment in 1:3){
     # initialize the ID and state of the current invading strand 
-    bigtracker=bigtracker+1
+    bigtracker = bigtracker +1
     ly.type = ly.names[fragment]
     lys2.fragment = ly.sequences[fragment]
     if (fragment == 1){
@@ -438,19 +471,17 @@ for (trial in 1:1){
       if(fragment == 2){
         self.micros = L1000.selfmicros
       }else{
-        self.micros = LY2000.selfmicros
+          self.micros = LY2000.selfmicros
       }
     }
     
-    # -7 because we made n-7 microhomolies of 8nt for a fragment of n nt ;
-    # /8 because we just want 1 nt per MH of 8 nt ;
     SEI.binding.tries = floor((nchar(lys2.fragment)-7)/8)
     
     occupied.rad51$bound = "unbound"
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
-    firster = 0 
+    first = 0 
     twoh = 0
     
     lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
@@ -459,25 +490,23 @@ for (trial in 1:1){
     lys2.occupancy$bound = "no"
     lys2.occupancy$id = "heterology"
     lys2.occupancy$zipped = "no"
-    # Loop through the time-steps
     
-    
-    rad54 <- floor(0.025*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
-    rdh54 <- floor(0.25 * rad54) # number of rdh54 to be placed into the invading strand;
+    rad54 <- floor(0.005*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
+    rdh54 <- floor(0.1*rad54)+1 # number of rdh54 to be placed into the invading strand;
     rad54.rdh54.locations <- rad54.rdh54.placement(rad54, rdh54) 
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
     pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
     
-    
     zipped.fragments.list <- as.data.frame(matrix(0,0,3))
     names(zipped.fragments.list ) = c("start", "end", "sequences")
     
-    
-    start.zipping <- 0
-    current.overlapped.rad54 <- 0
     unzipped.rad54 <- pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
     
+    # Loop through the time-steps
     for (time.step in 1:num.time.steps){
+      if(kon.prob == 0){
+        next
+      }
       
       if (occupied.rad51$bound != "unbound"){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
@@ -487,20 +516,21 @@ for (trial in 1:1){
         }
       }
       
+
       if(twoh == 1 && length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
           if(lys2.occupancy$zipped[pos] != "yes" && check.before.zipping(pos) >= 16){
             zipped.fragments.list = zipping(pos, zipped.fragments.list)
-            
+
             if(nrow(zipped.fragments.list) > 0){
               if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
                 zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
                 break
-                
+
               }else{
                 current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
                 current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
-                lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes" 
+                lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
                 unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
                 break
               }
@@ -508,7 +538,7 @@ for (trial in 1:1){
           }
         }
       }
-      
+
       if(nrow(zipped.fragments.list) > 0){
         for(i in 1:nrow(zipped.fragments.list)){
           preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2,1-koff2))
@@ -520,8 +550,7 @@ for (trial in 1:1){
           }
         }
       }
-      
-      
+
       new.bindings = genome.wide.sei(SEI.binding.tries)
       
       if (occupied.rad51$bound == "unbound"){
@@ -529,56 +558,60 @@ for (trial in 1:1){
         if(length(new.bindings$lys2.microhomology) > 0){
           occupied.rad51$bound = "bound"
         }
-        
-      }else{
+      }
+      else{
         # print("bound and adding")
         occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
         occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
       }
       
-      if(length(which(occupied.rad51$donor.invasions != "H")) != 0 && firster == 0){
-        summary.stats$length[bigtracker] = ly.type
-        summary.stats$first.time[bigtracker] = time.step
-        firster = 1
-      }
-      
       if(occupied.rad51$bound != "unbound"){
         for (i in 1:length(occupied.rad51$lys2.microhomology)){
-          lys2.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]="yes"
+          lys2.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
           if(occupied.rad51$donor.invasions[i] != "H"){
             lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
           }
-          
         }
         prob.detection = length(which(lys2.occupancy$zipped == "yes"))
-        prob.detection = prob.detection/500 #take into account crosslink density 1/500 ;
-      }
-      else{
-        prob.detection = 0;
+        prob.detection = prob.detection/500
+        
+      }else{
+        prob.detection = 0
       }
       
       if(prob.detection >= 1){
         prob.detection = 1
       }
-      if(length(which(lys2.occupancy$id == "homology")) >= 200 & twoh == 0){
-        summary.stats$twoh.time[bigtracker] = time.step
-        twoh = 1
+      
+      lys2.occupancy$id[lys2.occupancy$bound == "no"] = "unbound"
+      
+      if(length(which(lys2.occupancy$id == "homology")) > 0 && first == 0){
+        first = 1;
+        occupancy.firsts$first.bound[bigtracker] = time.step
       }
-      if(saver < 3){
+      
+      if(length(which(lys2.occupancy$id == "homology")) >= 200 && twoh == 0){
+        twoh = 1;
+        occupancy.firsts$twoh.bound[bigtracker] = time.step
+        occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
+      }
+      
+      
+      if(saver <3 ){
         # tabulate occupancies vs. time step and length
         ly.binding.ts$bound[ly.binding.ts$time.step == time.step & ly.binding.ts$length == ly.type] = length(which(lys2.occupancy$bound == "yes"))
-        ly.binding.ts$heterologies[ly.binding.ts$time.step == time.step & ly.binding.ts$length == ly.type] = length(which(lys2.occupancy$bound == "yes" & lys2.occupancy$id == "heterology"))
+        ly.binding.ts$heterologies[ly.binding.ts$time.step == time.step & ly.binding.ts$length == ly.type] = length(which(lys2.occupancy$id == "heterology"))
       }
+      
       pop.time.series$prob.detect[pop.time.series$time.step == time.step & pop.time.series$length == ly.type] = pop.time.series$prob.detect[pop.time.series$time.step == time.step & pop.time.series$length == ly.type] + prob.detection
       
-      ### simulate random dissociation
+      #simulate random dissociation
       num.bound = length(occupied.rad51$donor.invasions)
-      # print(num.bound)
+      #  print(num.bound)
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
       
       occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
       occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
-      
       
       if (sum(!preserved)==num.bound){
         occupied.rad51$bound = "unbound"
@@ -587,8 +620,79 @@ for (trial in 1:1){
     }#next time step
   }#next fragment
   
+  fname = paste("timeseries",num.time.steps,kon.name,koff1.name,bindings.per.tethering,search.window,sep="_")
+  fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
+  write.table(ly.binding.ts,file=paste(dirnew,"/", fname, sep = ""))
+
   if(saver < 3){
-    saver = saver + 1;
+
+    names(ly.binding.ts)[3] = "length"
+    ly.binding.ts$length = factor(ly.binding.ts$length)
+    outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
+    #            print(outname)
+    occ_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
+      labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
+      scale_y_continuous(limits = c(0, 2000))
+    ggsave(outname,plot=occ_plot)
+
+    outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
+    het_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
+      labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2000))
+    ggsave(outname,plot=het_plot)
+
+    outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
+    ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
+    lys2_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
+      labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+      scale_y_continuous(limits = c(0, 2000))
+    ggsave(outname,plot=lys2_plot)
   }
   
-} #end process
+  saver=saver+1
+}#end process
+
+# population timeseries
+write.table(pop.time.series, file=paste(dirnew_data,"/population_timeseries.txt",sep=""))
+
+outname=paste(dirnew_plots,"/population_time_series.png",sep="")
+pop.plot<-ggplot(data = pop.time.series) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
+  labs(x = "time step", y = "Probability of Detection") + theme_minimal()+ theme(text = element_text(size = 16))+
+  scale_y_continuous(limits = c(0, test.replicates))
+ggsave(outname,plot=pop.plot)
+
+
+
+final.firsts = as.data.frame(matrix(-1,test.replicates,3))
+names(final.firsts) = c("500","1000","2000")
+final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
+final.firsts$`1000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 1000)]
+final.firsts$`2000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 2000)]
+
+fname = "first_contact_time.txt";
+write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+
+file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
+first.plot<-ggplot(occupancy.firsts, aes(x=first.bound, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
+ggsave(file,plot=first.plot)
+
+final.firsts$`500` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 500)]
+final.firsts$`1000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 1000)]
+final.firsts$`2000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 2000)]
+
+fname = "200_contact_time.txt";
+write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+
+file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
+first.plot<-ggplot(occupancy.firsts, aes(x=twoh.bound, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
+ggsave(file,plot=first.plot)
+
+final.firsts$`500` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 500)]
+final.firsts$`1000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 1000)]
+final.firsts$`2000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 2000)]
+
+fname = "first_200_contact_time_diff.txt";
+write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+
+file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
+first.plot<-ggplot(occupancy.firsts, aes(x=first.twoh.time.diff, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
+ggsave(file,plot=first.plot)
