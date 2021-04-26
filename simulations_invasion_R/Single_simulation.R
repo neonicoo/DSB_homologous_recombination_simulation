@@ -562,6 +562,7 @@ for (trial in 1:5){
         prob.detection = length(which(lys2.occupancy$zipped == "yes"))
         prob.detection = prob.detection/500 #take into account crosslink density 1/500 ;
       }
+      
       else{
         prob.detection = 0;
       }
@@ -569,6 +570,7 @@ for (trial in 1:5){
       if(prob.detection >= 1){
         prob.detection = 1
       }
+      
       if(length(which(lys2.occupancy$id == "homology")) >= 200 & twoh == 0){
         summary.stats$twoh.time[bigtracker] = time.step
         twoh = 1
