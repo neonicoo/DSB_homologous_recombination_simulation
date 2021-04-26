@@ -349,8 +349,8 @@ zipping <- function(rad54, zipping.list){
     if (pos %in% zipping.list$start){
       zip.junction = 1
       zip.fragment = paste(zip.fragment, zipping.list$sequences[which(zipping.list$start == pos)], sep = "")
-      new.zipping.list$start[which(zipping.list$start == pos)] = rad54
-      new.zipping.list$sequences[which(zipping.list$start == pos)] = zip.fragment
+      new.zipping.list = new.zipping.list[-c(which(new.zipping.list$start == pos)),]
+      new.zipping.list = rbind(new.zipping.list, c(rad54, rad54+nchar(zip.fragment)-1, zip.fragment))
       break
       
     }else{
@@ -363,9 +363,9 @@ zipping <- function(rad54, zipping.list){
   
   if(zip.junction == 0){
     new.zipping.list  = rbind(zipping.list , c(as.integer(zip.indexe[1]), as.integer(tail(zip.indexe,1)), zip.fragment))
-    names(new.zipping.list ) = c("start", "end", "sequences")
-    
   }
+  
+  names(new.zipping.list ) = c("start", "end", "sequences")
   return(new.zipping.list)
 }
 
@@ -471,19 +471,20 @@ for (trial in 1:1){
       if(twoh == 1 && length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
           if(lys2.occupancy$zipped[pos] != "yes" && check.before.zipping(pos) >= 16){
-            current.overlapped.rad54 <- pos
-            zipped.fragments.list <- zipping(current.overlapped.rad54, zipped.fragments.list)
+            zipped.fragments.list = zipping(pos, zipped.fragments.list)
             
-            if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
-              zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
-              break
-              
-            }else{
-              current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
-              current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
-              lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes" 
-              unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == current.overlapped.rad54)]
-              break
+            if(dim(zipped.fragments.list)[1] > 0){
+              if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
+                zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
+                break
+                
+              }else{
+                current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
+                current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
+                lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes" 
+                unzipped.rad54 <-unzipped.rad54[-which(unzipped.rad54 == pos)]
+                break
+              }
             }
           }
         }
