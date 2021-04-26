@@ -307,28 +307,31 @@ rev.comp<-function(x,rev=TRUE){
 #########################################################################################################
 
 rad54.rdh54.placement <- function(nb.rad54, nb.rdh54){
+  
   location.rad54 <- c()
   location.rdh54 <- c()
   while (nb.rad54 > 0){ #place the required rad54 randomly (according uniform distro) over the invading fragment ;
     new.location <- 0
     while (new.location == 0 | new.location %in% location.rad54){
-      new.location <- floor(runif(1, min = 0, max=str_length(lys2.fragment)))
+      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
     }
     location.rad54 = c(location.rad54, new.location)
     nb.rad54 = nb.rad54 - 1
   }
   
-  while (nb.rdh54 > 0){ #Consider that a proportion of rad54 becomes rdh54
-    new.location <- sample(location.rad54, size = 1)
+  while (nb.rdh54 > 0){
+    new.location <-  0
+    while (new.location == 0 | new.location %in% location.rad54 | new.location %in% location.rdh54){
+      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
+    }
     location.rdh54 = c(location.rdh54, new.location) #location.rad54 becomes location.rdh54
-    
-    #remove the location.rdh54 from the location.rad54 vector
-    location.rad54 = location.rad54[-which(location.rad54 == new.location)] 
     nb.rdh54 = nb.rdh54 - 1
   }
   
   return(list(sort(location.rad54), sort(location.rdh54)))
 }
+
+
 #########################################################################################################
 #########################################################################################################
 check.before.zipping <- function(current.rad54){
@@ -424,7 +427,7 @@ bigtracker = 0
 summary.stats = as.data.frame(matrix(0,3*test.replicates,3))
 names(summary.stats) = c('length','first.time','twoh.time')
 
-for (trial in 1:5){ 
+for (trial in 1:test.replicates){ 
   # initialize tabulation of bound microhomologies/heterologies
   # print(trial)
   
@@ -471,8 +474,8 @@ for (trial in 1:5){
     # Loop through the time-steps
     
     
-    rad54 <- floor(0.025*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
-    rdh54 <- floor(0.25 * rad54) # number of rdh54 to be placed into the invading strand;
+    rad54 <- floor(0.005*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
+    rdh54 <- floor(0.1*rad54)+1 # number of rdh54 to be placed into the invading strand;
     rad54.rdh54.locations <- rad54.rdh54.placement(rad54, rdh54) 
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
     pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
