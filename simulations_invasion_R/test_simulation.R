@@ -46,15 +46,15 @@ test.replicates = 5 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
 koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
+koff2.group<-c(0, 0.0005, 0.05, 0.5) #dissociation probabilities for each zipped fragments
 m.group = c(2,5) #bindings allowed to occur per tethering
 search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
-
-koff2 <- 0.05 #probability for a SEI to be dissociated during the D-LOOP
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
 kon.group.names<- gsub("\\.", "", as.character(kon.group))
 koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
+koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
 
 print(kon.group.names)
 print(koff1.group.names)
@@ -65,27 +65,31 @@ print(koff1.group.names)
 #################################### FUNCTIONS ##########################################################
 
 find.occupancies = function(lower.window ="none", upper.window = "none", additional.removals = "none"){
-  #' Find the positions where there is no MH bounded ;
-  #' 
-  # the indices of upper.window and lower.window are included in the removal
-  # all function parameters are indices in 1:nchar(lys2.fragment)
+  # Find the positions where there is no MH bounded ;
+  # Takes into account distance search window, if they are specified ;
+  # Additional positions not to be retained can be specified as parameters ;
+  # Return a vector of indices of free binding sites ;
+  
   indices = 1:(nchar(lys2.fragment) -7)
   if (occupied.rad51$bound=="unbound"){
     return(indices)
   }
-  #remove  occupied 8-bp sites along single end
+  
   remove = c(occupied.rad51$lys2.microhomology)
   for (i in 1:7){
     remove = c(remove, (occupied.rad51$lys2.microhomology - i), 
-               (occupied.rad51$lys2.microhomology + i))}
-  if (lower.window != "none"){remove=c(remove, 0:lower.window)}
-  if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))}
-  if (additional.removals[1] != "none"){ 
+               (occupied.rad51$lys2.microhomology + i))
+  }
+  
+  if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
+  if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
+  
+  if (additional.removals[1] != "none"){
     for (i in 0:7){
       remove = c(remove, (additional.removals - i), (additional.removals + i))
     }
   }
-  remove = remove[which(remove > 0)]
+  remove = remove[which(remove > 0)] #remove the negative and null indices 
   return(indices[-remove])
 }
 
@@ -94,8 +98,11 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
 
 
 genome.wide.sei = function(initial.binding.tries){
-  #choose region of LY weighted by available microhomologies
-  #dont let those already occupied be chosen
+  
+  # Choose region of LY weighted by available microhomologies (MHs);
+  # Dont let those already occupied be chosen (by the use of the find.occupancies() function) ;
+  
+  
   open.sites = find.occupancies() #indexes of unoccupied sites
   
   if (length(open.sites)== 0){ #if all the sites are occuped
@@ -106,41 +113,47 @@ genome.wide.sei = function(initial.binding.tries){
   matches = c()
   for (i in 1:initial.binding.tries){
     if (length(open.sites) == 1){ 
-      #if there is only one available site,the last ramaining site appends the vector matches
+      # If there is only one available binding site :
       matches[i] = open.sites
     }else{ 
-      #We draw a site among those available which will be matched with a MH according to the respective probabilities of the MHs :
+      # Draw a site among those available which will be matched with a MH according to the respective weighted probabilities :
       matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites]) 
     }
-    #Where there is a match with a MH, we consider that the site concerned is no longer available, we remove it from the index open.sites;
-    #To be sure that the next matches will not overlap with the previous one, we have to remove from the index the 7 positions upstream and downstream of the match.
+    
+    # Where there is a match with a MH, we consider that the site concerned is no longer available ;
+    # We remove it from the index open.sites;
+    # To be sure that the next matches will not overlap with the previous one, 
+    #  we have to remove from the index the 7 positions upstream and downstream of the match :
     open.sites = open.sites[-which(open.sites %in% (matches[i]-7):(matches[i] + 7))]
     if (length(open.sites) < 1){ 
-      #if there is no more available sites where we could bound another MH
       break
     }
   }
   
-  #Choose if/which binds;
-  #successes : list of sample position among the matches where the probability of association is good enough to have a bond;
+  # Choose if/which binds;
+  # successes : list of sample positions among the matches where the probability of association is good enough to have a bond;
+  # The probability of association is called 'Kon'.
+  # We keep only the matches where a bond will occur;
   successes=sample( c(TRUE, FALSE), length(matches), replace = TRUE, prob = c(kon.prob, (1-kon.prob)) )
-  matches = matches[successes] #We keep only the matches where a bond will occur;
+  matches = matches[successes]
   
   if (length(matches)<1){
-    #if no one match has a good enough probability Kon to be au bounding site ;
     return(list(bound = occupied.rad51$bound,strand = "negative",donor.invasions = c(), lys2.microhomology = c()))
   }
   
   # Set IDs of each bound (Heterology (H) vs LYS); 
   # If LYS, set as genomic position in + strand notation
   
-  # id.probs : vector the matches which are among the self-MHs positions, divided by the total number of apparitions in the genome for the MH itself;
+  # id.probs : probability for a MH to be homologous or heterologous, according it's occurrence in the genome wide (and self-occurrences) 
   # identities : list of id (H or LYS) according the above id.probs for each match ;
   id.probs = sapply(matches, function(x){(1 + ifelse(x %in% self.micros$position1, 1,0))/forward.sequences$total[x]})
   identities = sapply(1:length(matches), function(x) {sample(c("H", "LYS"), 1, prob = c(sapply(id.probs[x], function(x) max(0, 1-x)), id.probs[x]))})
   
-  # donor.ids : vector of extrated SE that invaded lys2 (and not heterology (H) ) ;
+  # donor.ids : vector of homologous MHs  ;
   donor.ids = matches[which(identities == "LYS")]
+  
+  # If the MH is also a self-micro,
+  #  Choose randomly a binding site  between all the self micros occurrences (position1, position2, position3 etc...:
   for (index in which(donor.ids %in% self.micros$position1)){
     y = which(self.micros$position1 == donor.ids[index])[1]
     sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
@@ -149,45 +162,48 @@ genome.wide.sei = function(initial.binding.tries){
       }
     donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
+  
   # 473927 - donor.ids : position of the last nt for the ly.sequence in the chr II - postion of the donor where the MH is "LYS"
   identities[which(identities == "LYS")] = 473927 - donor.ids
   
   if (occupied.rad51$bound != "unbound"){
-    #remove MH ids that have already been counted as donor
     remove = which((identities !="H") & (as.character(identities) %in% occupied.rad51$donor.invasions) )
     if (length(remove)>0){
       identities = identities[-remove]; matches = matches[-remove]
     }
   } 
-  #LYS alignment or misalignments
-  #for LYS, match to correct by heterology within lys already allowed
+  
+  # LYS alignment or misalignments :
   return(list(bound=occupied.rad51$bound, strand = "negative", donor.invasions = identities, lys2.microhomology = matches))
 }  
 #########################################################################################################
 #########################################################################################################
 
 new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
-  # correct.binding : vector of indexes for the micro-homologies (LYS) donors :
-  correct.bindings = as.numeric(which(occupied.rad51$donor.invasions != "H"))
+  # When a binding is homologous, we have to search others MHs in a distance search windows ;
+  # The number of bindings per search window is the bindings.per.tethering variable ;
+  
+  
+  # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
   # new.bindings : deep copy of an empty occupied.rad51 ;
+  correct.bindings = as.numeric(which(occupied.rad51$donor.invasions != "H"))
   new.bindings = list(bound=occupied.rad51$bound, strand = "negative", donor.invasions = c(), lys2.microhomology = c())
   
+  # Check for unbound sites :
   if (length(find.occupancies()) == 0){
-    #if all the sites are occuped ;
     return(new.bindings)
     }
   
-  # bindings : list of sites occupied by another MHs into a search window around some MHs locus ;
+  # bindings : list of sites occupied by another MHs into the search window around the current micros locus ;
   bindings = c()
   
   for (binding.index in correct.bindings){
-    # if all the sites are occuped once we add the binding has additional removals :
     if (length(bindings) > 0){
       if (length(find.occupancies(additional.removals = bindings)) == 0){break}
     }else{ 
       if (length(find.occupancies()) == 0){break} 
         }
-    #current.selocus : index of a lys2.microhomology;
+    #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
     
     if (length(bindings) <=0){
@@ -206,7 +222,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     current.bindings = c()
     
     
-    # Here we want for each tethering, bound an open site loated in the search window of our current locus ;
+    # Bind an unoccupied site located in the search window around our current locus ;
     for (j in 1:bindings.per.tethering){
       if (length(open.sites)==1){
         current.bindings[j] = open.sites
@@ -217,12 +233,12 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
           current.bindings = c(current.bindings,candidate)
         }
       }
-      # We have to remove the candidate from the open sites and the 7 positions upstream and downstream it ;
+      # Remove the candidates and the 7 positions upstream and downstream it from the free sites index ;
       open.sites = open.sites[-which(open.sites %in% (current.bindings[j]-7):(current.bindings[j] + 7))]
       if (length(open.sites) <1){break}
     }
     bindings = c(bindings, current.bindings)
-  } #end binding.index loop
+  }
     
   # donor.ids : same as in the genome.wide.sei function  ;
   donor.ids = bindings
@@ -240,7 +256,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   
   
   if (occupied.rad51$bound != "unbound"){
-    #remove MH ids in new.dindings that have already been counted as donor in occupied.rad51 ;
+    #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
     remove = which((new.bindings$donor.invasions !="H") & (as.character(new.bindings$donor.invasions) %in% occupied.rad51$donor.invasions) )
     if (length(remove) > 0){
       new.bindings$donor.invasions = new.bindings$donor.invasions[-remove]
@@ -252,7 +268,9 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
 #########################################################################################################
 #########################################################################################################
 
-rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
+rev.comp<-function(x,rev=TRUE){ 
+  #Compute the reverse complement of a sequence ;
+  
   x<-toupper(x)
   y<-rep("N",nchar(x))
   xx<-unlist(strsplit(x,NULL))
@@ -283,7 +301,7 @@ rev.comp<-function(x,rev=TRUE){ #Compute the reverse complement of a seq
 rad54.rdh54.placement <- function(nb.rad54, nb.rdh54){
   location.rad54 <- c()
   location.rdh54 <- c()
-  while (nb.rad54 > 0){ #place the requiered rad54 randomly (according uniform distro) over the invading fragment ;
+  while (nb.rad54 > 0){ #place the required rad54 randomly (according uniform distro) over the invading fragment ;
     new.location <- 0
     while (new.location == 0 | new.location %in% location.rad54){
       new.location <- floor(runif(1, min = 0, max=str_length(lys2.fragment)))
@@ -374,9 +392,10 @@ zipping <- function(rad54, zipping.list){
 ######################################### Temporary simulation ##########################################
 
 
-kon = 2; koff = 3; m = 2; sw = 2; 
+kon = 2; koff = 3; m = 2; sw = 2; koff2 = 0.05
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
+
 bindings.per.tethering = m.group[m]
 search.window = search.window.group[sw]
 
@@ -531,8 +550,8 @@ for (trial in 1:1){
           }
           
         }
-        prob.detection = length(which(lys2.occupancy$id == "homology"))
-        prob.detection = prob.detection/500 #take into a count crosslink density 1/500 ;
+        prob.detection = length(which(lys2.occupancy$zipped == "yes"))
+        prob.detection = prob.detection/500 #take into account crosslink density 1/500 ;
       }
       else{
         prob.detection = 0;
