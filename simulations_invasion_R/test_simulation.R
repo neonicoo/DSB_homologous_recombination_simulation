@@ -403,7 +403,7 @@ zipping <- function(rad54, zipping.list){
 ######################################### Temporary simulation ##########################################
 
 
-kon = 1; koff = 3; m = 2; sw = 2; koff2 = 2
+kon = 3; koff = 3; m = 2; sw = 2; koff2 = 3
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
 koff2.prob=koff2.group[koff2]
@@ -634,19 +634,19 @@ for (trial in 1:test.replicates){
     
     occ_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
       labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
-      scale_y_continuous(limits = c(0, 2000))
+      scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=occ_plot)
     
     outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
     het_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
-      labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2000))
+      labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=het_plot)
     
     outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
     ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
     lys2_plot<-ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
       labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
-      scale_y_continuous(limits = c(0, 2000))
+      scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=lys2_plot)
   }
   
@@ -664,6 +664,8 @@ ggsave(outname,plot=pop.plot)
 
 
 
+occupancy.firsts2 <- occupancy.firsts[-c(which(occupancy.firsts$first.bound == -1)),]
+
 final.firsts = as.data.frame(matrix(-1,test.replicates,3))
 names(final.firsts) = c("500","1000","2000")
 final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
@@ -674,15 +676,13 @@ fname = "first_contact_time.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
-first.plot<-ggplot(occupancy.firsts, aes(x=first.bound, fill=length)) + 
-  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") + 
-  xlim(0,max(occupancy.firsts$first.bound)+10)
+first.plot<-ggplot(occupancy.firsts2, aes(x=first.bound, fill=length)) + 
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") 
 ggsave(file,plot=first.plot)
 
 file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
-first.boxplot<- ggplot(occupancy.firsts, aes(x=length, y=first.bound, fill=length)) + 
+first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=first.bound, fill=length)) + 
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
-  ylim(0, num.time.steps) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
@@ -694,15 +694,13 @@ fname = "200_contact_time.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
-first.plot<-ggplot(occupancy.firsts, aes(x=twoh.bound, fill=length)) + 
-  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") + 
-  xlim(0,max(occupancy.firsts$twoh.bound)+10)
+first.plot<-ggplot(occupancy.firsts2, aes(x=twoh.bound, fill=length)) + 
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.plot)
 
 file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
-first.boxplot<- ggplot(occupancy.firsts, aes(x=length, y=twoh.bound, fill=length)) + 
+first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=twoh.bound, fill=length)) + 
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
-  ylim(0, num.time.steps) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
@@ -714,15 +712,13 @@ fname = "first_200_contact_time_diff.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
-first.plot<-ggplot(occupancy.firsts, aes(x=first.twoh.time.diff, fill=length)) + 
-  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") + 
-  xlim(0,max(occupancy.firsts$first.twoh.time.diff)+1)
+first.plot<-ggplot(occupancy.firsts2, aes(x=first.twoh.time.diff, fill=length)) + 
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.plot)
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
-first.boxplot<- ggplot(occupancy.firsts, aes(x=length, y=first.twoh.time.diff, fill=length, color=first.bound)) + 
+first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=first.twoh.time.diff, fill=length, color=first.bound)) + 
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
-  ylim(0, max(occupancy.firsts$first.twoh.time.diff)+1) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
