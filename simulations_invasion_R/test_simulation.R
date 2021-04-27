@@ -403,15 +403,17 @@ zipping <- function(rad54, zipping.list){
 ######################################### Temporary simulation ##########################################
 
 
-kon = 2; koff = 3; m = 2; sw = 2; koff2 = 0.05
+kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
+koff2.prob=koff2.group[koff2]
 
 bindings.per.tethering = m.group[m]
 search.window = search.window.group[sw]
 
 kon.name=kon.group.names[kon]
 koff1.name=koff1.group.names[koff]
+koff2.name=koff2.group.names[koff2]
 
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
 occupied.rad51 = list(bound = "unbound",strand = "negative", donor.invasions = 473927 - 368, lys2.microhomology = 368)
@@ -429,7 +431,7 @@ occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
 names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
 occupancy.firsts$length = rep(ly.names, times = test.replicates)
 
-dirname=paste(num.time.steps,kon.name,koff1.name,bindings.per.tethering,search.window,sep="_")
+dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
 
 dirnew=paste(rootdir,dirname,sep="")
 dir.create(dirnew)
@@ -541,7 +543,7 @@ for (trial in 1:test.replicates){
 
       if(nrow(zipped.fragments.list) > 0){
         for(i in 1:nrow(zipped.fragments.list)){
-          preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2,1-koff2))
+          preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2.prob,1-koff2.prob))
           if(!preserved.zip){
             current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
@@ -620,7 +622,7 @@ for (trial in 1:test.replicates){
     }#next time step
   }#next fragment
   
-  fname = paste("timeseries",num.time.steps,kon.name,koff1.name,bindings.per.tethering,search.window,sep="_")
+  fname = paste("timeseries", num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
   write.table(ly.binding.ts,file=paste(dirnew,"/", fname, sep = ""))
 
