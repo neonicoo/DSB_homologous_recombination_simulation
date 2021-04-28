@@ -51,11 +51,11 @@ yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
-test.replicates = 3 # How many times to simulate, replicates
+test.replicates = 100 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
-kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
-koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
-koff2.group<-c(0, 0.0005, 0.05, 0.5) #dissociation probabilities for each zipped fragments
+kon.group<-c(0.005, 0.01, 0.05, 0.4, 0.8) #binding probabilities for every binding try
+koff1.group<-c(0,0.0001, 0.005, 0.05,0.6) # dissociation probabilities for each bound particle
+koff2.group<-c(0, 0.0001, 0.005, 0.05, 0.6) #dissociation probabilities for each zipped fragments
 m.group = c(2,5) #bindings allowed to occur per tethering
 search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
 
@@ -445,6 +445,10 @@ for(kon in 1:length(kon.group)){
           names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
           occupancy.firsts$length = rep(ly.names, times = test.replicates)
           
+          stats.zipping = as.data.frame(matrix(-1, 3*test.replicates, 3))
+          names(stats.zipping) = c("length", "first.zip", "half.detect")
+          stats.zipping$length = rep(ly.names, times = test.replicates)
+          
           dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
           
           dirnew=paste(rootdir,dirname,sep="")
@@ -499,6 +503,9 @@ for(kon in 1:length(kon.group)){
               
               first = 0 
               twoh = 0
+              
+              first.zip <- 0
+              half.detect <- 0
               
               lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
               names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
@@ -599,6 +606,7 @@ for(kon in 1:length(kon.group)){
                   prob.detection = 1
                 }
                 
+                
                 lys2.occupancy$id[lys2.occupancy$bound == "no"] = "unbound"
                 
                 if(length(which(lys2.occupancy$id == "homology")) > 0 && first == 0){
@@ -612,6 +620,15 @@ for(kon in 1:length(kon.group)){
                   occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
                 }
                 
+                if(length(which(lys2.occupancy$zipped == "yes")) > 0 && first.zip == 0){
+                  first.zip = 1
+                  stats.zipping$first.zip[bigtracker] = time.step
+                }
+                
+                if(prob.detection > 0.5 & half.detect == 0){
+                  half.detect = 1
+                  stats.zipping$half.detect[bigtracker] = time.step
+                }
                 
                 if(saver <3 ){
                   # tabulate occupancies vs. time step and length
@@ -678,6 +695,8 @@ for(kon in 1:length(kon.group)){
           ggsave(outname,plot=pop.plot)
           
           
+          #### Histograms+ boxplot for the first and twoh MH
+          occupancy.firsts2 <- occupancy.firsts[-c(which(occupancy.firsts$first.bound == -1)),]
           
           final.firsts = as.data.frame(matrix(-1,test.replicates,3))
           names(final.firsts) = c("500","1000","2000")
@@ -689,8 +708,15 @@ for(kon in 1:length(kon.group)){
           write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
           
           file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
-          first.plot<-ggplot(occupancy.firsts, aes(x=first.bound, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
-          ggsave(file,plot=first.plot)
+          first.hist<-ggplot(occupancy.firsts2, aes(x=first.bound, fill=length)) + 
+            geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") 
+          ggsave(file,plot=first.hist)
+          
+          file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
+          first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=first.bound, fill=length)) + 
+            geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+            stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+          ggsave(file,plot=first.boxplot)
           
           final.firsts$`500` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 500)]
           final.firsts$`1000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 1000)]
@@ -700,8 +726,15 @@ for(kon in 1:length(kon.group)){
           write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
           
           file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
-          first.plot<-ggplot(occupancy.firsts, aes(x=twoh.bound, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
-          ggsave(file,plot=first.plot)
+          first.hist<-ggplot(occupancy.firsts2, aes(x=twoh.bound, fill=length)) + 
+            geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
+          ggsave(file,plot=first.hist)
+          
+          file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
+          first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=twoh.bound, fill=length)) + 
+            geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+            stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+          ggsave(file,plot=first.boxplot)
           
           final.firsts$`500` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 500)]
           final.firsts$`1000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 1000)]
@@ -711,8 +744,32 @@ for(kon in 1:length(kon.group)){
           write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
           
           file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
-          first.plot<-ggplot(occupancy.firsts, aes(x=first.twoh.time.diff, fill=length)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
-          ggsave(file,plot=first.plot)
+          first.hist<-ggplot(occupancy.firsts2, aes(x=first.twoh.time.diff, fill=length)) + 
+            geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
+          ggsave(file,plot=first.hist)
+          
+          file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
+          first.boxplot<- ggplot(occupancy.firsts2, aes(x=length, y=first.twoh.time.diff, fill=length)) + 
+            geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+            stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+          ggsave(file,plot=first.boxplot)
+          
+          
+          #### Zipping detection 
+          
+          file = paste(dirnew_plots,"/first_zip_boxplot.png",sep="")
+          first.zip.boxplot <- ggplot(stats.zipping[-c(which(stats.zipping$first.zip == -1)),], 
+                                      aes(x=length, y=first.zip, color=length)) + 
+            geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
+            stat_summary(fun = mean, geom = "point", shape = 8, size = 3)
+          ggsave(file,plot=first.zip.boxplot)
+          
+          file = paste(dirnew_plots,"/half_detection_boxplot.png",sep="")
+          first.zip.boxplot <- ggplot(stats.zipping[-c(which(stats.zipping$half.detect == -1)),], 
+                                      aes(x=length, y=half.detect, color=length)) + 
+            geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
+            stat_summary(fun = mean, geom = "point", shape = 8, size = 3)
+          ggsave(file,plot=first.zip.boxplot)
           
         }
       }
