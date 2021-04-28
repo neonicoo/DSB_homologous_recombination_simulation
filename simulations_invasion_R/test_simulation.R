@@ -51,13 +51,16 @@ yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
-test.replicates = 10 # How many times to simulate, replicates
+test.replicates = 12 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
-kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
-koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
-koff2.group<-c(0, 0.0005, 0.05, 0.5) #dissociation probabilities for each zipped fragments
-m.group = c(2,5) #bindings allowed to occur per tethering
-search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
+
+
+# kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
+# koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
+# koff2.group<-c(0, 0.0005, 0.05, 0.5) #dissociation probabilities for each zipped fragments
+# m.group = c(2,5) #bindings allowed to occur per tethering
+# search.window.group = c(250,500) #the genomic distance of the tethering effect (per side)
+
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -403,7 +406,7 @@ zipping <- function(rad54, zipping.list){
 ######################################### Temporary simulation ##########################################
 
 
-kon = 3; koff = 3; m = 2; sw = 2; koff2 = 3
+kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
 koff2.prob=koff2.group[koff2]
