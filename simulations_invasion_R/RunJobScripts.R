@@ -22,5 +22,6 @@ koff2.group <- c(0.05)
 m.group = c(5)
 search.window.group = c(250)
 
+test.replicates = 5
+
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
-jobSetStatus("D6EE4042", status = "done")

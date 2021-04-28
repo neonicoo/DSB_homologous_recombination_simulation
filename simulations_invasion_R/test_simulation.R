@@ -51,7 +51,7 @@ yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
-test.replicates = 12 # How many times to simulate, replicates
+#test.replicates = 10 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
 
@@ -537,14 +537,14 @@ for (trial in 1:test.replicates){
             if(nrow(zipped.fragments.list) > 0){
               if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
                 zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
-                break
+                #break
 
               }else{
                 current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
                 current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
                 lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
                 unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
-                break
+                #break
               }
             }
           }
@@ -559,6 +559,7 @@ for (trial in 1:test.replicates){
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
             lys2.occupancy$zipped[current.zip.start : current.zip.end] = "no"
             unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
+            #break
           }
         }
       }
