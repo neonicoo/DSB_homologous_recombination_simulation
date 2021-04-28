@@ -51,7 +51,7 @@ yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
 yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
 
 num.time.steps = 600 # Length of simulation in time steps
-test.replicates = 50 # How many times to simulate, replicates
+test.replicates = 10 # How many times to simulate, replicates
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 kon.group<-c(0.005,0.05,0.1,0.4,0.7,0.9) #binding probabilities for every binding try
 koff1.group<-c(0,0.0001,0.05,0.6) # dissociation probabilities for each bound particle
@@ -403,7 +403,7 @@ zipping <- function(rad54, zipping.list){
 ######################################### Temporary simulation ##########################################
 
 
-kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
+kon = 3; koff = 3; m = 2; sw = 2; koff2 = 3
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
 koff2.prob=koff2.group[koff2]
@@ -741,16 +741,17 @@ ggsave(file,plot=first.boxplot)
 
 
 #### Zipping detection 
-stats.zipping2 <- stats.zipping[-c(which(stats.zipping$first.zip== -1)),]
 
 file = paste(dirnew_plots,"/first_zip_boxplot.png",sep="")
-first.zip.boxplot <- ggplot(stats.zipping, aes(x=length, y=first.zip, color=length)) + 
+first.zip.boxplot <- ggplot(stats.zipping[-c(which(stats.zipping$first.zip == -1)),], 
+                            aes(x=length, y=first.zip, color=length)) + 
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3)
 ggsave(file,plot=first.zip.boxplot)
 
 file = paste(dirnew_plots,"/half_detection_boxplot.png",sep="")
-first.zip.boxplot <- ggplot(stats.zipping, aes(x=length, y=half.detect, color=length)) + 
+first.zip.boxplot <- ggplot(stats.zipping[-c(which(stats.zipping$half.detect == -1)),], 
+                            aes(x=length, y=half.detect, color=length)) + 
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3)
 ggsave(file,plot=first.zip.boxplot)
