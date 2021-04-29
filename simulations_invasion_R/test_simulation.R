@@ -378,7 +378,6 @@ zipping <- function(rad54, zipping.list){
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% unzipped.rad54[-which(unzipped.rad54 == rad54)] && 
-        lys2.occupancy$id[pos] != "unbound" && 
         pos < nchar(lys2.fragment)+1)
     {
     
