@@ -1,7 +1,7 @@
 
 # If not installed :
 #     install.packages("remotes")
-#     remotes::install_github("rtsudio/rstudioapi")
+#     remotes::install_github("rstudio/rstudioapi")
 
 library(rstudioapi)
 library(parallel)
