@@ -16,12 +16,74 @@ setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simul
 
 parallel::detectCores()
 
-kon.group <- c(0.05)
-koff1.group <- c(0.05)
+#Simulation 0
+kon.group <- c(0.8)
+koff1.group <- c(0.1)
 koff2.group <- c(0.05)
-m.group = c(5)
-search.window.group = c(250)
-
-test.replicates = 5
-
+m.group = c(2)
+search.window.group = c(500)
+test.replicates = 10
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+
+# #Simulation 1
+# kon.group <- c(0.01)
+# koff1.group <- c(0.05)
+# koff2.group <- c(0.05)
+# m.group = c(10)
+# search.window.group = c(500)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 2
+# kon.group <- c(0.05)
+# koff1.group <- c(0.0001)
+# koff2.group <- c(0.0005)
+# m.group = c(5)
+# search.window.group = c(250)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 3
+# kon.group <- c(0.05)
+# koff1.group <- c(0.0001)
+# koff2.group <- c(0.0005)
+# m.group = c(5)
+# search.window.group = c(250)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 4
+# kon.group <- c(0.7)
+# koff1.group <- c(0.001)
+# koff2.group <- c(0.05)
+# m.group = c(5)
+# search.window.group = c(500)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 5
+# kon.group <- c(0.005)
+# koff1.group <- c(0.0001)
+# koff2.group <- c(0.2)
+# m.group = c(10)
+# search.window.group = c(250)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 6
+# kon.group <- c(0.1)
+# koff1.group <- c(0.5)
+# koff2.group <- c(0.0001)
+# m.group = c(5)
+# search.window.group = c(500)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+# 
+# #Simulation 7
+# kon.group <- c(0.6)
+# koff1.group <- c(0.1)
+# koff2.group <- c(0.005)
+# m.group = c(10)
+# search.window.group = c(500)
+# test.replicates = 100
+# rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
