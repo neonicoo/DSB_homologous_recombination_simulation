@@ -17,8 +17,6 @@ library(stringr)
 library(seqinr)
 library("Biostrings")
 
-'%!in%' <- function(x,y)!('%in%'(x,y)) #negate operator for %in%
-
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
 
@@ -42,13 +40,12 @@ L500 = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACAT
 ly.names = c("500", "1000", "2000")
 ly.sequences = c(L500, L, LY)
 
-
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
-yeast.genome.chr2 <- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/chr2.fa" ,
-                                seqtype = 'DNA', as.string = TRUE, 
-                                forceDNAtolower  = TRUE, set.attributes = FALSE)
+yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
+                          seqtype = 'DNA', as.string = TRUE, 
+                          forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-yeast.genome.chr2 <- yeast.genome.chr2[[1]] #select just the nucleotides sequence
+donor <- LY
 
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
@@ -56,7 +53,7 @@ graph.resolution = 1 #save occupancy data at every nth time step. Plots will hav
 test.replicates = 10 # How many times to simulate, replicates
 kon.group<-c(0.1) #binding probabilities for every binding try
 koff1.group<-c(0.1) # dissociation probabilities for each bound particle
-koff2.group<-c(0.005) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 
@@ -73,6 +70,12 @@ print(koff2.group.names)
 
 #########################################################################################################
 #################################### FUNCTIONS ##########################################################
+
+#negate operator for %in% :
+'%!in%' <- function(x,y)!('%in%'(x,y)) 
+
+#########################################################################################################
+#########################################################################################################
 
 find.occupancies = function(lower.window ="none", upper.window = "none", additional.removals = "none"){
   # Find the positions where there is no MH bounded ;
@@ -571,7 +574,7 @@ for (trial in 1:test.replicates){
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
       
-      if(nrow(zipped.fragments.list) > 0 && koff2.prob > 0){
+      if(nrow(zipped.fragments.list) > 0 && koff2.group > 0){
         for(i in 1:nrow(zipped.fragments.list)){
           preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2.prob,1-koff2.prob))
           if(!preserved.zip){
@@ -744,7 +747,7 @@ pop.plot<-
 ggsave(outname,plot=pop.plot)
 
 #### Histograms+ boxplot for the first and twoh MH
-occupancy.firsts2 <- occupancy.firsts[-c(which(occupancy.firsts$first.bound == -1)),]
+occupancy.firsts2 <- occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),]
 
 final.firsts = as.data.frame(matrix(-1,test.replicates,3))
 names(final.firsts) = c("500","1000","2000")
@@ -813,7 +816,7 @@ ggsave(file,plot=first.boxplot)
 
 file = paste(dirnew_plots,"/first_zip_boxplot.png",sep="")
 first.zip.boxplot <- 
-  ggplot(stats.zipping[-c(which(stats.zipping$first.zip == -1)),], 
+  ggplot(stats.zipping[c(which(occupancy.firsts$first.bound != -1)),], 
                             aes(x=length, y=first.zip, color=length)) + 
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3)+
@@ -822,7 +825,7 @@ ggsave(file,plot=first.zip.boxplot)
 
 file = paste(dirnew_plots,"/half_detection_boxplot.png",sep="")
 first.zip.boxplot <- 
-  ggplot(stats.zipping[-c(which(stats.zipping$half.detect == -1)),], 
+  ggplot(stats.zipping[c(which(occupancy.firsts$first.bound != -1)),], 
                             aes(x=length, y=half.detect, color=length)) + 
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3) +
