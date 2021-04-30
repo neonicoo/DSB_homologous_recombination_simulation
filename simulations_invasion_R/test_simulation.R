@@ -47,12 +47,12 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
 
 donor <- LY
 
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
 test.replicates = 10 # How many times to simulate, replicates
-kon.group<-c(0.1) #binding probabilities for every binding try
-koff1.group<-c(0.1) # dissociation probabilities for each bound particle
+kon.group<-c(0.05) #binding probabilities for every binding try
+koff1.group<-c(0.05) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
@@ -376,34 +376,40 @@ zipping <- function(rad54, zipping.list){
   pos <- rad54
   zip.indexe <- c()
   zip.fragment <-"" 
-  zip.junction <- 0
   new.zipping.list <- zipping.list
   
   while(pos %!in% pos.rdh54 && 
-        pos %!in% unzipped.rad54[-which(unzipped.rad54 == rad54)] && 
-        pos < nchar(lys2.fragment)+1)
-    {
-    
-    if (pos %in% zipping.list$start){
-      zip.junction = 1
-      zip.fragment = paste(zip.fragment, zipping.list$sequences[which(zipping.list$start == pos)], sep = "")
-      new.zipping.list = new.zipping.list[-c(which(new.zipping.list$start == pos)),]
-      new.zipping.list = rbind(new.zipping.list, c(rad54, rad54+nchar(zip.fragment)-1, zip.fragment))
-      break
-      
-    }else{
+        pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
+        pos < nchar(lys2.fragment))
+  {
+    if(lys2.occupancy$id[pos] == "homology"){
       new.nt <- substr(lys2.fragment, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
-      pos = pos+1
+      pos = pos + 1
+      
+    }else if (lys2.occupancy$id[pos] != "homology"){
+      
+      if (str_sub(string = lys2.fragment, start = pos, end = pos) == str_sub(string = donor, start = pos, end = pos)){
+        new.nt <- substr(lys2.fragment, pos, pos)
+        zip.indexe = c(zip.indexe, pos)
+        zip.fragment = paste(zip.fragment, new.nt, sep="")
+        pos = pos + 1
+        
+      }else{
+        break
+      }
     }
   }
   
-  if(zip.junction == 0){
-    new.zipping.list  = rbind(zipping.list , c(as.integer(zip.indexe[1]), as.integer(tail(zip.indexe,1)), zip.fragment))
+  if(nchar(zip.fragment) > 16){
+    new.zipping.list  = rbind(new.zipping.list, 
+                              c(as.integer(zip.indexe[1]), 
+                                as.integer(tail(zip.indexe,1)), 
+                                zip.fragment))
   }
   
-  names(new.zipping.list ) = c("start", "end", "sequences")
+  names(new.zipping.list) = c("start", "end", "sequences")
   return(new.zipping.list)
 }
 
@@ -530,7 +536,7 @@ for (trial in 1:test.replicates){
     zipped.fragments.list <- as.data.frame(matrix(0,0,3)) #all the macrohomologies after zipping with start/end positions
     names(zipped.fragments.list ) = c("start", "end", "sequences")
     
-    unzipped.rad54 <- pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")] #positions of non-overlapped rad54
+    unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
     
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
@@ -547,24 +553,17 @@ for (trial in 1:test.replicates){
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(twoh == 1 && length(unzipped.rad54 > 0)){
+      if(twoh == 1 & length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
           # Check if the sequence to zip is big enough ;
           # We decided >= 16 (2*8 nts) arbitraly (could be more or less)
-          if(lys2.occupancy$zipped[pos] != "yes" && check.before.zipping(pos) >= 16){
+          if(lys2.occupancy$zipped[pos] != "yes" & check.before.zipping(pos) >= 16){
             zipped.fragments.list = zipping(pos, zipped.fragments.list)
-            
-            # Now check if the zipped fragment is big enough to be kept (>16)
-            if(nrow(zipped.fragments.list) > 0){
-              if(nchar(tail(zipped.fragments.list$sequences,1)) < 16){
-                zipped.fragments.list = zipped.fragments.list[-c(dim(zipped.fragments.list)[1]), ]
-
-              }else{
-                current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
-                current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
-                lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
-                unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")]
-              }
+            if(dim(zipped.fragments.list)[1] != 0){
+              current.zip.start <- as.integer(tail(zipped.fragments.list,1)$start)
+              current.zip.end <- as.integer(tail(zipped.fragments.list,1)$end)
+              lys2.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
+              unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)]
             }
           }
         }
@@ -574,30 +573,39 @@ for (trial in 1:test.replicates){
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
       
-      if(nrow(zipped.fragments.list) > 0 && koff2.group > 0){
+      if(koff2.prob > 0 & dim(zipped.fragments.list)[1] != 0){
+        row2remove <- c()
         for(i in 1:nrow(zipped.fragments.list)){
           preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2.prob,1-koff2.prob))
           if(!preserved.zip){
             current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
-            
+            row2remove = c(row2remove, i)
+
             lys2.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
             lys2.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             lys2.occupancy$id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
-            unzipped.rad54 = pos.rad54[which(lys2.occupancy$zipped[pos.rad54]=="no")] #the rad54 into the sequence are no more overlapped by any microhomology
-            
-            remove <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
-            occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove] #remove binding sites from the donor
-            occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove]
-            
+            unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
+
+            remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
+            occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51] #remove binding sites from the donor
+            occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
+
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
               occupied.rad51$bound = "unbound"
               break
             }
           }
         }
+        if(length(row2remove) > 0){
+          zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
+          if(dim(zipped.fragments.list)[1] != 0){
+            row.names(zipped.fragments.list) = (1:nrow(zipped.fragments.list))
+          }
+        }
       }
-      
+
+
       new.bindings = genome.wide.sei(SEI.binding.tries)
       
       if (occupied.rad51$bound == "unbound"){
@@ -701,19 +709,19 @@ for (trial in 1:test.replicates){
     names(ly.binding.ts)[3] = "length"
     ly.binding.ts$length = factor(ly.binding.ts$length)
     outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
-    
+
     occ_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
       labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
       scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=occ_plot)
-    
+
     outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
     het_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
       labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=het_plot)
-    
+
     outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
     ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
     lys2_plot<-
@@ -722,7 +730,7 @@ for (trial in 1:test.replicates){
       scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=lys2_plot)
   }
-  
+
   saver=saver+1
 }#end process
 
@@ -760,13 +768,13 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=first.bound, fill=length)) + 
-  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity") 
+  ggplot(occupancy.firsts2, aes(x=first.bound, fill=length)) +
+  geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
-first.boxplot<- 
-  ggplot(occupancy.firsts2, aes(x=length, y=first.bound, fill=length)) + 
+first.boxplot<-
+  ggplot(occupancy.firsts2, aes(x=length, y=first.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
@@ -780,13 +788,13 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=twoh.bound, fill=length)) + 
+  ggplot(occupancy.firsts2, aes(x=twoh.bound, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
-first.boxplot<- 
-  ggplot(occupancy.firsts2, aes(x=length, y=twoh.bound, fill=length)) + 
+first.boxplot<-
+  ggplot(occupancy.firsts2, aes(x=length, y=twoh.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
@@ -800,37 +808,34 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=first.twoh.time.diff, fill=length)) + 
+  ggplot(occupancy.firsts2, aes(x=first.twoh.time.diff, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
-first.boxplot<- 
-  ggplot(occupancy.firsts2, aes(x=length, y=first.twoh.time.diff, fill=length)) + 
+first.boxplot<-
+  ggplot(occupancy.firsts2, aes(x=length, y=first.twoh.time.diff, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
 
-#### Zipping detection 
+#### Zipping detection
 
 file = paste(dirnew_plots,"/first_zip_boxplot.png",sep="")
-first.zip.boxplot <- 
-  ggplot(stats.zipping[c(which(occupancy.firsts$first.bound != -1)),], 
-                            aes(x=length, y=first.zip, color=length)) + 
+first.zip.boxplot <-
+  ggplot(stats.zipping[c(which(stats.zipping$first.zip != -1)),],
+                            aes(x=length, y=first.zip, color=length)) +
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3)+
   ggtitle("Time step of first zipped macrohomology for each fragment")
 ggsave(file,plot=first.zip.boxplot)
 
 file = paste(dirnew_plots,"/half_detection_boxplot.png",sep="")
-first.zip.boxplot <- 
-  ggplot(stats.zipping[c(which(occupancy.firsts$first.bound != -1)),], 
-                            aes(x=length, y=half.detect, color=length)) + 
+first.zip.boxplot <-
+  ggplot(stats.zipping[c(which(stats.zipping$half.detect != -1)),],
+                            aes(x=length, y=half.detect, color=length)) +
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3) +
   ggtitle("Time step of half detection for each invading fragment")
 ggsave(file,plot=first.zip.boxplot)
-
-
-
