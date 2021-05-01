@@ -88,6 +88,7 @@ search.window.group = c(500)
 test.replicates = 100
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
+#Simulation 8
 kon.group <- c(0.2)
 koff1.group <- c(0.1)
 koff2.group <- c(0.1)
