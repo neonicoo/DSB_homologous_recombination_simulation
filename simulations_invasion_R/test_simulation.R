@@ -47,15 +47,15 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
 
 donor <- LY
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-# test.replicates = 10 # How many times to simulate, replicates
-# kon.group<-c(0.05) #binding probabilities for every binding try
-# koff1.group<-c(0.05) # dissociation probabilities for each bound particle
-# koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
-# m.group = c(2) #bindings allowed to occur per tethering
-# search.window.group = c(250) #the genomic distance of the tethering effect (per side)
+test.replicates = 2 # How many times to simulate, replicates
+kon.group<-c(0.1) #binding probabilities for every binding try
+koff1.group<-c(0.1) # dissociation probabilities for each bound particle
+koff2.group<-c(0.005) #dissociation probabilities for each zipped fragments
+m.group = c(2) #bindings allowed to occur per tethering
+search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -377,27 +377,37 @@ zipping <- function(rad54, zipping.list){
   zip.indexe <- c()
   zip.fragment <-"" 
   new.zipping.list <- zipping.list
+  counter <- 0
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos < nchar(lys2.fragment))
+        pos < nchar(lys2.fragment) &&
+        counter <= 4)
   {
+    
     if(lys2.occupancy$id[pos] == "homology"){
       new.nt <- substr(lys2.fragment, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
+      counter = 0
       pos = pos + 1
       
     }else if (lys2.occupancy$id[pos] != "homology"){
-      
-      if (str_sub(string = lys2.fragment, start = pos, end = pos) == str_sub(string = donor, start = pos, end = pos)){
+      if (str_sub(string = lys2.fragment, start = pos, end = pos) == 
+          str_sub(string = donor, start = pos, end = pos)){
+        
         new.nt <- substr(lys2.fragment, pos, pos)
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")
+        counter = 0
         pos = pos + 1
         
       }else{
-        break
+        new.nt <- substr(lys2.fragment, pos, pos)
+        zip.indexe = c(zip.indexe, pos)
+        zip.fragment = paste(zip.fragment, new.nt, sep="")
+        counter = counter + 1
+        pos = pos + 1
       }
     }
   }
