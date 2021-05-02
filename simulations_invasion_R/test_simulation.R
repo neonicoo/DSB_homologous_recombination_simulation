@@ -50,12 +50,12 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 2 # How many times to simulate, replicates
+test.replicates = 10 # How many times to simulate, replicates
 kon.group<-c(0.1) #binding probabilities for every binding try
 koff1.group<-c(0.1) # dissociation probabilities for each bound particle
-koff2.group<-c(0.005) #dissociation probabilities for each zipped fragments
-m.group = c(2) #bindings allowed to occur per tethering
-search.window.group = c(250) #the genomic distance of the tethering effect (per side)
+koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
+m.group = c(5) #bindings allowed to occur per tethering
+search.window.group = c(500) #the genomic distance of the tethering effect (per side)
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
