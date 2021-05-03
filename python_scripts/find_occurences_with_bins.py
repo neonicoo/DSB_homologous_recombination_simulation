@@ -10,6 +10,7 @@ from Bio import SeqIO
 
 if __name__ == "__main__" :
 	
+	bin_size = int(input("Please enter the size for each bin : "))
 	fragment = input("Please input your nucleotides sequence fragment here : \n")
 
 	sequences = []
@@ -20,10 +21,10 @@ if __name__ == "__main__" :
 	chr_bins_name = []
 	for record in SeqIO.parse(yeast_genome, "fasta"):
 		chr_name = str(record.id)
-		nb_bins = math.ceil(len(record.seq)/5000)
+		nb_bins = math.ceil(len(record.seq)/bin_size)
 
 		for b in range(0, nb_bins+1, 1):
-		    bins_name = str((b)*5000 +1)+"_"+str((b+1)*5000 +1)
+		    bins_name = str((b)*bin_size +1)+"_"+str((b+1)*bin_size +1)
 		    chr_bins_name.append(chr_name+"_"+bins_name)
 
 	yeast_genome.close()
@@ -36,19 +37,19 @@ if __name__ == "__main__" :
 
 		for record in SeqIO.parse(yeast_genome, "fasta"):
 		    count_chr = []
-		    nb_bins = math.ceil(len(record.seq)/5000)
+		    nb_bins = math.ceil(len(record.seq)/bin_size)
 
 		    seq = str(record.seq).lower()
 		    revcomp_seq = str(record.reverse_complement().seq).lower()
 
 		    for b in range(0, nb_bins+1, 1):
 		        count_bin = 0
-		        count_bin += len([m.start() for m in re.finditer(pattern=micro, string=seq[b*5000:(b+1)*5000])])
-		        if(seq[(b+1)*5000 -8:(b+1)*5000 +8].find(micro) > -1):
+		        count_bin += len([m.start() for m in re.finditer(pattern=micro, string=seq[b*bin_size:(b+1)*bin_size])])
+		        if(seq[(b+1)*bin_size -8:(b+1)*bin_size +8].find(micro) > -1):
 		            count_bin +=1
 		            
-		        count_bin += len([m.start() for m in re.finditer(pattern=micro, string=revcomp_seq[b*5000:(b+1)*5000])])
-		        if(revcomp_seq[(b+1)*5000 - 8:(b+1)*5000 +8].find(micro) > -1):
+		        count_bin += len([m.start() for m in re.finditer(pattern=micro, string=revcomp_seq[b*bin_size:(b+1)*bin_size])])
+		        if(revcomp_seq[(b+1)*bin_size - 8:(b+1)*bin_size +8].find(micro) > -1):
 		            count_bin +=1
 		        
 		        count_chr.append(count_bin)
