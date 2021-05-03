@@ -72,7 +72,9 @@ if __name__ == "__main__" :
 		os.makedirs('./output_files')
 
 	file2save = input("Please enter the name for the output file that will contain the occurences in genome wide : \n")
-	df.to_csv('./output_files/' + file2save+"_occurences_per_8bp_(for_rev_donor)_with_bins.txt", index=False)
+	file2save = "./output_files/" +str(file2save)+"_occurences_per_8bp_(for_rev_donor)_with_bins.csv"
+	
+	df.to_csv(file2save, index=False)
 	
 	print("\n\n --- DONE --- \n")
 
