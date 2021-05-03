@@ -64,7 +64,7 @@ if __name__ == "__main__" :
 		total.append(sum(mh_occurrences[i]))
 		
 	df = pd.DataFrame(np.matrix(mh_occurrences), columns=chr_bins_name)
-	df.index = sequences
+	df.insert(loc=0, column="sequences", value = sequences)
 	df["total"] = total
 	df.head()
 
@@ -72,7 +72,7 @@ if __name__ == "__main__" :
 		os.makedirs('./output_files')
 
 	file2save = input("Please enter the name for the output file that will contain the occurences in genome wide : \n")
-	df.to_csv(file2save+"_occurences_per_8bp_(for_rev_donor)_with_bins.txt")
+	df.to_csv('./output_files/' + file2save+"_occurences_per_8bp_(for_rev_donor)_with_bins.txt", index=False)
 	
 	print("\n\n --- DONE --- \n")
 
