@@ -4,7 +4,7 @@
 # Set wd to directory containing all the directories that contain population time series 
 #   for individual sets of parameters
 
-setwd("/home/nicolas/Documents/INSA/Stage4BiM/Keith/Data/Data_Kon_Koff1_win")
+setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
 
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
@@ -27,7 +27,7 @@ plateau_data = as.data.frame(matrix(0,num.parameters,10))
 names(plateau_data) = c("kon","koff1","tethering","window","time2000","time1000","time500","plat2000","plat1000","plat500")
 
 # file name and directory where you want the processed data to be stored. 
-processed_file = "/home/nicolas/Documents/INSA/Stage4BiM/Keith/Data/SummaryMatrix/plateau_data.txt"
+processed_file = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/"
 
 ### TRY NOT TO CHANGE ANYTHING AFTER THIS LINE ###
 
