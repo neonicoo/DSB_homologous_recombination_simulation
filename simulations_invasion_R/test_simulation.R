@@ -118,7 +118,7 @@ genome.wide.sei = function(initial.binding.tries){
   
   open.sites = find.occupancies() #indexes of unoccupied sites
   
-  if (length(open.sites)== 0){ #if all the sites are occuped
+  if (length(open.sites)== 0){ #if all the sites are occupied
     return(list(bound = occupied.rad51$bound,strand = "negative", donor.invasions = c(), lys2.microhomology = c()))
   }
   
@@ -521,11 +521,12 @@ for (trial in 1:test.replicates){
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
-    first = 0 
-    twoh = 0
+    first = 0 #the first homology bound to the donor
+    twoh = 0 # the first two hundred homologies bound to the donor
     
-    first.zip <- 0
-    half.detect <- 0
+    start.zipping <- 0 #enable or not the zipping phase
+    first.zip <- 0 #the first zipped fragment to the donor
+    half.detect <- 0 #when the probability detection is equal to 0.5
     
     lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
     names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
@@ -563,7 +564,7 @@ for (trial in 1:test.replicates){
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(twoh == 1 & length(unzipped.rad54 > 0)){
+      if(start.zipping == 1 & length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
           # Check if the sequence to zip is big enough ;
           # We decided >= 16 (2*8 nts) arbitraly (could be more or less)
@@ -660,11 +661,20 @@ for (trial in 1:test.replicates){
         occupancy.firsts$first.bound[bigtracker] = time.step
       }
       
-      if(length(which(lys2.occupancy$id == "homology")) >= (220 + rnorm(1, 0, 20)) && twoh == 0){
-        twoh = 1;
-        occupancy.firsts$twoh.bound[bigtracker] = time.step
-        occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
+      if(length(which(lys2.occupancy$id == "homology")) >= 200 && start.zipping == 0){
+        if(twoh == 0){
+          twoh = 1
+          occupancy.firsts$twoh.bound[bigtracker] = time.step
+          occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
+        }
+        start.zipping = 1
+        
+      }else if(length(which(lys2.occupancy$id == "homology")) < 200 && start.zipping == 1){
+        if(twoh == 1){
+          start.zipping = 0
+        }
       }
+      
       
       if(length(which(lys2.occupancy$zipped == "yes")) > 0 && first.zip == 0){
         first.zip = 1
