@@ -23,7 +23,7 @@ if __name__ == "__main__" :
 		chr_name = str(record.id)
 		nb_bins = math.ceil(len(record.seq)/bin_size)
 
-		for b in range(0, nb_bins+1, 1):
+		for b in range(0, nb_bins, 1):
 		    bins_name = str((b)*bin_size +1)+"_"+str((b+1)*bin_size +1)
 		    chr_bins_name.append(chr_name+"_"+bins_name)
 
@@ -42,7 +42,7 @@ if __name__ == "__main__" :
 		    seq = str(record.seq).lower()
 		    revcomp_seq = str(record.reverse_complement().seq).lower()
 
-		    for b in range(0, nb_bins+1, 1):
+		    for b in range(0, nb_bins, 1):
 		        count_bin = 0
 		        count_bin += len([m.start() for m in re.finditer(pattern=micro, string=seq[b*bin_size:(b+1)*bin_size])])
 		        if(seq[(b+1)*bin_size -8:(b+1)*bin_size +8].find(micro) > -1):
