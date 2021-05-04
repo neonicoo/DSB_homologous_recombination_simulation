@@ -33,7 +33,6 @@ for(i in 2:(ncol(bins.occurences)-1)){
   total.homologies.per.bin = c(total.homologies.per.bin, sum(bins.occurences[i]))
 }
 
-
 # within-lys microhomologies (misalignments)
 L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
 L1000.selfmicros <- read.delim("./LYS2/L1000_self-microhomologies.txt", stringsAsFactors=FALSE); L1000.selfmicros$position3 = NA
@@ -50,7 +49,10 @@ ly.sequences = c(L500, L, LY)
 
 # Import the experimental contacts of the left DSB 10kb with the genome wide :
 contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
+bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_pos), "_", as.character(contacts$end_pos), sep="")
+contacts <- cbind(contacts, bins.id)
 colnames(contacts)[6] <- "frequency"
+colnames(contacts)[7] <- "id"
 
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
 yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
