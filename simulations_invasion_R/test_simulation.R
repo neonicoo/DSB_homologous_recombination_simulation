@@ -26,6 +26,14 @@ forward.sequences = forward.sequences[,c("start", "sequence", "total")]
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
+# genome-wide microhomology counts but with bins of 10kb
+bins.occurences <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")
+total.homologies.per.bin <- c()
+for(i in 2:(ncol(bins.occurences)-1)){
+  total.homologies.per.bin = c(total.homologies.per.bin, sum(bins.occurences[i]))
+}
+
+
 # within-lys microhomologies (misalignments)
 L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
 L1000.selfmicros <- read.delim("./LYS2/L1000_self-microhomologies.txt", stringsAsFactors=FALSE); L1000.selfmicros$position3 = NA
@@ -40,6 +48,10 @@ L500 = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACAT
 ly.names = c("500", "1000", "2000")
 ly.sequences = c(L500, L, LY)
 
+# Import the experimental contacts of the left DSB 10kb with the genome wide :
+contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
+colnames(contacts)[6] <- "frequency"
+
 #Import of the chr2.fa sequence file from the yeast genome (S288) :
 yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
                           seqtype = 'DNA', as.string = TRUE, 
@@ -50,7 +62,7 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.1) #binding probabilities for every binding try
 koff1.group<-c(0.1) # dissociation probabilities for each bound particle
 koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
@@ -670,9 +682,7 @@ for (trial in 1:test.replicates){
         start.zipping = 1
         
       }else if(length(which(lys2.occupancy$id == "homology")) < 200 && start.zipping == 1){
-        if(twoh == 1){
-          start.zipping = 0
-        }
+        start.zipping = 0
       }
       
       
