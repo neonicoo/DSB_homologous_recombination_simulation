@@ -59,14 +59,12 @@ if __name__ == "__main__" :
 		
 		
 		
-	total = []
 	for i in range(len(sequences)):
 		mh_occurrences[i] = np.concatenate(mh_occurrences[i])
-		total.append(sum(mh_occurrences[i]))
 		
 	df = pd.DataFrame(np.matrix(mh_occurrences), columns=chr_bins_name)
 	df.insert(loc=0, column="sequences", value = sequences)
-	df["total"] = total
+	df.set_index("sequences")
 	df.head()
 
 	if not os.path.exists('./output_files'):
