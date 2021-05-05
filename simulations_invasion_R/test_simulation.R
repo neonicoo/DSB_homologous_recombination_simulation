@@ -133,13 +133,20 @@ genome.wide.sei = function(initial.binding.tries){
   
   #matches : vector of possible bounding sites for MHs
   matches = c()
+  bins = c()
   for (i in 1:initial.binding.tries){
     if (length(open.sites) == 1){ 
       # If there is only one available binding site :
       matches[i] = open.sites
     }else{ 
       # Draw a site among those available which will be matched with a MH according to the respective weighted probabilities :
-      matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites]) 
+      matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites])
+      
+      #possible.bins = c(t(sequences.contacts.bins[matches[i],]))
+      #possible.bins = sequences.contacts.bins[which(sequences.contacts.bins[matches[i], ]>0)][matches[i],-1]
+      #print(possible.bins)
+      #current.bin = sample(colnames(possible.bins), size=1, prob = possible.bins)
+      #bins[i] =  current.bin
     }
     
     # Where there is a match with a MH, we consider that the site concerned is no longer available ;
@@ -463,6 +470,7 @@ sequences.contacts.bins = sequences.bins
 for (i in 2:ncol(sequences.bins)){
   sequences.contacts.bins[i] = sequences.bins[i]*contacts$frequency[i-1]
 }
+sequences.contacts.bins = sequences.contacts.bins[-1] # Remove the "sequences" column
 
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
