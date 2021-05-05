@@ -27,7 +27,7 @@ row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
 # genome-wide microhomology counts but with bins of 10kb
-bins.occurences <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")
+sequences.bins <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")
 
 # Import the experimental contacts of the left DSB 10kb with the genome wide :
 contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
@@ -35,32 +35,6 @@ bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_
 contacts <- cbind(contacts, bins.id)
 colnames(contacts)[6] <- "frequency"
 colnames(contacts)[7] <- "id"
-
-# We have to check that the bins are the same between the 2 tables (bins.occurences and contacts) ;
-# For example, for LY bins.occurences we have 2 more bins than in the contacts dataframe, so we remove them ;
-# The comparison is made with the chromosome id and the start position for each bin 
-chr_pos_occurences = c()
-for (i in 2:(ncol(bins.occurences)-1)){
-  chr_pos_occurences= c(chr_pos_occurences, 
-          paste(str_split(colnames(bins.occurences[i]), "_")[[1]][1], 
-                str_split(colnames(bins.occurences[i]), "_")[[1]][2], sep="_"))
-}
-
-chr_pos_contacts = c()
-for (i in 1:length(bins.id)){
-  chr_pos_contacts= c(chr_pos_contacts, 
-          paste(str_split(bins.id[i], "_")[[1]][1], 
-                str_split(bins.id[i], "_")[[1]][2], sep="_"))
-}
-
-remove = which(chr_pos_occurences %!in% chr_pos_contacts)+1
-bins.occurences <- subset(bins.occurences, select=-remove)
-rm(chr_pos_occurences, chr_pos_contacts, remove)
-
-total.homologies.per.bin <- c()
-for(i in 2:(ncol(bins.occurences)-1)){
-  total.homologies.per.bin = c(total.homologies.per.bin, sum(bins.occurences[i]))
-}
 
 # within-lys microhomologies (misalignments)
 L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
@@ -460,7 +434,35 @@ zipping <- function(rad54, zipping.list){
 
 
 #########################################################################################################
-######################################### Temporary simulation ##########################################
+######################################### Single run simulation ##########################################
+
+
+# We have to check that the bins are the same between the 2 tables (sequences.bins and contacts) ;
+# For example, for LY sequences.bins we have 2 more bins than in the contacts dataframe, so we remove them ;
+# The comparison is made with the chromosome id and the start position for each bin 
+chr_pos_occurences = c()
+for (i in 2:ncol(sequences.bins)){
+  chr_pos_occurences= c(chr_pos_occurences, 
+                        paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], 
+                              str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
+}
+
+chr_pos_contacts = c()
+for (i in 1:length(bins.id)){
+  chr_pos_contacts= c(chr_pos_contacts, 
+                      paste(str_split(bins.id[i], "_")[[1]][1], 
+                            str_split(bins.id[i], "_")[[1]][2], sep="_"))
+}
+
+remove = which(chr_pos_occurences %!in% chr_pos_contacts)+1
+sequences.bins <- subset(sequences.bins, select=-remove)
+rm(chr_pos_occurences, chr_pos_contacts, remove)
+
+#Fusion the frequency of contact for each bins with the number of apparition for each microhomologies
+sequences.contacts.bins = sequences.bins
+for (i in 2:ncol(sequences.bins)){
+  sequences.contacts.bins[i] = sequences.bins[i]*contacts$frequency[i-1]
+}
 
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
