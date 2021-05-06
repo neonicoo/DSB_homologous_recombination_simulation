@@ -128,7 +128,7 @@ genome.wide.sei = function(initial.binding.tries){
   open.sites = find.occupancies() #indexes of unoccupied sites
   
   if (length(open.sites)== 0){ #if all the sites are occupied
-    return(list(bound = occupied.rad51$bound,strand = "negative", donor.invasions = c(), lys2.microhomology = c()))
+    return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
   }
   
   #matches : vector of possible bounding sites for MHs
@@ -144,15 +144,18 @@ genome.wide.sei = function(initial.binding.tries){
       
       contact.freq = sequences.contacts.bins[matches[i], ]
       possible.bins = bins.id[which(contact.freq > 0)]
-      current.bin = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])
-      bins[i] =  current.bin
+      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])
     }
     
     # Where there is a match with a MH, we consider that the site concerned is no longer available ;
     # We remove it from the index open.sites;
     # To be sure that the next matches will not overlap with the previous one, 
     #  we have to remove from the index the 7 positions upstream and downstream of the match :
+    
+    
+    #open.sites = open.sites[sequences.contacts.bins[open.sites,current.bin] > 0]
     open.sites = open.sites[-which(open.sites %in% (matches[i]-7):(matches[i] + 7))]
+    
     if (length(open.sites) < 1){ 
       break
     }
@@ -164,9 +167,10 @@ genome.wide.sei = function(initial.binding.tries){
   # We keep only the matches where a bond will occur;
   successes=sample( c(TRUE, FALSE), length(matches), replace = TRUE, prob = c(kon.prob, (1-kon.prob)) )
   matches = matches[successes]
+  bins = bins[successes]
   
   if (length(matches)<1){
-    return(list(bound = occupied.rad51$bound,strand = "negative",donor.invasions = c(), lys2.microhomology = c()))
+    return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
   }
   
   # Set IDs of each bound (Heterology (H) vs LYS); 
@@ -197,12 +201,14 @@ genome.wide.sei = function(initial.binding.tries){
   if (occupied.rad51$bound != "unbound"){
     remove = which((identities !="H") & (as.character(identities) %in% occupied.rad51$donor.invasions) )
     if (length(remove)>0){
-      identities = identities[-remove]; matches = matches[-remove]
+      identities = identities[-remove]
+      matches = matches[-remove]
+      bins = bins[-remove]
     }
   } 
   
   # LYS alignment or misalignments :
-  return(list(bound=occupied.rad51$bound, strand = "negative", donor.invasions = identities, lys2.microhomology = matches))
+  return(list(bound=occupied.rad51$bound, strand = "negative", genome.bins = bins, donor.invasions = identities, lys2.microhomology = matches))
 }  
 #########################################################################################################
 #########################################################################################################
@@ -215,7 +221,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
   # new.bindings : deep copy of an empty occupied.rad51 ;
   correct.bindings = as.numeric(which(occupied.rad51$donor.invasions != "H"))
-  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", donor.invasions = c(), lys2.microhomology = c())
+  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c())
   
   # Check for unbound sites :
   if (length(find.occupancies()) == 0){
@@ -224,6 +230,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   
   # bindings : list of sites occupied by another MHs into the search window around the current micros locus ;
   bindings = c()
+  bins = c()
   
   for (binding.index in correct.bindings){
     if (length(bindings) > 0){
@@ -233,7 +240,8 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     }
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
-    
+    current.bin = occupied.rad51$genome.bins[binding.index]
+      
     if (length(bindings) <=0){
       additionals = "none"
     }else{
@@ -259,6 +267,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
         yy = runif(1)
         if(yy <= kon){
           current.bindings = c(current.bindings,candidate)
+          bins = c(bins, current.bin)
         }
       }
       # Remove the candidates and the 7 positions upstream and downstream it from the free sites index ;
@@ -278,7 +287,9 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     }
     donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
+  
   identities = 473927 - donor.ids
+  new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
   new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
   new.bindings$donor.invasions    = c(new.bindings$donor.invasions, identities)
   
@@ -287,6 +298,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
     remove = which((new.bindings$donor.invasions !="H") & (as.character(new.bindings$donor.invasions) %in% occupied.rad51$donor.invasions) )
     if (length(remove) > 0){
+      new.bindings$genome.bins = new.bindings$genome.bins[-remove]
       new.bindings$donor.invasions = new.bindings$donor.invasions[-remove]
       new.bindings$lys2.microhomology = new.bindings$lys2.microhomology[-remove]}
   }
@@ -471,6 +483,7 @@ for (i in 2:ncol(sequences.bins)){
 }
 sequences.contacts.bins = sequences.contacts.bins[-1] # Remove the "sequences" column
 sequences.contacts.bins = apply(sequences.contacts.bins, 2, function(x) x[x!= ""]) #dataframe to matrix (reduce time complexity)
+colnames(sequences.contacts.bins) = bins.id
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1 #for single Job run
@@ -487,7 +500,7 @@ koff1.name=koff1.group.names[koff]
 koff2.name=koff2.group.names[koff2]
 
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
-occupied.rad51 = list(bound = "unbound",strand = "negative", donor.invasions = 473927 - 368, lys2.microhomology = 368)
+occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c(), donor.invasions = 473927 - 368, lys2.microhomology = 368)
 
 #population time series only for the zipped fragment 
 pop.time.series.zip = as.data.frame(matrix(0,num.time.steps*3,3))
@@ -562,6 +575,7 @@ for (trial in 1:test.replicates){
     SEI.binding.tries = floor((nchar(lys2.fragment)-7)/8)
     
     occupied.rad51$bound = "unbound"
+    occupied.rad51$genome.bins = c()
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
@@ -602,6 +616,8 @@ for (trial in 1:test.replicates){
       if (occupied.rad51$bound != "unbound"){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
+          
+          occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
         }
@@ -643,7 +659,10 @@ for (trial in 1:test.replicates){
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
 
             remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
-            occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51] #remove binding sites from the donor
+            
+            #remove binding sites from the donor
+            occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
+            occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
             occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
 
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
@@ -668,9 +687,10 @@ for (trial in 1:test.replicates){
         if(length(new.bindings$lys2.microhomology) > 0){
           occupied.rad51$bound = "bound"
         }
-      }
-      else{
+        
+      }else{
         # print("bound and adding")
+        occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
         occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
         occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
       }
@@ -684,6 +704,7 @@ for (trial in 1:test.replicates){
             lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "heterology"
           }
         }
+        
         # The probability of SEI detection depends of the number of zipped nts ;
         prob.detection.zip = length(which(lys2.occupancy$zipped == "yes"))
         prob.detection.zip = prob.detection.zip/500 #take into accout the crosslink density
@@ -752,6 +773,7 @@ for (trial in 1:test.replicates){
       #  print(num.bound)
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
       
+      occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
       occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
       occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
       
