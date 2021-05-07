@@ -493,6 +493,7 @@ for (i in 2:ncol(sequences.bins)){
 sequences.contacts.bins = sequences.contacts.bins[-1] # Remove the "sequences" column
 sequences.contacts.bins = apply(sequences.contacts.bins, 2, function(x) x[x!= ""]) #dataframe to matrix (reduce time complexity)
 colnames(sequences.contacts.bins) = bins.id
+rm(sequences.bins, contacts)
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1 #for single Job run
@@ -534,6 +535,12 @@ occupancy.firsts$length = rep(ly.names, times = test.replicates)
 stats.zipping = as.data.frame(matrix(-1, 3*test.replicates, 3))
 names(stats.zipping) = c("length", "first.zip", "half.detect")
 stats.zipping$length = rep(ly.names, times = test.replicates)
+
+
+chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*3, length(bins.id)+2))
+colnames(chromosome.contacts) = c("time.step", "length", bins.id)
+chromosome.contacts$time.step = rep(seq(1,num.time.steps,1),3)
+chromosome.contacts$length = rep(ly.names, each = num.time.steps)
 
 dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
 
@@ -790,6 +797,18 @@ for (trial in 1:test.replicates){
         occupied.rad51$bound = "unbound"
       }
       
+      for (i in 1:length(table(occupied.rad51$genome.bins))){
+        bin <- names(table(occupied.rad51$genome.bins))[i]
+        count <- table(occupied.rad51$genome.bins)[[i]]
+        
+        chromosome.contacts[chromosome.contacts$time.step == time.step &
+                              chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] =
+          chromosome.contacts[chromosome.contacts$time.step == time.step &
+                                chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] + count
+      }
+      
+      
+      
     }#next time step
   }#next fragment
   
@@ -826,6 +845,12 @@ for (trial in 1:test.replicates){
 
   saver=saver+1
 }#end process
+
+write.table(scaled.chromosome.contacts, file=paste(dirnew_data,"/population_chromosomes_contacts.txt",sep=""))
+
+scaled.chromosome.contacts = chromosome.contacts
+scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]] = round(scale(scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]]), 3)
+write.csv(scaled.chromosome.contacts, file=paste(dirnew_data,"/population_chromosomes_contacts.csv",sep=""))
 
 # population timeseries
 write.table(pop.time.series.zip, file=paste(dirnew_data,"/population_timeseries_zip.txt",sep=""))
@@ -936,3 +961,6 @@ first.zip.boxplot <-
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3) +
   ggtitle("Time step of half detection for each invading fragment")
 ggsave(file,plot=first.zip.boxplot)
+
+
+rm(het_plot, lys2_plot, occ_plot, pop.plot, first.boxplot, first.hist, first.zip.boxplot)
