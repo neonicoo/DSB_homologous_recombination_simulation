@@ -59,8 +59,8 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
-kon.group<-c(0.5) #binding probabilities for every binding try
+test.replicates = 1 # How many times to simulate, replicates
+kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(5) #bindings allowed to occur per tethering
@@ -845,8 +845,6 @@ for (trial in 1:test.replicates){
 
   saver=saver+1
 }#end process
-
-write.table(scaled.chromosome.contacts, file=paste(dirnew_data,"/population_chromosomes_contacts.txt",sep=""))
 
 scaled.chromosome.contacts = chromosome.contacts
 scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]] = round(scale(scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]]), 3)
