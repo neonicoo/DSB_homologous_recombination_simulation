@@ -59,9 +59,9 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
-kon.group<-c(0.1) #binding probabilities for every binding try
-koff1.group<-c(0.1) # dissociation probabilities for each bound particle
+test.replicates = 10 # How many times to simulate, replicates
+kon.group<-c(0.5) #binding probabilities for every binding try
+koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
@@ -848,7 +848,6 @@ pop.plot<-
 ggsave(outname,plot=pop.plot)
 
 #### Histograms+ boxplot for the first and twoh MH
-occupancy.firsts2 <- occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),]
 
 final.firsts = as.data.frame(matrix(-1,test.replicates,3))
 names(final.firsts) = c("500","1000","2000")
@@ -861,13 +860,14 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=first.bound, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),], 
+         aes(x=first.bound, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts2, aes(x=length, y=first.bound, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound!= -1)),], aes(x=length, y=first.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
@@ -881,13 +881,15 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=twoh.bound, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$twoh.bound != -1)),], 
+         aes(x=twoh.bound, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts2, aes(x=length, y=twoh.bound, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
+         aes(x=length, y=twoh.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
@@ -901,13 +903,15 @@ write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts2, aes(x=first.twoh.time.diff, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff!= -1)),], 
+         aes(x=first.twoh.time.diff, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts2, aes(x=length, y=first.twoh.time.diff, fill=length)) +
+  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
+         aes(x=length, y=first.twoh.time.diff, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
