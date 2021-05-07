@@ -62,7 +62,7 @@ graph.resolution = 1 #save occupancy data at every nth time step. Plots will hav
 test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.1) #binding probabilities for every binding try
 koff1.group<-c(0.1) # dissociation probabilities for each bound particle
-koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
 
@@ -183,8 +183,11 @@ genome.wide.sei = function(initial.binding.tries){
   
   # id.probs : probability for a MH to be homologous or heterologous, according it's occurrence in the genome wide (and self-occurrences) 
   # identities : list of id (H or LYS) according the above id.probs for each match ;
-  id.probs = sapply(matches, function(x){(1 + ifelse(x %in% self.micros$position1, 1,0))/forward.sequences$total[x]})
-  identities = sapply(1:length(matches), function(x) {sample(c("H", "LYS"), 1, prob = c(sapply(id.probs[x], function(x) max(0, 1-x)), id.probs[x]))})
+  
+  #id.probs = sapply(matches, function(x){(1 + ifelse(x %in% self.micros$position1, 1,0))/forward.sequences$total[x]})
+  #identities = sapply(1:length(matches), function(x) {sample(c("H", "LYS"), 1, prob = c(sapply(id.probs[x], function(x) max(0, 1-x)), id.probs[x]))})
+  
+  identities = sapply(1:length(bins), function(x){ifelse(bins[x] == "chr2_460001_470001" | x == "chr2_470001_480001", "LYS", "H")})
   
   # donor.ids : vector of homologous MHs  ;
   donor.ids = matches[which(identities == "LYS")]
