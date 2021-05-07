@@ -850,7 +850,8 @@ write.table(scaled.chromosome.contacts, file=paste(dirnew_data,"/population_chro
 
 scaled.chromosome.contacts = chromosome.contacts
 scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]] = round(scale(scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]]), 3)
-write.csv(scaled.chromosome.contacts, file=paste(dirnew_data,"/population_chromosomes_contacts.csv",sep=""))
+write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
+write.csv(scaled.chromosome.contacts, file=paste(dirnew_data,"/scaled_chromosomes_contacts.csv",sep=""))
 
 # population timeseries
 write.table(pop.time.series.zip, file=paste(dirnew_data,"/population_timeseries_zip.txt",sep=""))
