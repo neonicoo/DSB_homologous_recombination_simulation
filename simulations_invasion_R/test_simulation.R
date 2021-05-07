@@ -138,6 +138,11 @@ genome.wide.sei = function(initial.binding.tries){
     if (length(open.sites) == 1){ 
       # If there is only one available binding site :
       matches[i] = open.sites
+      
+      contact.freq = sequences.contacts.bins[matches[i], ]
+      possible.bins = bins.id[which(contact.freq > 0)]
+      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])
+      
     }else{ 
       # Draw a site among those available which will be matched with a MH according to the respective weighted probabilities :
       matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites])
@@ -262,6 +267,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     for (j in 1:bindings.per.tethering){
       if (length(open.sites)==1){
         current.bindings[j] = open.sites
+        bins = c(bins, current.bin)
       }else{
         candidate = sample(open.sites, size = 1)
         yy = runif(1)
@@ -616,7 +622,7 @@ for (trial in 1:test.replicates){
       if (occupied.rad51$bound != "unbound"){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
-          
+
           occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
