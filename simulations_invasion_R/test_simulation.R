@@ -59,7 +59,7 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 100 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
@@ -249,7 +249,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
     current.bin = occupied.rad51$genome.bins[binding.index]
-      
+    
     if (length(bindings) <=0){
       additionals = "none"
     }else{
@@ -584,7 +584,7 @@ for (trial in 1:test.replicates){
       if(fragment == 2){
         self.micros = L1000.selfmicros
       }else{
-          self.micros = LY2000.selfmicros
+        self.micros = LY2000.selfmicros
       }
     }
     
@@ -632,7 +632,7 @@ for (trial in 1:test.replicates){
       if (occupied.rad51$bound != "unbound"){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
-
+          
           occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
@@ -668,19 +668,19 @@ for (trial in 1:test.replicates){
             current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
             row2remove = c(row2remove, i)
-
+            
             lys2.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
             lys2.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             lys2.occupancy$id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
-
+            
             remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
             
             #remove binding sites from the donor
             occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
             occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
             occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-
+            
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
               occupied.rad51$bound = "unbound"
               break
@@ -694,8 +694,8 @@ for (trial in 1:test.replicates){
           }
         }
       }
-
-
+      
+      
       new.bindings = genome.wide.sei(SEI.binding.tries)
       
       if (occupied.rad51$bound == "unbound"){
@@ -735,7 +735,7 @@ for (trial in 1:test.replicates){
       
       if(prob.detection.zip >= 1){prob.detection.zip = 1}
       if(prob.detection.all >= 1){prob.detection.all = 1}
-
+      
       
       if(length(which(lys2.occupancy$id == "homology")) > 0 && first == 0){
         first = 1;
@@ -775,7 +775,7 @@ for (trial in 1:test.replicates){
       }
       
       pop.time.series.zip$prob.detect[pop.time.series.zip$time.step == time.step & 
-                                    pop.time.series.zip$length == ly.type] = 
+                                        pop.time.series.zip$length == ly.type] = 
         pop.time.series.zip$prob.detect[pop.time.series.zip$time.step == time.step & 
                                           pop.time.series.zip$length == ly.type] + prob.detection.zip
       
@@ -807,33 +807,31 @@ for (trial in 1:test.replicates){
                                 chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] + count
       }
       
-      
-      
     }#next time step
   }#next fragment
   
   fname = paste("timeseries", num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
   write.table(ly.binding.ts,file=paste(dirnew,"/", fname, sep = ""))
-
+  
   if(saver < 3){
-
+    
     names(ly.binding.ts)[3] = "length"
     ly.binding.ts$length = factor(ly.binding.ts$length)
     outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
-
+    
     occ_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
       labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
       scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=occ_plot)
-
+    
     outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
     het_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
       labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=het_plot)
-
+    
     outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
     ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
     lys2_plot<-
@@ -842,14 +840,15 @@ for (trial in 1:test.replicates){
       scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=lys2_plot)
   }
-
+  
   saver=saver+1
 }#end process
 
-scaled.chromosome.contacts = chromosome.contacts
-scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]] = round(scale(scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]]), 3)
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
-write.csv(scaled.chromosome.contacts, file=paste(dirnew_data,"/scaled_chromosomes_contacts.csv",sep=""))
+
+# scaled.chromosome.contacts = chromosome.contacts
+# scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]] = round(scale(scaled.chromosome.contacts[,3:dim(scaled.chromosome.contacts)[2]]), 3)
+# write.csv(scaled.chromosome.contacts, file=paste(dirnew_data,"/scaled_chromosomes_contacts.csv",sep=""))
 
 # population timeseries
 write.table(pop.time.series.zip, file=paste(dirnew_data,"/population_timeseries_zip.txt",sep=""))
@@ -946,7 +945,7 @@ ggsave(file,plot=first.boxplot)
 file = paste(dirnew_plots,"/first_zip_boxplot.png",sep="")
 first.zip.boxplot <-
   ggplot(stats.zipping[c(which(stats.zipping$first.zip != -1)),],
-                            aes(x=length, y=first.zip, color=length)) +
+         aes(x=length, y=first.zip, color=length)) +
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3)+
   ggtitle("Time step of first zipped macrohomology for each fragment")
@@ -955,7 +954,7 @@ ggsave(file,plot=first.zip.boxplot)
 file = paste(dirnew_plots,"/half_detection_boxplot.png",sep="")
 first.zip.boxplot <-
   ggplot(stats.zipping[c(which(stats.zipping$half.detect != -1)),],
-                            aes(x=length, y=half.detect, color=length)) +
+         aes(x=length, y=half.detect, color=length)) +
   geom_boxplot(fill = "white", position = position_dodge(1), size = 0.5) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 3) +
   ggtitle("Time step of half detection for each invading fragment")
