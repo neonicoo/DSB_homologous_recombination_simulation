@@ -17,82 +17,82 @@ setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simul
 parallel::detectCores()
 
 #Simulation 0
-kon.group <- c(0.2)
+kon.group <- c(0.4)
+koff1.group <- c(0.1)
+koff2.group <- c(0.0)
+m.group = c(2)
+search.window.group = c(250)
+test.replicates = 30
+rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+
+#Simulation 1
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.0)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
-#Simulation 1
-kon.group <- c(0.2)
+#Simulation 2
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.0001)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
-rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
-
-#Simulation 2
-kon.group <- c(0.2)
-koff1.group <- c(0.1)
-koff2.group <- c(0.0001)
-m.group = c(2)
-search.window.group = c(250)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
 #Simulation 3
-kon.group <- c(0.2)
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.0005)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
 #Simulation 4
-kon.group <- c(0.2)
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.001)
 m.group = c(2)
 search.window.group = c(250)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
 #Simulation 5
-kon.group <- c(0.2)
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.001)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
 #Simulation 6
-kon.group <- c(0.2)
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
-koff2.group <- c(0.005)
+koff2.group <- c(0.05)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
 
 #Simulation 7
-kon.group <- c(0.2)
-koff1.group <- c(0.1)
-koff2.group <- c(0.01)
-m.group = c(5)
-search.window.group = c(500)
-test.replicates = 100
-rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
-
-#Simulation 8
-kon.group <- c(0.2)
+kon.group <- c(0.4)
 koff1.group <- c(0.1)
 koff2.group <- c(0.1)
 m.group = c(5)
 search.window.group = c(500)
-test.replicates = 100
+test.replicates = 30
+rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
+
+#Simulation 8
+kon.group <- c(0.4)
+koff1.group <- c(0.1)
+koff2.group <- c(0.5)
+m.group = c(5)
+search.window.group = c(500)
+test.replicates = 30
 rstudioapi::jobRunScript(path="./simulations_invasion_R/test_simulation.R", importEnv = TRUE)
