@@ -320,31 +320,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
 #########################################################################################################
 #########################################################################################################
 
-donors.generator <- function(template, bins, N = 10){
-  donors.list<-list(sequence = c(template), bins = c("chr2_470000_480000"))
-  bases <- c("a", "t", "g", "c")
-  
-  for (n in 1:N){
-    new.donor <- template
-    lower.limit <- floor(0.05*nchar(template))
-    upper.limit <- floor(0.3*nchar(template))
-    snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
-    
-    for (i in snp.location){
-      snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
-      substr(new.donor, i, i) <- snp
-    }
-    donors.list$sequence = c(donors.list$sequence, new.donor)
-    donors.list$bins = c(donors.list$bins, sample(bins, size = 1))
-  }
-  
-  
-  return(donors.list)
-}
-
-#########################################################################################################
-#########################################################################################################
-
 rev.comp<-function(x,rev=TRUE){ 
   #Compute the reverse complement of a sequence ;
   
@@ -522,9 +497,6 @@ sequences.contacts.bins = sequences.contacts.bins[-1] # Remove the "sequences" c
 sequences.contacts.bins = apply(sequences.contacts.bins, 2, function(x) x[x!= ""]) #dataframe to matrix (reduce time complexity)
 colnames(sequences.contacts.bins) = bins.id
 rm(sequences.bins, contacts)
-
-
-donors.list <- donors.generator(donor, bins = bins.id, N = 10)
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; #for single Job run
