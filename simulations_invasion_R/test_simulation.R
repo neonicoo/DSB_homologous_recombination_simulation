@@ -59,12 +59,14 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 100 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
 m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
+rad54.group <- c(1/200) #proportionnal to the lengh of invading strand
+rdh54.group <- c(1/10) #proportionnal to the number of rad54
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -72,6 +74,7 @@ search.window.group = c(500) #the genomic distance of the tethering effect (per 
 kon.group.names<- gsub("\\.", "", as.character(kon.group))
 koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
 koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
+rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
 
 print(kon.group.names)
 print(koff1.group.names)
@@ -496,11 +499,13 @@ colnames(sequences.contacts.bins) = bins.id
 rm(sequences.bins, contacts)
 
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
-kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1 #for single Job run
+kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; #for single Job run
 
 kon.prob=kon.group[kon]
 koff1.prob=koff1.group[koff]
 koff2.prob=koff2.group[koff2]
+rad54.prop=rad54.group[rad54]
+rdh54.prop=rdh54.group[rdh54]
 
 bindings.per.tethering = m.group[m]
 search.window = search.window.group[sw]
@@ -508,6 +513,8 @@ search.window = search.window.group[sw]
 kon.name=kon.group.names[kon]
 koff1.name=koff1.group.names[koff]
 koff2.name=koff2.group.names[koff2]
+rad54.name=rad54.group.names[rad54]
+rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
 
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
 occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c(), donor.invasions = 473927 - 368, lys2.microhomology = 368)
@@ -542,7 +549,9 @@ colnames(chromosome.contacts) = c("time.step", "length", bins.id)
 chromosome.contacts$time.step = rep(seq(1,num.time.steps,1),3)
 chromosome.contacts$length = rep(ly.names, each = num.time.steps)
 
-dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
+####### Directory settings #########
+dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, 
+              bindings.per.tethering, search.window, rad54.name, rdh54.name, sep="_")
 
 dirnew=paste(rootdir,dirname,sep="")
 dir.create(dirnew)
@@ -560,6 +569,9 @@ dirnew_plots = paste(dirnew,"/plots",sep="")
 dir.create(dirnew_plots)
 
 print(dirnew)
+
+###################################
+
 
 # Now make all the replicates
 for (trial in 1:test.replicates){ 
@@ -612,9 +624,9 @@ for (trial in 1:test.replicates){
     # We have to place randomly some rad54 and rdh54 in the invading fragment to induce the zipping ;
     # The number of rad54 depends of the length of the fragment,
     # and the number of rdh54 depends of the number of rad54 ;
-    rad54 <- floor(0.005*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
-    rdh54 <- floor(0.1*rad54)+1 # number of rdh54 to be placed into the invading strand;
-    rad54.rdh54.locations <- rad54.rdh54.placement(rad54, rdh54) 
+    nb.rad54 <- floor(rad54.prop*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
+    nb.rdh54 <- floor(rdh54.prop*nb.rad54)+1 # number of rdh54 to be placed into the invading strand;
+    rad54.rdh54.locations <- rad54.rdh54.placement(nb.rad54, nb.rdh54) 
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
     pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
     
