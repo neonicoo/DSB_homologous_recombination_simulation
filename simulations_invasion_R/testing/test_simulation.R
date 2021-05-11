@@ -233,13 +233,6 @@ for (trial in 1:test.replicates){
     first.zip <- 0 #the first zipped fragment to the donor
     half.detect <- 0 #when the probability detection is equal to 0.5
     
-    lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
-    names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
-    lys2.occupancy$bp = 1:nchar(lys2.fragment)
-    lys2.occupancy$bound = "no"
-    lys2.occupancy$id = "unbound"
-    lys2.occupancy$zipped = "no"
-    
     # We have to place randomly some rad54 and rdh54 in the invading fragment to induce the zipping ;
     # The number of rad54 depends of the length of the fragment,
     # and the number of rdh54 depends of the number of rad54 ;
@@ -269,7 +262,53 @@ for (trial in 1:test.replicates){
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
         }
       }
+
+      new.bindings = genome.wide.sei(SEI.binding.tries)
       
+      if (occupied.rad51$bound == "unbound"){
+        occupied.rad51 = new.bindings;
+        if(length(new.bindings$lys2.microhomology) > 0){
+          occupied.rad51$bound = "bound"
+        }
+        
+      }else{
+        # print("bound and adding")
+        occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
+        occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
+        occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
+      }
+      
+      #simulate random dissociation
+      num.bound = length(occupied.rad51$donor.invasions)
+      #  print(num.bound)
+      preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
+      
+      occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
+      occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
+      occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
+      
+      if (sum(!preserved)==num.bound){
+        occupied.rad51$bound = "unbound"
+      }
+      
+      lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
+      names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
+      lys2.occupancy$bp = 1:nchar(lys2.fragment)
+      lys2.occupancy$bound = "no"
+      lys2.occupancy$id = "unbound"
+      lys2.occupancy$zipped = "no"
+      
+      if(occupied.rad51$bound != "unbound"){
+        for (i in 1:length(occupied.rad51$lys2.microhomology)){
+          lys2.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
+          if(occupied.rad51$donor.invasions[i] != "H"){
+            lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
+          }else if(occupied.rad51$donor.invasions[i] == "H"){
+            lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "heterology"
+          }
+        }
+      }
+
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(start.zipping == 1 & length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
@@ -326,32 +365,7 @@ for (trial in 1:test.replicates){
         }
       }
       
-      
-      new.bindings = genome.wide.sei(SEI.binding.tries)
-      
-      if (occupied.rad51$bound == "unbound"){
-        occupied.rad51 = new.bindings;
-        if(length(new.bindings$lys2.microhomology) > 0){
-          occupied.rad51$bound = "bound"
-        }
-        
-      }else{
-        # print("bound and adding")
-        occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
-        occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
-        occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
-      }
-      
       if(occupied.rad51$bound != "unbound"){
-        for (i in 1:length(occupied.rad51$lys2.microhomology)){
-          lys2.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
-          if(occupied.rad51$donor.invasions[i] != "H"){
-            lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
-          }else if(occupied.rad51$donor.invasions[i] == "H"){
-            lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "heterology"
-          }
-        }
-        
         # The probability of SEI detection depends of the number of zipped nts ;
         prob.detection.zip = length(which(lys2.occupancy$zipped == "yes"))
         prob.detection.zip = prob.detection.zip/500 #take into accout the crosslink density
@@ -385,7 +399,6 @@ for (trial in 1:test.replicates){
         start.zipping = 0
       }
       
-      
       if(length(which(lys2.occupancy$zipped == "yes")) > 0 && first.zip == 0){
         first.zip = 1
         stats.zipping$first.zip[bigtracker] = time.step
@@ -414,19 +427,6 @@ for (trial in 1:test.replicates){
                                         pop.time.series.all$length == ly.type] = 
         pop.time.series.all$prob.detect[pop.time.series.all$time.step == time.step & 
                                           pop.time.series.all$length == ly.type] + prob.detection.all
-      
-      #simulate random dissociation
-      num.bound = length(occupied.rad51$donor.invasions)
-      #  print(num.bound)
-      preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
-      
-      occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
-      occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
-      occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
-      
-      if (sum(!preserved)==num.bound){
-        occupied.rad51$bound = "unbound"
-      }
       
       for (i in 1:length(table(occupied.rad51$genome.bins))){
         bin <- names(table(occupied.rad51$genome.bins))[i]
