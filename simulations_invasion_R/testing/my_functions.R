@@ -38,6 +38,8 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
 
 #########################################################################################################
 #########################################################################################################
+
+
 genome.wide.sei = function(initial.binding.tries){
   
   # Choose region of LY weighted by available microhomologies (MHs);
@@ -106,18 +108,7 @@ genome.wide.sei = function(initial.binding.tries){
   #id.probs = sapply(matches, function(x){(1 + ifelse(x %in% self.micros$position1, 1,0))/forward.sequences$total[x]})
   #identities = sapply(1:length(matches), function(x) {sample(c("H", "LYS"), 1, prob = c(sapply(id.probs[x], function(x) max(0, 1-x)), id.probs[x]))})
   
-  #identities = sapply(1:length(bins), function(x){ifelse(bins[x] == "chr2_460001_470001" | x == "chr2_470001_480001", "LYS", "H")})
-  
-  identities<- c()
-  for (b in 1:length(bins)){
-    if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
-      identities = c(identities, "LYS")
-    }else if(bins[b] %in% donors.list$bins){
-      identities = c(identities, bins[b])
-    }else{
-      identities = c(identities, "H")
-    }
-  }
+  identities = sapply(1:length(bins), function(x){ifelse(bins[x] == "chr2_460001_470001" | x == "chr2_470001_480001", "LYS", "H")})
   
   # donor.ids : vector of homologous MHs  ;
   donor.ids = matches[which(identities == "LYS")]
@@ -133,11 +124,11 @@ genome.wide.sei = function(initial.binding.tries){
     donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
   
-  # 473927 - donor.ids : position of the last nt for the ly.sequence in the chr II - position of the donor where the MH is "LYS"
+  # 473927 - donor.ids : position of the last nt for the ly.sequence in the chr II - postion of the donor where the MH is "LYS"
   identities[which(identities == "LYS")] = 473927 - donor.ids
   
   if (occupied.rad51$bound != "unbound"){
-    remove = which(matches %in% occupied.rad51$lys2.microhomology)
+    remove = which((identities !="H") & (as.character(identities) %in% occupied.rad51$donor.invasions) )
     if (length(remove)>0){
       identities = identities[-remove]
       matches = matches[-remove]
@@ -154,6 +145,7 @@ genome.wide.sei = function(initial.binding.tries){
 new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   # When a binding is homologous, we have to search others MHs in a distance search windows ;
   # The number of bindings per search window is the bindings.per.tethering variable ;
+  
   
   # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
   # new.bindings : deep copy of an empty occupied.rad51 ;
@@ -185,6 +177,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
       additionals = bindings
     }
     
+    
     # We look if we have available open sites around the current MH locus, i.e into the search windows around it;
     open.sites = find.occupancies(lower.window = current.selocus - window,
                                   upper.window = current.selocus + window, 
@@ -192,6 +185,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     
     if (length(open.sites) <= 0){next}
     current.bindings = c()
+    
     
     # Bind an unoccupied site located in the search window around our current locus ;
     for (j in 1:bindings.per.tethering){
@@ -202,7 +196,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
         candidate = sample(open.sites, size = 1)
         yy = runif(1)
         if(yy <= kon){
-          current.bindings = c(current.bindings, candidate)
+          current.bindings = c(current.bindings,candidate)
           bins = c(bins, current.bin)
         }
       }
@@ -213,68 +207,32 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     bindings = c(bindings, current.bindings)
   }
   
-  identities<- c()
-  for (b in 1:length(bins)){
-    if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
-      identities = c(identities, "LYS")
-    }else if(bins[b] %in% donors.list$bins){
-      identities = c(identities, bins[b])
-    }else{
-      identities = c(identities, "H")
-    }
-  }
-  
   # donor.ids : same as in the genome.wide.sei function  ;
-  donor.ids = bindings[which(identities == "LYS")]
-  
+  donor.ids = bindings
   for (index in which(donor.ids %in% self.micros$position1)){
     y = which(self.micros$position1 == donor.ids[index])[1]
     sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
     if(!is.na(self.micros$position3[y])){
-      sampling.micros = c(sampling.micros,self.micros$position3[y])
+      sampling.micros =   c(sampling.micros,self.micros$position3[y])
     }
     donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
   
-  identities[which(identities == "LYS")] = 473927 - donor.ids
+  identities = 473927 - donor.ids
   new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
   new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
-  new.bindings$donor.invasions = c(new.bindings$donor.invasions, identities)
+  new.bindings$donor.invasions    = c(new.bindings$donor.invasions, identities)
+  
   
   if (occupied.rad51$bound != "unbound"){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
-    remove= which(bindings %in% occupied.rad51$lys2.microhomology)
+    remove = which((new.bindings$donor.invasions !="H") & (as.character(new.bindings$donor.invasions) %in% occupied.rad51$donor.invasions) )
     if (length(remove) > 0){
       new.bindings$genome.bins = new.bindings$genome.bins[-remove]
       new.bindings$donor.invasions = new.bindings$donor.invasions[-remove]
       new.bindings$lys2.microhomology = new.bindings$lys2.microhomology[-remove]}
   }
   return(new.bindings)
-}
-
-#########################################################################################################
-#########################################################################################################
-
-donors.generator <- function(template, bins, N = 10){
-  donors.list<-list(sequence = c(), bins = c())
-  bases <- c("a", "t", "g", "c")
-  
-  for (n in 1:N){
-    new.donor <- template
-    lower.limit <- floor(0.05*nchar(template))
-    upper.limit <- floor(0.3*nchar(template))
-    snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
-    
-    for (i in snp.location){
-      snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
-      substr(new.donor, i, i) <- snp
-    }
-    donors.list$sequence = c(donors.list$sequence, new.donor)
-    donors.list$bins = c(donors.list$bins, sample(bins, size = 1))
-  }
-  
-  
-  return(donors.list)
 }
 
 #########################################################################################################
@@ -373,12 +331,6 @@ check.before.zipping <- function(current.rad54){
 zipping <- function(rad54, zipping.list){
   
   pos <- rad54
-  if(lys2.occupancy$bin[pos] %!in% donors.list$bins){
-    donor = LY
-  }else{
-    donor = donors.list$sequence[which(donors.list$bins == lys2.occupancy$bin[pos])]
-  }
-  
   zip.indexe <- c()
   zip.fragment <-"" 
   new.zipping.list <- zipping.list
@@ -387,7 +339,7 @@ zipping <- function(rad54, zipping.list){
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
         pos < nchar(lys2.fragment) &&
-        counter < 3)
+        counter <= 4)
   {
     
     if(lys2.occupancy$id[pos] == "homology"){
@@ -427,6 +379,7 @@ zipping <- function(rad54, zipping.list){
   names(new.zipping.list) = c("start", "end", "sequences")
   return(new.zipping.list)
 }
+
 
 #########################################################################################################
 #########################################################################################################
