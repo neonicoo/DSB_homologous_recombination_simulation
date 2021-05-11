@@ -64,11 +64,11 @@ graph.resolution = 1 #save occupancy data at every nth time step. Plots will hav
 test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(1/200) #proportionnal to the lengh of invading strand
-rdh54.group <- c(1/10) #proportionnal to the number of rad54
+rad54.group <- c(1/200) #proportional to the lengh of invading strand
+rdh54.group <- c(1/10) #proportional to the number of rad54
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -81,8 +81,6 @@ rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
 print(kon.group.names)
 print(koff1.group.names)
 print(koff2.group.names)
-
-
 
 #########################################################################################################
 ######################################### Single run simulation ##########################################
@@ -228,8 +226,8 @@ for (trial in 1:test.replicates){
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
-    first = 0 #the first homology bound to the donor
-    twoh = 0 # the first two hundred homologies bound to the donor
+    first.lys = 0 #the first homology bound to the donor
+    twoh.lys = 0 # the first two hundred homologies bound to the donor
     
     start.zipping <- 0 #enable or not the zipping phase
     first.zip <- 0 #the first zipped fragment to the donor
@@ -370,14 +368,14 @@ for (trial in 1:test.replicates){
       if(prob.detection.all >= 1){prob.detection.all = 1}
       
       
-      if(length(which(lys2.occupancy$id == "homology")) > 0 && first == 0){
-        first = 1;
+      if(length(which(lys2.occupancy$id == "homology")) > 0 && first.lys == 0){
+        first.lys = 1;
         occupancy.firsts$first.bound[bigtracker] = time.step
       }
       
       if(length(which(lys2.occupancy$id == "homology")) >= 200 && start.zipping == 0){
-        if(twoh == 0){
-          twoh = 1
+        if(twoh.lys == 0){
+          twoh.lys = 1
           occupancy.firsts$twoh.bound[bigtracker] = time.step
           occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
         }
