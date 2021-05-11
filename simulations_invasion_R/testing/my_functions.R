@@ -146,7 +146,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   # When a binding is homologous, we have to search others MHs in a distance search windows ;
   # The number of bindings per search window is the bindings.per.tethering variable ;
   
-  
   # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
   # new.bindings : deep copy of an empty occupied.rad51 ;
   correct.bindings = as.numeric(which(occupied.rad51$donor.invasions != "H"))
@@ -177,7 +176,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
       additionals = bindings
     }
     
-    
     # We look if we have available open sites around the current MH locus, i.e into the search windows around it;
     open.sites = find.occupancies(lower.window = current.selocus - window,
                                   upper.window = current.selocus + window, 
@@ -185,7 +183,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     
     if (length(open.sites) <= 0){next}
     current.bindings = c()
-    
     
     # Bind an unoccupied site located in the search window around our current locus ;
     for (j in 1:bindings.per.tethering){
@@ -223,7 +220,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
   new.bindings$donor.invasions    = c(new.bindings$donor.invasions, identities)
   
-  
   if (occupied.rad51$bound != "unbound"){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
     remove = which((new.bindings$donor.invasions !="H") & (as.character(new.bindings$donor.invasions) %in% occupied.rad51$donor.invasions) )
@@ -233,6 +229,29 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
       new.bindings$lys2.microhomology = new.bindings$lys2.microhomology[-remove]}
   }
   return(new.bindings)
+}
+
+#########################################################################################################
+#########################################################################################################
+
+donors.generator <- function(template, bins, N = 10){
+  donors.list<-list(sequence = c(), bins = c(), invasion = rep("no", times = N))
+  bases <- c("a", "t", "g", "c")
+  
+  for (n in 1:N){
+    new.donor <- template
+    lower.limit <- floor(0.05*nchar(template))
+    upper.limit <- floor(0.3*nchar(template))
+    snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
+    
+    for (i in snp.location){
+      snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
+      substr(new.donor, i, i) <- snp
+    }
+    donors.list$sequence = c(donors.list$sequence, new.donor)
+    donors.list$bins = c(donors.list$bins, sample(bins, size = 1))
+  }
+  return(donors.list)
 }
 
 #########################################################################################################
