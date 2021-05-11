@@ -235,7 +235,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
 #########################################################################################################
 
 donors.generator <- function(template, bins, N = 10){
-  new.donors.list<-list(sequence = c(), bins = c(), id = c(), invasion = rep("no", times = N))
+  new.donors.list<-list(sequence = c(LY), bins = c("chr2_470001_480001"), id = c("LYS"), invasion = c("no", rep("no", times = N)))
   bases <- c("a", "t", "g", "c")
   
   for (n in 1:N){
