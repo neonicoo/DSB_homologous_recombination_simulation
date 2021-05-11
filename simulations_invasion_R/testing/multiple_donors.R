@@ -154,9 +154,9 @@ pop.time.series.all$time.step = rep(seq(1,num.time.steps,1),3)
 saver = 0
 bigtracker = 0
 
-occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
-names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
-occupancy.firsts$length = rep(ly.names, times = test.replicates)
+lys.occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
+names(lys.occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
+lys.occupancy.firsts$length = rep(ly.names, times = test.replicates)
 
 stats.zipping = as.data.frame(matrix(-1, 3*test.replicates, 3))
 names(stats.zipping) = c("length", "first.zip", "half.detect")
@@ -366,31 +366,31 @@ for (trial in 1:test.replicates){
         }
         
         # The probability of SEI detection depends of the number of zipped nts ;
-        prob.detection.zip = length(which(donors.occupancy$zipped == "yes"))
-        prob.detection.zip = prob.detection.zip/500 #take into accout the crosslink density
+        prob.detection.lys.zip = length(which(donors.occupancy$zipped == "yes" & donors.occupancy$donor.id == "LYS"))
+        prob.detection.lys.zip = prob.detection.lys.zip/500 #take into accout the crosslink density
         
-        prob.detection.all = length(which(donors.occupancy$bound.id == "homology"))
-        prob.detection.all = prob.detection.all/500 
+        prob.detection.lys.all = length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS"))
+        prob.detection.lys.all = prob.detection.lys.all/500 
         
       }else{
-        prob.detection.zip = 0
-        prob.detection.all = 0
+        prob.detection.lys.zip = 0
+        prob.detection.lys.all = 0
       }
       
-      if(prob.detection.zip >= 1){prob.detection.zip = 1}
-      if(prob.detection.all >= 1){prob.detection.all = 1}
+      if(prob.detection.lys.zip >= 1){prob.detection.lys.zip = 1}
+      if(prob.detection.lys.all >= 1){prob.detection.lys.all = 1}
       
       
-      if(length(which(donors.occupancy$bound.id == "homology")) > 0 && first.lys == 0){
+      if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS")) > 0 && first.lys == 0){
         first.lys = 1;
-        occupancy.firsts$first.bound[bigtracker] = time.step
+        lys.occupancy.firsts$first.bound[bigtracker] = time.step
       }
       
-      if(length(which(donors.occupancy$bound.id == "homology")) >= 200 && start.zipping == 0){
+      if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS")) >= 200 && start.zipping == 0){
         if(twoh.lys == 0){
           twoh.lys = 1
-          occupancy.firsts$twoh.bound[bigtracker] = time.step
-          occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
+          lys.occupancy.firsts$twoh.bound[bigtracker] = time.step
+          lys.occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - lys.occupancy.firsts$first.bound[bigtracker]
         }
         start.zipping = 1
         
@@ -404,7 +404,7 @@ for (trial in 1:test.replicates){
         stats.zipping$first.zip[bigtracker] = time.step
       }
       
-      if(prob.detection.zip > 0.5 & half.detect == 0){
+      if(prob.detection.lys.zip > 0.5 & half.detect == 0){
         half.detect = 1
         stats.zipping$half.detect[bigtracker] = time.step
       }
@@ -416,17 +416,21 @@ for (trial in 1:test.replicates){
         
         ly.binding.ts$heterologies[ly.binding.ts$time.step == time.step & 
                                      ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
+        
+        #ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
+        ly.binding.ts$homologies[ly.binding.ts$time.step == time.step & 
+                                     ly.binding.ts$length == ly.type] = length(which(donors.occupancy$donor.id == "LYS"))
       }
       
       pop.time.series.zip$prob.detect[pop.time.series.zip$time.step == time.step & 
                                         pop.time.series.zip$length == ly.type] = 
         pop.time.series.zip$prob.detect[pop.time.series.zip$time.step == time.step & 
-                                          pop.time.series.zip$length == ly.type] + prob.detection.zip
+                                          pop.time.series.zip$length == ly.type] + prob.detection.lys.zip
       
       pop.time.series.all$prob.detect[pop.time.series.all$time.step == time.step & 
                                         pop.time.series.all$length == ly.type] = 
         pop.time.series.all$prob.detect[pop.time.series.all$time.step == time.step & 
-                                          pop.time.series.all$length == ly.type] + prob.detection.all
+                                          pop.time.series.all$length == ly.type] + prob.detection.lys.all
       
       #simulate random dissociation
       num.bound = length(occupied.rad51$donor.invasions)
@@ -473,11 +477,11 @@ for (trial in 1:test.replicates){
     outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
     het_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
-      labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+           scale_y_continuous(limits = c(0, 2070))
+      labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+ 
+      scale_y_continuous(limits = c(0, 2070))
     ggsave(outname,plot=het_plot)
     
     outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
-    ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
     lys2_plot<-
       ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
       labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
@@ -518,66 +522,66 @@ ggsave(outname,plot=pop.plot)
 
 final.firsts = as.data.frame(matrix(-1,test.replicates,3))
 names(final.firsts) = c("500","1000","2000")
-final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
-final.firsts$`1000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 1000)]
-final.firsts$`2000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 2000)]
+final.firsts$`500` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 500)]
+final.firsts$`1000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 1000)]
+final.firsts$`2000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 2000)]
 
 fname = "first_contact_time.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),], 
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.bound != -1)),], 
          aes(x=first.bound, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound!= -1)),], aes(x=length, y=first.bound, fill=length)) +
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.bound!= -1)),], aes(x=length, y=first.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
-final.firsts$`500` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 500)]
-final.firsts$`1000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 1000)]
-final.firsts$`2000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 2000)]
+final.firsts$`500` = lys.occupancy.firsts$twoh.bound[which(lys.occupancy.firsts$length == 500)]
+final.firsts$`1000` = lys.occupancy.firsts$twoh.bound[which(lys.occupancy.firsts$length == 1000)]
+final.firsts$`2000` = lys.occupancy.firsts$twoh.bound[which(lys.occupancy.firsts$length == 2000)]
 
 fname = "200_contact_time.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$twoh.bound != -1)),], 
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$twoh.bound != -1)),], 
          aes(x=twoh.bound, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff != -1)),], 
          aes(x=length, y=twoh.bound, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
 ggsave(file,plot=first.boxplot)
 
-final.firsts$`500` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 500)]
-final.firsts$`1000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 1000)]
-final.firsts$`2000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 2000)]
+final.firsts$`500` = lys.occupancy.firsts$first.twoh.time.diff[which(lys.occupancy.firsts$length == 500)]
+final.firsts$`1000` = lys.occupancy.firsts$first.twoh.time.diff[which(lys.occupancy.firsts$length == 1000)]
+final.firsts$`2000` = lys.occupancy.firsts$first.twoh.time.diff[which(lys.occupancy.firsts$length == 2000)]
 
 fname = "first_200_contact_time_diff.txt";
 write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
 first.hist<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff!= -1)),], 
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff!= -1)),], 
          aes(x=first.twoh.time.diff, fill=length)) +
   geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
 ggsave(file,plot=first.hist)
 
 file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
 first.boxplot<-
-  ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
+  ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff != -1)),], 
          aes(x=length, y=first.twoh.time.diff, fill=length)) +
   geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
   stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
