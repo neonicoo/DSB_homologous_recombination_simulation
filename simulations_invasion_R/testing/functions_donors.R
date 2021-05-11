@@ -323,10 +323,10 @@ check.before.zipping <- function(current.rad54){
   left <- 1
   right <- 1
   
-  if (lys2.occupancy$bound[current.rad54] == "yes" && lys2.occupancy$id[current.rad54] == "homology"){
+  if (donors.occupancy$bound[current.rad54] == "yes" && donors.occupancy$bound.id[current.rad54] == "homology"){
     while(left !=0 && right != 0){
       while(left != 0){
-        if (lys2.occupancy$bound[current.rad54 - left] == "yes" && lys2.occupancy$id[current.rad54 - left] == "homology" && left < current.rad54){
+        if (donors.occupancy$bound[current.rad54 - left] == "yes" && donors.occupancy$bound.id[current.rad54 - left] == "homology" && left < current.rad54){
           microhomologies.left = microhomologies.left +1
           left = left+1
         }else{
@@ -335,7 +335,7 @@ check.before.zipping <- function(current.rad54){
       }
       
       while(right != 0){
-        if(lys2.occupancy$bound[current.rad54 + right] == "yes" && lys2.occupancy$id[current.rad54 + right] == "homology" && (current.rad54 + right) < str_length(lys2.fragment)){
+        if(donors.occupancy$bound[current.rad54 + right] == "yes" && donors.occupancy$bound.id[current.rad54 + right] == "homology" && (current.rad54 + right) < str_length(lys2.fragment)){
           microhomologies.right = microhomologies.right +1
           right = right+1
         }else{
@@ -361,14 +361,14 @@ zipping <- function(rad54, zipping.list){
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
         pos < nchar(lys2.fragment)){
     
-    if(lys2.occupancy$id[pos] == "homology"){
+    if(donors.occupancy$bound.id[pos] == "homology"){
       new.nt <- substr(lys2.fragment, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
       counter = 0
       pos = pos + 1
       
-    }else if (lys2.occupancy$id[pos] != "homology"){
+    }else if (donors.occupancy$bound.id[pos] != "homology"){
       if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor, start = pos, end = pos)){
         new.nt <- substr(lys2.fragment, pos, pos)
         zip.indexe = c(zip.indexe, pos)
