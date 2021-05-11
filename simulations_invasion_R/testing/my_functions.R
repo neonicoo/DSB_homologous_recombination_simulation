@@ -338,9 +338,7 @@ zipping <- function(rad54, zipping.list){
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos < nchar(lys2.fragment) &&
-        counter <= 4)
-  {
+        pos < nchar(lys2.fragment)){
     
     if(lys2.occupancy$id[pos] == "homology"){
       new.nt <- substr(lys2.fragment, pos, pos)
@@ -350,21 +348,23 @@ zipping <- function(rad54, zipping.list){
       pos = pos + 1
       
     }else if (lys2.occupancy$id[pos] != "homology"){
-      if (str_sub(string = lys2.fragment, start = pos, end = pos) == 
-          str_sub(string = donor, start = pos, end = pos)){
-        
+      if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor, start = pos, end = pos)){
         new.nt <- substr(lys2.fragment, pos, pos)
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")
-        counter = 0
         pos = pos + 1
         
       }else{
-        new.nt <- substr(lys2.fragment, pos, pos)
-        zip.indexe = c(zip.indexe, pos)
-        zip.fragment = paste(zip.fragment, new.nt, sep="")
         counter = counter + 1
-        pos = pos + 1
+        if (counter >= 5){
+          return(new.zipping.list)
+          
+        }else if (counter < 5){
+          new.nt <- substr(lys2.fragment, pos, pos)
+          zip.indexe = c(zip.indexe, pos)
+          zip.fragment = paste(zip.fragment, new.nt, sep="")
+          pos = pos + 1
+        }
       }
     }
   }
