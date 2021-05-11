@@ -58,15 +58,15 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
 
 donor <- LY
 
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
+test.replicates = 14 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.001) #dissociation probabilities for each zipped fragments
-m.group = c(5) #bindings allowed to occur per tethering
-search.window.group = c(500) #the genomic distance of the tethering effect (per side)
+koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
+m.group = c(4) #bindings allowed to occur per tethering
+search.window.group = c(400) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
 
@@ -226,6 +226,11 @@ for (trial in 1:test.replicates){
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
+    lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
+    names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
+    lys2.occupancy$bp = 1:nchar(lys2.fragment)
+    lys2.occupancy$zipped = "no"
+    
     first.lys = 0 #the first homology bound to the donor
     twoh.lys = 0 # the first two hundred homologies bound to the donor
     
@@ -281,6 +286,8 @@ for (trial in 1:test.replicates){
       num.bound = length(occupied.rad51$donor.invasions)
       #print(num.bound)
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
+      preserved[which(occupied.rad51$lys2.microhomology[preserved] %in% lys2.occupancy$zipped=="yes")] = TRUE #koff1 can't dissociate zipped homologies
+      
       occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
       occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
       occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
@@ -289,12 +296,9 @@ for (trial in 1:test.replicates){
         occupied.rad51$bound = "unbound"
       }
       
-      lys2.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),4))
-      names(lys2.occupancy) = c('bp', 'bound', "id", "zipped")
-      lys2.occupancy$bp = 1:nchar(lys2.fragment)
+      
       lys2.occupancy$bound = "no"
       lys2.occupancy$id = "unbound"
-      lys2.occupancy$zipped = "no"
       
       if(occupied.rad51$bound != "unbound"){
         for (i in 1:length(occupied.rad51$lys2.microhomology)){
@@ -307,23 +311,6 @@ for (trial in 1:test.replicates){
         }
       }
       
-      if(length(which(lys2.occupancy$id == "homology")) > 0 && first.lys == 0){
-        first.lys = 1;
-        occupancy.firsts$first.bound[bigtracker] = time.step
-      }
-      
-      if(length(which(lys2.occupancy$id == "homology")) >= 200 && start.zipping == 0){
-        if(twoh.lys == 0){
-          twoh.lys = 1
-          occupancy.firsts$twoh.bound[bigtracker] = time.step
-          occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
-        }
-        start.zipping = 1
-        
-      }else if(length(which(lys2.occupancy$id == "homology")) < 200 && start.zipping == 1){
-        start.zipping = 0
-      }
-
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(start.zipping == 1 & length(unzipped.rad54 > 0)){
         for (pos in unzipped.rad54){
@@ -380,6 +367,25 @@ for (trial in 1:test.replicates){
         }
       }
       
+      if(length(which(lys2.occupancy$id == "homology")) > 0 && first.lys == 0){
+        first.lys = 1;
+        occupancy.firsts$first.bound[bigtracker] = time.step
+      }
+      
+      if(length(which(lys2.occupancy$id == "homology")) >= 200 && start.zipping == 0){
+        if(twoh.lys == 0){
+          twoh.lys = 1
+          occupancy.firsts$twoh.bound[bigtracker] = time.step
+          occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - occupancy.firsts$first.bound[bigtracker]
+        }
+        start.zipping = 1
+        
+      }else if(length(which(lys2.occupancy$id == "homology")) < 200 && start.zipping == 1){
+        start.zipping = 0
+      }
+
+      
+      
       if(occupied.rad51$bound != "unbound"){
         # The probability of SEI detection depends of the number of zipped nts ;
         prob.detection.zip = length(which(lys2.occupancy$zipped == "yes"))
@@ -425,7 +431,7 @@ for (trial in 1:test.replicates){
         pop.time.series.all$prob.detect[pop.time.series.all$time.step == time.step & 
                                           pop.time.series.all$length == ly.type] + prob.detection.all
       
-      if(occupied.rad51 != "unbound"){
+      if(occupied.rad51$bound != "unbound"){
         for (i in 1:length(table(occupied.rad51$genome.bins))){
           bin <- names(table(occupied.rad51$genome.bins))[i]
           count <- table(occupied.rad51$genome.bins)[[i]]
