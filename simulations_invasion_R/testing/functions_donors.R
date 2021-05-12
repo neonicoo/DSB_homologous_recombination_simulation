@@ -104,10 +104,8 @@ genome.wide.sei = function(initial.binding.tries){
   
   identities = c()
   for (b in 1:length(matches)){
-    if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
-      identities = c(identities, "LYS")
-    }else if(bins[b] %in% donors.list$bins[-1]){
-      identities = c(identities, donors.list$id[which(donors.list$bins[-1] == bins[b])])
+    if(bins[b] %in% donors.list$bins){
+      identities = c(identities, donors.list$id[which(donors.list$bins == bins[b])])
     }else{
       identities = c(identities, "H")
     }
@@ -212,10 +210,8 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   identities = c()
   if(length(bins) > 0){
     for (b in 1:length(bins)){
-      if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
-        identities = c(identities, "LYS")
-      }else if(bins[b] %in% donors.list$bins[-1]){
-        identities = c(identities, donors.list$id[which(donors.list$bins[-1] == bins[b])])
+      if(bins[b] %in% donors.list$bins){
+        identities = c(identities, donors.list$id[which(donors.list$bins== bins[b])])
       }else{
         identities = c(identities, "H")
       }
@@ -406,10 +402,10 @@ zipping <- function(rad54, zipping.list, donor){
         
       }else{
         counter = counter + 1
-        if (counter > 5){
+        if (counter > 10){
           return(-1) #wrong donor
           
-        }else if (counter <= 5){
+        }else if (counter <= 10){
           new.nt <- substr(lys2.fragment, pos, pos)
           zip.indexe = c(zip.indexe, pos)
           zip.fragment = paste(zip.fragment, new.nt, sep="")

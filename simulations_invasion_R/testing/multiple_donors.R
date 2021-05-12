@@ -61,9 +61,9 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
-kon.group<-c(0.2) #binding probabilities for every binding try
-koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+test.replicates = 3 # How many times to simulate, replicates
+kon.group<-c(0.4) #binding probabilities for every binding try
+koff1.group<-c(0.4) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
@@ -136,7 +136,7 @@ rad54.name=rad54.group.names[rad54]
 rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
 
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
-occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c(), donor.invasions = 473927 - 368, lys2.microhomology = 368)
+occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = 473927 - 368, lys2.microhomology = 368)
 
 #population time series only for the zipped fragment 
 pop.time.series.zip = as.data.frame(matrix(0,num.time.steps*3,3))
@@ -278,7 +278,7 @@ for (trial in 1:test.replicates){
       new.bindings = genome.wide.sei(SEI.binding.tries)
 
       if (occupied.rad51$bound == "unbound"){
-        occupied.rad51 = new.bindings;
+        occupied.rad51 = new.bindings
         if(length(new.bindings$lys2.microhomology) > 0){
           occupied.rad51$bound = "bound"
         }
@@ -295,16 +295,16 @@ for (trial in 1:test.replicates){
       #  print(num.bound)
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
       preserved[which(occupied.rad51$lys2.microhomology[preserved] %in% donors.occupancy$zipped=="yes")] = TRUE #koff1 can't dissociate zipped homologies
-      
-      occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
-      occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
-      occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
-      
+
       if (sum(!preserved)==num.bound){
         occupied.rad51$bound = "unbound"
+        
+      }else{
+        occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
+        occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
+        occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
       }
-      
-      
+
       donors.occupancy$bound = "no"
       donors.occupancy$bound.id = "unbound"
       donors.occupancy$donor.id = "unknown"
@@ -362,7 +362,7 @@ for (trial in 1:test.replicates){
               occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
               occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
               occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
-              
+  
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
               donors.occupancy$zipped[which(donors.occupancy$donor.id==current.donor)] = "no"
@@ -374,6 +374,11 @@ for (trial in 1:test.replicates){
               donors.list$invasion[which(donors.list$id == current.donor)] = "wrong"
               donors.blacklist = c(donors.blacklist, current.donor)
               current.donor = ""
+              
+              if(length(occupied.rad51$donor.invasions) == 0){
+                occupied.rad51$bound = "unbound"
+                break
+              }
             }
           }
         }
@@ -497,15 +502,18 @@ for (trial in 1:test.replicates){
         pop.time.series.all$prob.detect[pop.time.series.all$time.step == time.step & 
                                           pop.time.series.all$length == ly.type] + prob.detection.lys.all
       
-      for (i in 1:length(table(occupied.rad51$genome.bins))){
-        bin <- names(table(occupied.rad51$genome.bins))[i]
-        count <- table(occupied.rad51$genome.bins)[[i]]
-        
-        chromosome.contacts[chromosome.contacts$time.step == time.step &
-                              chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] =
+      if(occupied.rad51$bound != "unbound"){
+        for (i in 1:length(table(occupied.rad51$genome.bins))){
+          bin <- names(table(occupied.rad51$genome.bins))[i]
+          count <- table(occupied.rad51$genome.bins)[[i]]
+          
           chromosome.contacts[chromosome.contacts$time.step == time.step &
-                                chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] + count
+                                chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] =
+            chromosome.contacts[chromosome.contacts$time.step == time.step &
+                                  chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] + count
+        }
       }
+      
       
     }#next time step
   }#next fragment
