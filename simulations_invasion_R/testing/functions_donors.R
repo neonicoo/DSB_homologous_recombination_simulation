@@ -379,7 +379,7 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list){
+zipping <- function(rad54, zipping.list, donor.seq){
   
   pos <- rad54
   zip.indexe <- c()
@@ -390,14 +390,14 @@ zipping <- function(rad54, zipping.list){
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
         pos < nchar(lys2.fragment)){
     
-    if(donors.occupancy$bound.id[pos] == "homology"){
+    if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == "homology"){
       new.nt <- substr(lys2.fragment, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
       counter = 0
       pos = pos + 1
       
-    }else if (donors.occupancy$bound.id[pos] != "homology"){
+    }else{
       if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor, start = pos, end = pos)){
         new.nt <- substr(lys2.fragment, pos, pos)
         zip.indexe = c(zip.indexe, pos)
@@ -407,7 +407,7 @@ zipping <- function(rad54, zipping.list){
       }else{
         counter = counter + 1
         if (counter >= 5){
-          return(0)
+          return(-1) #wrong donor
           
         }else if (counter < 5){
           new.nt <- substr(lys2.fragment, pos, pos)
@@ -423,7 +423,7 @@ zipping <- function(rad54, zipping.list){
     return(c(as.integer(zip.indexe[1]),  as.integer(tail(zip.indexe,1)), zip.fragment) )
     
   }else{
-    return(0)
+    return(0) #zipped sequence is too short 
   }
 }
 

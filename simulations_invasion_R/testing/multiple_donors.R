@@ -333,12 +333,17 @@ for (trial in 1:test.replicates){
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(length(unzipped.rad54 > 0) & current.donor != "" && donors.list$invasion[which(donors.list$id == current.donor)] == "yes"){
+      if(length(unzipped.rad54 > 0) && 
+         current.donor != "" && 
+         donors.list$invasion[which(donors.list$id == current.donor)] == "yes"){
+        
         for (pos in unzipped.rad54){
+          
           # Check if the sequence to zip is big enough ;
           # We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
-            new.zip = zipping(pos, zipped.fragments.list)
+            new.zip = zipping(pos, zipped.fragments.list, donor.seq = donors.list$sequence[which(donor.id == current.donor)])
+            
             if(length(new.zip) > 1){
               unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)]
               zipped.fragments.list = rbind(zipped.fragments.list, new.zip)
@@ -346,6 +351,17 @@ for (trial in 1:test.replicates){
               current.zip.start <- as.integer(new.zip[1])
               current.zip.end <- as.integer(new.zip[2])
               donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
+              
+            }else if (new.zip == -1){
+              donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
+              donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
+              donors.occupancy$zipped[which(donors.occupancy$donor.id==current.donor)] = "no"
+              donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
+              zipped.fragments.list <- as.data.frame(matrix(0,0,3))
+              names(zipped.fragments.list ) = c("start", "end", "sequences")
+              unzipped.rad54 = pos.rad54
+              current.donor = ""
+              
             }
           }
         }
@@ -415,8 +431,6 @@ for (trial in 1:test.replicates){
           }
         }
       }
-      
-
       
       if(occupied.rad51$bound != "unbound"){
         # The probability of SEI detection depends of the number of zipped nts ;
