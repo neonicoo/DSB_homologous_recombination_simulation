@@ -56,13 +56,11 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
                           seqtype = 'DNA', as.string = TRUE, 
                           forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-donor <- LY
-
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
 test.replicates = 10 # How many times to simulate, replicates
-kon.group<-c(0.4) #binding probabilities for every binding try
+kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
@@ -220,7 +218,7 @@ for (trial in 1:test.replicates){
     }
     
     
-    donors.list = donors.generator(template = LY, bins = bins.id, N=2)
+    donors.list = donors.generator(template = LY, bins = bins.id, N=6)
     current.donor = ""
     donors.blacklist = c()
     
@@ -296,15 +294,14 @@ for (trial in 1:test.replicates){
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
       preserved[which(occupied.rad51$lys2.microhomology[preserved] %in% donors.occupancy$zipped=="yes")] = TRUE #koff1 can't dissociate zipped homologies
 
+      occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
+      occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
+      occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
+      
       if (sum(!preserved)==num.bound){
         occupied.rad51$bound = "unbound"
-        
-      }else{
-        occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
-        occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
-        occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
       }
-
+      
       donors.occupancy$bound = "no"
       donors.occupancy$bound.id = "unbound"
       donors.occupancy$donor.id = "unknown"
@@ -334,19 +331,19 @@ for (trial in 1:test.replicates){
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(length(unzipped.rad54 > 0) && current.donor != "" && 
+      if(length(unzipped.rad54 > 0) && current.donor != "" &&
          donors.list$invasion[which(donors.list$id == current.donor)] != "wrong"){
-        
+
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
           donors.list$invasion[which(donors.list$id == current.donor)] =="yes"
-        } 
-        
+        }
+
         for (pos in unzipped.rad54){
           # Check if the sequence to zip is big enough ;
           # We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
             new.zip = zipping(pos, zipped.fragments.list, donor= current.donor)
-            
+
             if(length(new.zip) > 1){
               unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)]
               zipped.fragments.list = rbind(zipped.fragments.list, new.zip)
@@ -354,19 +351,19 @@ for (trial in 1:test.replicates){
               current.zip.start <- as.integer(new.zip[1])
               current.zip.end <- as.integer(new.zip[2])
               donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
-              
+
             }else if (new.zip == -1){
               print(c("FAILED", ly.type, current.donor))
-              
+
               remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
               occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
               occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
               occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
-  
+
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
               donors.occupancy$zipped[which(donors.occupancy$donor.id==current.donor)] = "no"
-              
+
               donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
               names(zipped.fragments.list ) = c("start", "end", "sequences")
@@ -374,7 +371,7 @@ for (trial in 1:test.replicates){
               donors.list$invasion[which(donors.list$id == current.donor)] = "wrong"
               donors.blacklist = c(donors.blacklist, current.donor)
               current.donor = ""
-              
+
               if(length(occupied.rad51$donor.invasions) == 0){
                 occupied.rad51$bound = "unbound"
                 break
@@ -383,7 +380,7 @@ for (trial in 1:test.replicates){
           }
         }
       }
-      
+
       # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
@@ -401,7 +398,7 @@ for (trial in 1:test.replicates){
             donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
             donors.occupancy$donor.id[current.zip.start : current.zip.end] = "unknown"
-            
+
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
 
             remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
@@ -413,11 +410,14 @@ for (trial in 1:test.replicates){
 
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
               occupied.rad51$bound = "unbound"
+              occupied.rad51$genome.bins = c()
+              occupied.rad51$donor.invasions = c()
+              occupied.rad51$lys2.microhomology = c()
               break
             }
           }
         }
-        
+
         if(length(row2remove) > 0){
           zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
           if(dim(zipped.fragments.list)[1] != 0){
@@ -490,7 +490,7 @@ for (trial in 1:test.replicates){
         
         #ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
         ly.binding.ts$homologies[ly.binding.ts$time.step == time.step & 
-                                   ly.binding.ts$length == ly.type] = length(which(donors.occupancy$donor.id == "LYS"))
+                                   ly.binding.ts$length == ly.type] = length(which(donors.occupancy$binding.id == "homology"))
       }
       
       pop.time.series.zip$prob.detect[pop.time.series.zip$time.step == time.step & 

@@ -39,7 +39,6 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
 #########################################################################################################
 #########################################################################################################
 
-
 genome.wide.sei = function(initial.binding.tries){
   
   # Choose region of LY weighted by available microhomologies (MHs);
@@ -78,7 +77,6 @@ genome.wide.sei = function(initial.binding.tries){
     # To be sure that the next matches will not overlap with the previous one, 
     #  we have to remove from the index the 7 positions upstream and downstream of the match :
     
-    
     #open.sites = open.sites[sequences.contacts.bins[open.sites,current.bin] > 0]
     open.sites = open.sites[-which(open.sites %in% (matches[i]-7):(matches[i] + 7))]
     
@@ -105,13 +103,16 @@ genome.wide.sei = function(initial.binding.tries){
   identities = c()
   for (b in 1:length(matches)){
     if(bins[b] %in% donors.list$bins){
-      identities = c(identities, donors.list$id[which(donors.list$bins == bins[b])])
+      this.donor = donors.list$id[which(donors.list$bins == bins[b])]
+      if(length(this.donor)>1){
+        this.donor = sample(this.donor, size = 1)
+      }
+      identities = c(identities, this.donor)
     }else{
       identities = c(identities, "H")
     }
   }
-  
-  
+
   # donor.ids : vector of homologous MHs  ;
   donor.ids = matches[which(identities == "LYS")]
   
@@ -139,6 +140,7 @@ genome.wide.sei = function(initial.binding.tries){
     }
   } 
   
+  
   # LYS alignment or misalignments :
   return(list(bound=occupied.rad51$bound, strand = "negative", genome.bins = bins, donor.invasions = identities, lys2.microhomology = matches))
 }  
@@ -162,6 +164,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   # bindings : list of sites occupied by another MHs into the search window around the current micros locus ;
   bindings = c()
   bins = c()
+  identities= c()
   
   for (binding.index in correct.bindings){
     if (length(bindings) > 0){
@@ -172,6 +175,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
     current.bin = occupied.rad51$genome.bins[binding.index]
+    this.donor = occupied.rad51$donor.invasions[binding.index]
     
     if (length(bindings) <=0){
       additionals = "none"
@@ -192,12 +196,15 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
       if (length(open.sites)==1){
         current.bindings[j] = open.sites
         bins = c(bins, current.bin)
+        identities = c(identities, this.donor)
+        
       }else{
         candidate = sample(open.sites, size = 1)
         yy = runif(1)
         if(yy <= kon){
           current.bindings = c(current.bindings,candidate)
           bins = c(bins, current.bin)
+          identities = c(identities, this.donor)
         }
       }
       # Remove the candidates and the 7 positions upstream and downstream it from the free sites index ;
@@ -207,16 +214,6 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     bindings = c(bindings, current.bindings)
   }
   
-  identities = c()
-  if(length(bins) > 0){
-    for (b in 1:length(bins)){
-      if(bins[b] %in% donors.list$bins){
-        identities = c(identities, donors.list$id[which(donors.list$bins== bins[b])])
-      }else{
-        identities = c(identities, "H")
-      }
-    }
-  }
   # donor.ids : same as in the genome.wide.sei function  ;
   donor.ids = bindings[which(identities == "LYS")]
   
