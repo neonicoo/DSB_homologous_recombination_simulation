@@ -61,10 +61,10 @@ donor <- LY
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 3 # How many times to simulate, replicates
+test.replicates = 10 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
-koff1.group<-c(0.4) # dissociation probabilities for each bound particle
-koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
+koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
@@ -384,46 +384,47 @@ for (trial in 1:test.replicates){
         }
       }
       
-      #print(c(ly.type, current.donor))
-      
-      # # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
-      # # If a macrohomology becomes un-zipped because of koff2,
-      # # All the processes of homologies searching and zipping have to be done again ;
-      # 
-      # if(koff2.prob > 0 & dim(zipped.fragments.list)[1] != 0){
-      #   row2remove <- c()
-      #   for(i in 1:nrow(zipped.fragments.list)){
-      #     preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2.prob,1-koff2.prob))
-      #     if(!preserved.zip){
-      #       current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
-      #       current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
-      #       row2remove = c(row2remove, i)
-      # 
-      #       donors.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
-      #       donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
-      #       donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
-      #       unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
-      # 
-      #       remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
-      # 
-      #       #remove binding sites from the donor
-      #       occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
-      #       occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
-      #       occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-      # 
-      #       if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
-      #         occupied.rad51$bound = "unbound"
-      #         break
-      #       }
-      #     }
-      #   }
-      #   if(length(row2remove) > 0){
-      #     zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
-      #     if(dim(zipped.fragments.list)[1] != 0){
-      #       row.names(zipped.fragments.list) = (1:nrow(zipped.fragments.list))
-      #     }
-      #   }
-      # }
+      # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
+      # If a macrohomology becomes un-zipped because of koff2,
+      # All the processes of homologies searching and zipping have to be done again ;
+
+      if(koff2.prob > 0 & dim(zipped.fragments.list)[1] != 0){
+        row2remove <- c()
+        for(i in 1:nrow(zipped.fragments.list)){
+          preserved.zip <- sample(c(FALSE, TRUE), size =1, replace = TRUE, prob = c(koff2.prob,1-koff2.prob))
+          if(!preserved.zip){
+            current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
+            current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
+            row2remove = c(row2remove, i)
+
+            donors.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
+            donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
+            donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
+            donors.occupancy$donor.id[current.zip.start : current.zip.end] = "unknown"
+            
+            unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
+
+            remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
+
+            #remove binding sites from the donor
+            occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
+            occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
+            occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
+
+            if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
+              occupied.rad51$bound = "unbound"
+              break
+            }
+          }
+        }
+        
+        if(length(row2remove) > 0){
+          zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
+          if(dim(zipped.fragments.list)[1] != 0){
+            row.names(zipped.fragments.list) = (1:nrow(zipped.fragments.list))
+          }
+        }
+      }
       
       if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS")) > 0 && first.lys == 0){
         first.lys = 1;
