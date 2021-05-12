@@ -153,7 +153,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   
   # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
   # new.bindings : deep copy of an empty occupied.rad51 ;
-  correct.bindings = as.numeric(which(occupied.rad51$donor.invasions != "H"))
+  correct.bindings = which(occupied.rad51$donor.invasions != "H" & occupied.rad51$donor.invasions %!in% donors.blacklist)
   new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c())
   
   # Check for unbound sites :
@@ -209,18 +209,18 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     bindings = c(bindings, current.bindings)
   }
   
-  
   identities = c()
-  for (b in 1:length(bins)){
-    if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
-      identities = c(identities, "LYS")
-    }else if(bins[b] %in% donors.list$bins[-1]){
-      identities = c(identities, donors.list$id[which(donors.list$bins[-1] == bins[b])])
-    }else{
-      identities = c(identities, "H")
+  if(length(bins) > 0){
+    for (b in 1:length(bins)){
+      if(bins[b] == "chr2_460001_470001" | bins[b] == "chr2_470001_480001"){
+        identities = c(identities, "LYS")
+      }else if(bins[b] %in% donors.list$bins[-1]){
+        identities = c(identities, donors.list$id[which(donors.list$bins[-1] == bins[b])])
+      }else{
+        identities = c(identities, "H")
+      }
     }
   }
-  
   # donor.ids : same as in the genome.wide.sei function  ;
   donor.ids = bindings[which(identities == "LYS")]
   
