@@ -58,10 +58,10 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
 
 donor <- LY
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 14 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
@@ -309,6 +309,9 @@ for (trial in 1:test.replicates){
             lys2.occupancy$id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "heterology"
           }
         }
+        
+        lys2.occupancy$bound[which(lys2.occupancy$bound == "no" & lys2.occupancy$zipped == "yes") ] = "yes"
+        lys2.occupancy$id[which(lys2.occupancy$id == "unbound" & lys2.occupancy$zipped == "yes") ] = "homology"
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
