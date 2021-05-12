@@ -379,26 +379,26 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor.seq){
+zipping <- function(rad54, zipping.list, donor){
   
   pos <- rad54
   zip.indexe <- c()
   zip.fragment <-"" 
   counter <- 0
+  donor.seq = donors.list$sequence[which(donors.list$id == donor)]
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
         pos < nchar(lys2.fragment)){
     
-    if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == "homology"){
+    if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
       new.nt <- substr(lys2.fragment, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
-      counter = 0
       pos = pos + 1
       
     }else{
-      if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor, start = pos, end = pos)){
+      if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
         new.nt <- substr(lys2.fragment, pos, pos)
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")
@@ -406,10 +406,10 @@ zipping <- function(rad54, zipping.list, donor.seq){
         
       }else{
         counter = counter + 1
-        if (counter >= 5){
+        if (counter > 5){
           return(-1) #wrong donor
           
-        }else if (counter < 5){
+        }else if (counter <= 5){
           new.nt <- substr(lys2.fragment, pos, pos)
           zip.indexe = c(zip.indexe, pos)
           zip.fragment = paste(zip.fragment, new.nt, sep="")

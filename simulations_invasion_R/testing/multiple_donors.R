@@ -220,7 +220,7 @@ for (trial in 1:test.replicates){
     }
     
     
-    donors.list = donors.generator(template = LY, bins = bins.id, N=3)
+    donors.list = donors.generator(template = LY, bins = bins.id, N=5)
     current.donor = ""
     
     SEI.binding.tries = floor((nchar(lys2.fragment)-7)/8)
@@ -333,16 +333,18 @@ for (trial in 1:test.replicates){
       }
       
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(length(unzipped.rad54 > 0) && 
-         current.donor != "" && 
-         donors.list$invasion[which(donors.list$id == current.donor)] == "yes"){
+      if(length(unzipped.rad54 > 0) && current.donor != "" && 
+         donors.list$invasion[which(donors.list$id == current.donor)] != "wrong"){
+        
+        if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
+          donors.list$invasion[which(donors.list$id == current.donor)] =="yes"
+        } 
         
         for (pos in unzipped.rad54){
-          
           # Check if the sequence to zip is big enough ;
           # We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
-            new.zip = zipping(pos, zipped.fragments.list, donor.seq = donors.list$sequence[which(donor.id == current.donor)])
+            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor)
             
             if(length(new.zip) > 1){
               unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)]
@@ -353,20 +355,30 @@ for (trial in 1:test.replicates){
               donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
               
             }else if (new.zip == -1){
+              print(c("FAILED", ly.type, current.donor))
+              
+              remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
+              occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
+              occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
+              occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
+              
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
               donors.occupancy$zipped[which(donors.occupancy$donor.id==current.donor)] = "no"
+              
               donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
               names(zipped.fragments.list ) = c("start", "end", "sequences")
               unzipped.rad54 = pos.rad54
+              donors.list$invasion[which(donors.list$id == current.donor)] = "wrong"
               current.donor = ""
-              
             }
           }
         }
       }
-
+      
+      #print(c(ly.type, current.donor))
+      
       # # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
       # # If a macrohomology becomes un-zipped because of koff2,
       # # All the processes of homologies searching and zipping have to be done again ;
@@ -425,9 +437,10 @@ for (trial in 1:test.replicates){
       
       if(current.donor == ""){
         for (candidate.donor in unique(donors.occupancy$donor.id)){
-          if(candidate.donor != "unknown" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && donors.list$invasion[which(donors.list$id == candidate.donor)] == "no"){
+          if(candidate.donor != "unknown" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
+             donors.list$invasion[which(donors.list$id == candidate.donor)] == "no"){
+            
             current.donor = candidate.donor
-            donors.list$invasion[which(donors.list$id == current.donor)] = "yes"
           }
         }
       }
