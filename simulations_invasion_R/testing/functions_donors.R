@@ -250,20 +250,22 @@ donors.generator <- function(template, bins, N = 10){
   new.donors.list<-list(sequence = c(LY), bins = c("chr2_470001_480001"), id = c("LYS"), invasion = c("no", rep("no", times = N)))
   bases <- c("a", "t", "g", "c")
   
-  for (n in 1:N){
-    new.donor <- template
-    new.donor.id = paste("!LYS", as.character(n), sep="")
-    lower.limit <- floor(0.05*nchar(template))
-    upper.limit <- floor(0.3*nchar(template))
-    snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
-    
-    for (i in snp.location){
-      snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
-      substr(new.donor, i, i) <- snp
+  if(N >= 1){
+    for (n in 1:N){
+      new.donor <- template
+      new.donor.id = paste("!LYS", as.character(n), sep="")
+      lower.limit <- floor(0.05*nchar(template))
+      upper.limit <- floor(0.3*nchar(template))
+      snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
+      
+      for (i in snp.location){
+        snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
+        substr(new.donor, i, i) <- snp
+      }
+      new.donors.list$sequence = c(new.donors.list$sequence, new.donor)
+      new.donors.list$bins = c(new.donors.list$bins, sample(bins, size = 1))
+      new.donors.list$id = c(new.donors.list$id, new.donor.id)
     }
-    new.donors.list$sequence = c(new.donors.list$sequence, new.donor)
-    new.donors.list$bins = c(new.donors.list$bins, sample(bins, size = 1))
-    new.donors.list$id = c(new.donors.list$id, new.donor.id)
   }
   return(new.donors.list)
 }
@@ -372,7 +374,7 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor){
+zipping <- function(rad54, zipping.list, donor, limit = 10){
   
   pos <- rad54
   zip.indexe <- c()
@@ -399,10 +401,10 @@ zipping <- function(rad54, zipping.list, donor){
         
       }else{
         counter = counter + 1
-        if (counter > 10){
+        if (counter > limit){
           return(-1) #wrong donor
           
-        }else if (counter <= 10){
+        }else if (counter <= limit){
           new.nt <- substr(lys2.fragment, pos, pos)
           zip.indexe = c(zip.indexe, pos)
           zip.fragment = paste(zip.fragment, new.nt, sep="")
