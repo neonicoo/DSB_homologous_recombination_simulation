@@ -246,8 +246,8 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
 #########################################################################################################
 #########################################################################################################
 
-donors.generator <- function(template, bins, N = 10){
-  new.donors.list<-list(sequence = c(LY), bins = c("chr2_470001_480001"), id = c("LYS"), invasion = c("no", rep("no", times = N)))
+donors.generator <- function(template, bins, N = 0){
+  new.donors.list<-list(sequence = c(template), bins = c("chr2_470001_480001"), id = c("LYS"), invasion = c("no", rep("no", times = N)))
   bases <- c("a", "t", "g", "c")
   
   if(N >= 1){
@@ -303,7 +303,7 @@ rev.comp<-function(x,rev=TRUE){
 #########################################################################################################
 #########################################################################################################
 
-rad54.rdh54.placement <- function(nb.rad54, nb.rdh54){
+rad54.rdh54.placement <- function(nb.rad54, nb.rdh54, lys2.fragment){
   
   location.rad54 <- c()
   location.rdh54 <- c()

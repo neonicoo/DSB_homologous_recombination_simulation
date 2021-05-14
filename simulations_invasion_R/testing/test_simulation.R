@@ -101,7 +101,8 @@ rm(sequences.bins, contacts)
 
 num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
-test.replicates = 2 # How many times to simulate, replicates
+
+test.replicates = 25 # How many times to simulate, replicates
 kon.group<-c(0.8) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -109,6 +110,7 @@ m.group = c(3) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
+additional.donors <- 2
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -161,7 +163,7 @@ occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("ch
 #   mutation occurs in random position of the sequence ,
 #   the template sequence is LY.
 # Change N to change the number of potential donors ;
-donors.list = donors.generator(template = LY, bins = bins.id, N=2)
+donors.list = donors.generator(template = LY, bins = bins.id, N=additional.donors)
 
 saver = 0  #keeps track of how many individual simulations you want to save ;
 # Bigtracker : tracker to know the in which replicate we are for which fragment, 
@@ -178,7 +180,7 @@ bigtracker = 0
 #   the general behavior of the simulation (with inclusion of all homologies for all donors) 
 #   from the behavior of lys2 associations ;
 
-if(length(donors.list$id)>1){
+if(additional.donors>0){
   #population time series for all homologies for all donors (if multiple donors)
   pop.time.series.all.homo = as.data.frame(matrix(0,num.time.steps*3,3))
   names(pop.time.series.all.homo) = c("time.step","prob.detect","length")
@@ -234,7 +236,7 @@ chromosome.contacts$length = rep(ly.names, each = num.time.steps)
 ########################### Directory settings #################################
 
 dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, 
-              bindings.per.tethering, search.window, rad54.name, rdh54.name, sep="_")
+              bindings.per.tethering, search.window, rad54.name, rdh54.name, additional.donors, sep="_")
 
 dirnew=paste(rootdir,dirname,sep="")
 dir.create(dirnew)
@@ -243,7 +245,7 @@ dir.create(dirnew)
 sink(paste(dirnew, "/logfile.txt", sep=""))
 cat("Number of time steps : ", num.time.steps, "\n")
 cat("Number of replicates : ", test.replicates, "\n")
-cat("Number of potential donors :", length(donors.list$id), "\n")
+cat("Number of potential donors :", additional.donors+1, "\n")
 cat("Kon : ", kon.prob, "\n")
 cat("Koff1 : ", koff1.prob, "\n")
 cat("Koff2 : ", koff2.prob, "\n")
@@ -331,7 +333,7 @@ for (trial in 1:test.replicates){
     # and the number of rdh54 depends of the number of rad54 ;
     nb.rad54 <- floor(rad54.prop*str_length(lys2.fragment)) #number of rad54 to be placed into the invading strand ;
     nb.rdh54 <- floor(rdh54.prop*nb.rad54)+1 # number of rdh54 to be placed into the invading strand;
-    rad54.rdh54.locations <- rad54.rdh54.placement(nb.rad54, nb.rdh54) 
+    rad54.rdh54.locations <- rad54.rdh54.placement(nb.rad54, nb.rdh54, lys2.fragment = lys2.fragment) 
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
     pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
     
@@ -552,7 +554,7 @@ for (trial in 1:test.replicates){
         # The probability of SEI detection depends of the number of zipped nts ;
         # /500 : #take into accout the crosslink density ;
         
-        if(length(donors.list$id) > 1){
+        if(additional.donors>0){
           prob.detection.all.homo = length(which(donors.occupancy$bound.id == "homology"))
           prob.detection.all.homo = prob.detection.all.homo/500
           prob.detection.all.zip = length(which(donors.occupancy$zipped == "yes"))
@@ -572,7 +574,7 @@ for (trial in 1:test.replicates){
         
       }else{
         
-        if (length(donors.list$id)>1){
+        if(additional.donors>0){
           prob.detection.all.homo = 0
           prob.detection.all.zip = 0
         }
@@ -605,7 +607,7 @@ for (trial in 1:test.replicates){
                                    ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
       }
       
-      if (length(donors.list$id)>1){
+      if(additional.donors>0){
         pop.time.series.all.zip$prob.detect[pop.time.series.all.zip$time.step == time.step & 
                                               pop.time.series.all.zip$length == ly.type] = 
           pop.time.series.all.zip$prob.detect[pop.time.series.all.zip$time.step == time.step & 

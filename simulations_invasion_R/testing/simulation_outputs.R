@@ -1,3 +1,6 @@
+#########################################################################################################
+################################Outputs functions #######################################################
+
 single.runs <-function(dirnew_singles, ly.binding.ts){
   
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
@@ -22,6 +25,9 @@ single.runs <-function(dirnew_singles, ly.binding.ts){
   ggsave(outname,plot=lys2_plot)
   
 }
+
+#########################################################################################################
+#########################################################################################################
 
 population.time.series <- function(dirnew_plots, donors.list, pop.time.series.all.zip, pop.time.series.all.homo, 
                                    pop.time.series.lys.zip, pop.time.series.lys.homo){
@@ -64,6 +70,10 @@ population.time.series <- function(dirnew_plots, donors.list, pop.time.series.al
     scale_y_continuous(limits = c(0,  max(pop.time.series.lys.homo$prob.detect)+1))
   ggsave(outname,plot=pop.plot)
 }
+
+
+#########################################################################################################
+#########################################################################################################
 
 stats.plots <- function(dirnew_plots, lys.occupancy.firsts, stats.zipping){
   
@@ -146,3 +156,5 @@ stats.plots <- function(dirnew_plots, lys.occupancy.firsts, stats.zipping){
   
 }
 
+#########################################################################################################
+#########################################################################################################
