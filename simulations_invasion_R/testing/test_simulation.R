@@ -1,8 +1,13 @@
-rm(list=ls())
+rm(list=ls()) #clean global environment
 
 ###Set working directory
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
+# Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
+rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/"
+
+
+###################### Import librairies #######################################
 
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
@@ -17,26 +22,17 @@ library(stringr)
 library(seqinr)
 library("Biostrings")
 
-# Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
-rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/";
+################################################################################
+############################## Import the datas ################################
 
-source("./simulations_invasion_R/testing/simulation_functions.R")
-source("./simulations_invasion_R/testing/simulation_outputs.R")
+source("./simulations_invasion_R/testing/simulation_functions.R") #Run the file containing the functions for the simulation 
+source("./simulations_invasion_R/testing/simulation_outputs.R") #Run the file containing the functions to create the outputs graphs
+
 # genome-wide microhomology counts
 forward.sequences <- read.table("./LYS2/Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
 forward.sequences = forward.sequences[,c("start", "sequence", "total")]
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
-
-# genome-wide microhomology counts but with bins of 10kb
-sequences.bins <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")
-
-# Import the experimental contacts of the left DSB 10kb with the genome wide :
-contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
-bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_pos), "_", as.character(contacts$end_pos), sep="")
-contacts <- cbind(contacts, bins.id)
-colnames(contacts)[6] <- "frequency"
-colnames(contacts)[7] <- "id"
 
 # within-lys microhomologies (misalignments)
 L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
@@ -56,33 +52,18 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
                           seqtype = 'DNA', as.string = TRUE, 
                           forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-num.time.steps = 800 # Length of simulation in time steps
-graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
+# genome-wide microhomology counts but with bins of 10kb
+sequences.bins <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")
 
-test.replicates = 1 # How many times to simulate, replicates
-kon.group<-c(0.8) #binding probabilities for every binding try
-koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
-m.group = c(3) #bindings allowed to occur per tethering
-search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(1/200) #proportional to the lengh of invading strand
-rdh54.group <- c(1/10) #proportional to the number of rad54
+# Import the experimental contacts of the left DSB 10kb with the genome wide :
+contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
+bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_pos), "_", as.character(contacts$end_pos), sep="")
+contacts <- cbind(contacts, bins.id)
+colnames(contacts)[6] <- "frequency"
+colnames(contacts)[7] <- "id"
 
-
-# Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
-# For example 0005 is really 0.005
-kon.group.names<- gsub("\\.", "", as.character(kon.group))
-koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
-koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
-rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
-
-print(kon.group.names)
-print(koff1.group.names)
-print(koff2.group.names)
-
-#########################################################################################################
-######################################### Single run simulation ##########################################
-
+################################################################################
+################### Creation of the chromosome contact frequency matrix ########
 
 # We have to check that the bins are the same between the 2 tables (sequences.bins and contacts) ;
 # For example, for LY sequences.bins we have 2 more bins than in the contacts dataframe, so we remove them ;
@@ -115,6 +96,36 @@ sequences.contacts.bins = apply(sequences.contacts.bins, 2, function(x) x[x!= ""
 colnames(sequences.contacts.bins) = bins.id
 rm(sequences.bins, contacts)
 
+################################################################################
+####################### Parameters #############################################
+
+num.time.steps = 800 # Length of simulation in time steps
+graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
+test.replicates = 2 # How many times to simulate, replicates
+kon.group<-c(0.8) #binding probabilities for every binding try
+koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
+m.group = c(3) #bindings allowed to occur per tethering
+search.window.group = c(250) #the genomic distance of the tethering effect (per side)
+rad54.group <- c(1/200) #proportional to the lengh of invading strand
+rdh54.group <- c(1/10) #proportional to the number of rad54
+
+# Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
+# For example 0005 is really 0.005
+kon.group.names<- gsub("\\.", "", as.character(kon.group))
+koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
+koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
+rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
+
+print(kon.group.names)
+print(koff1.group.names)
+print(koff2.group.names)
+
+################################################################################
+
+################################################################################
+############################ Single run simulation #############################
+
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; #for single Job run
 
@@ -133,10 +144,39 @@ koff2.name=koff2.group.names[koff2]
 rad54.name=rad54.group.names[rad54]
 rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
 
-# Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
-occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = 473927 - 368, lys2.microhomology = 368)
+# Initialize the occupied.rad51 list that contains :
+#   the state of the invading fragment : bound or unbound ,
+#   the nature of the invading strand : negative ,
+#   the respective genome bins were heterologies and homologies are found,
+#   the nature of the donor :
+#     "H" if heterology ;
+#     "!LYS#" if it's a donor (in the donors.list$id)
+#     "473927 - position of rad51 in invading fragment" if the donor is LYS2
+#   the position of rad51 in invading fragment for each bound microhomologies ;
 
+occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = 473927, lys2.microhomology = 368)
+
+# Generate N additional donors (other than lys2),
+#   with a random number of mutations (between 10% and 40% snp ),
+#   mutation occurs in random position of the sequence ,
+#   the template sequence is LY.
+# Change N to change the number of potential donors ;
 donors.list = donors.generator(template = LY, bins = bins.id, N=2)
+
+saver = 0  #keeps track of how many individual simulations you want to save ;
+# Bigtracker : tracker to know the in which replicate we are for which fragment, 
+#   ex : for L1000 (2nd fragment of the list), for the 3th replicate, bigtracker = 8
+bigtracker = 0 
+
+####################" Initialize the population time series ####################
+
+# Population time series are dataframes that allows us to see the provability to detect an interaction between 
+#   the invading strand and the donor(s). This probability is proportional to the number of test replicates (inner runs) we make.
+
+# In the case we introduce additional donors (not only lys2) in the simulation,
+#   we need to create 2 more population time series in order to distinguish 
+#   the general behavior of the simulation (with inclusion of all homologies for all donors) 
+#   from the behavior of lys2 associations ;
 
 if(length(donors.list$id)>1){
   #population time series for all homologies for all donors (if multiple donors)
@@ -164,31 +204,42 @@ names(pop.time.series.lys.zip) = c("time.step","prob.detect","length")
 pop.time.series.lys.zip$length = rep(ly.names, each = num.time.steps)
 pop.time.series.lys.zip$time.step = rep(seq(1,num.time.steps,1),3)
 
-# Create a variable, saver, that keeps track of how many individual simulations you want to save. 
-saver = 0
-bigtracker = 0
+################################################################################
+############# Some other statistics dataframes #################################
+
+# Saves the time step of each fragment sizes, at each replicates for 
+#   the first homology with lys2,
+#   the two hundredth (also called twoh) homology with lys2, 
+#   the number of time steps between the first and the two hundredth ;
 
 lys.occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
 names(lys.occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
 lys.occupancy.firsts$length = rep(ly.names, times = test.replicates)
 
+# Same but for the zipping on lys2,contains :
+#   the time step of the first zip onto lys2,
+#   the time step were the probability of detection is egal to 1/2 (i.e at least 250/500 zipped nucléotides)
+
 stats.zipping = as.data.frame(matrix(-1, 3*test.replicates, 3))
 names(stats.zipping) = c("length", "first.zip", "half.detect")
 stats.zipping$length = rep(ly.names, times = test.replicates)
 
-
+# Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
 chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*3, length(bins.id)+2))
 colnames(chromosome.contacts) = c("time.step", "length", bins.id)
 chromosome.contacts$time.step = rep(seq(1,num.time.steps,1),3)
 chromosome.contacts$length = rep(ly.names, each = num.time.steps)
 
-####### Directory settings ##################
+################################################################################
+########################### Directory settings #################################
+
 dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, 
               bindings.per.tethering, search.window, rad54.name, rdh54.name, sep="_")
 
 dirnew=paste(rootdir,dirname,sep="")
 dir.create(dirnew)
 
+#Logfile to have a traceback of the parameters we used for the simulation
 sink(paste(dirnew, "/logfile.txt", sep=""))
 cat("Number of time steps : ", num.time.steps, "\n")
 cat("Number of replicates : ", test.replicates, "\n")
@@ -220,8 +271,8 @@ dir.create(dirnew_timeseries)
 
 print(dirnew)
 
-#############################################
-
+################################################################################
+############################## Start simulation ################################
 
 # Now make all the replicates
 for (trial in 1:test.replicates){ 
@@ -260,6 +311,7 @@ for (trial in 1:test.replicates){
     occupied.rad51$donor.invasions = c()
     occupied.rad51$lys2.microhomology = c()
     
+    # State of the invading fragment (occupancy) with donor(s)
     donors.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),5))
     names(donors.occupancy) = c('bp', 'bound', "bound.id", "donor.id", "zipped")
     donors.occupancy$bp = 1:nchar(lys2.fragment)
@@ -294,6 +346,7 @@ for (trial in 1:test.replicates){
         next
       }
       
+      # Seach homologies in the binding tethering window : new.microhomologizer 
       if (occupied.rad51$bound != "unbound"){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
@@ -303,6 +356,7 @@ for (trial in 1:test.replicates){
         }
       }
 
+      # Search new homologies for the free sites on the invading fragment
       new.bindings = genome.wide.sei(SEI.binding.tries)
 
       if (occupied.rad51$bound == "unbound"){
@@ -318,6 +372,7 @@ for (trial in 1:test.replicates){
         occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
       }
       
+      ###################### KOFF1 #############################################
       #simulate random dissociation(s)
       num.bound = length(occupied.rad51$donor.invasions)
       #  print(num.bound)
@@ -332,6 +387,8 @@ for (trial in 1:test.replicates){
         occupied.rad51$bound = "unbound"
       }
       
+      ##########################################################################
+      ############################## Ocuupancy #################################
       donors.occupancy$bound = "no"
       donors.occupancy$bound.id = "unbound"
       donors.occupancy$donor.id = "unknown"
@@ -360,6 +417,9 @@ for (trial in 1:test.replicates){
         donors.occupancy$donor.id[which(donors.occupancy$donor.id == "unknown" & donors.occupancy$zipped == "yes") ] = current.donor
       }
       
+      ##########################################################################
+      ################################# Zipping ################################
+      
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(length(unzipped.rad54 > 0) && current.donor != "" &&
          donors.list$invasion[which(donors.list$id == current.donor)] != "wrong"){
@@ -369,20 +429,29 @@ for (trial in 1:test.replicates){
         }
 
         for (pos in unzipped.rad54){
+          
           # Check if the sequence to zip is big enough ;
-          # We decided >= 16 (2*8 nts) arbitrary (could be more or less)
+          #   We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
             new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = 10)
 
-            if(length(new.zip) > 1){
-              unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)]
-              zipped.fragments.list = rbind(zipped.fragments.list, new.zip)
+            if(length(new.zip) > 1){ 
+              #i.e new.zip is a vector, 
+              #i.e the zipping successes 
+              
+              unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)] #remove the current overlapped rad54 from the list
+              zipped.fragments.list = rbind(zipped.fragments.list, new.zip) # add the zipped fragment to list of all the zip
               names(zipped.fragments.list) = c("start", "end", "sequences")
               current.zip.start <- as.integer(new.zip[1])
               current.zip.end <- as.integer(new.zip[2])
-              donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes"
+              donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes" #set the state of zipped nucleotides as "yes
 
             }else if (new.zip == -1){
+              #i.e zipping failed because the current donor as too much differences with the invading strand 
+              # Therefore we know that the current donor is not good enough to lead to homologous recombination,
+              # We have to search for another potential donor, and remove the current donor from the list;
+              
+              #Dissociate all rad51 bound to this wrong donor
               remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
               occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
               occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
@@ -408,7 +477,9 @@ for (trial in 1:test.replicates){
           }
         }
       }
-
+      ##########################################################################
+      ######################## KOFF2 ###########################################
+      
       # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
@@ -451,11 +522,14 @@ for (trial in 1:test.replicates){
         }
       }
       
+      ##########################################################################
+      
+      #first homology to LYS2
       if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS")) > 0 && first.lys == 0){
-        first.lys = 1;
+        first.lys = 1 
         lys.occupancy.firsts$first.bound[bigtracker] = time.step
       }
-      
+      #two hundredth homology to LYS2
       if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS")) >= 200){
         if(twoh.lys == 0){
           twoh.lys = 1
