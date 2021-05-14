@@ -56,13 +56,13 @@ yeast.genome<- read.fasta("./yeast-genome/S288c-R64-2-1-v2014/Genome_S288c.fa",
                           seqtype = 'DNA', as.string = TRUE, 
                           forceDNAtolower  = TRUE, set.attributes = FALSE)
 
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
-kon.group<-c(0.4) #binding probabilities for every binding try
+test.replicates = 1 # How many times to simulate, replicates
+kon.group<-c(0.8) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(3) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
@@ -136,7 +136,7 @@ rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
 # Initialize the occupied.rad51 vector, genomic (start) position of RAD51 particles (bp / 8) of invaded strand ;
 occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = 473927 - 368, lys2.microhomology = 368)
 
-donors.list = donors.generator(template = LY, bins = bins.id, N=0)
+donors.list = donors.generator(template = LY, bins = bins.id, N=2)
 
 if(length(donors.list$id)>1){
   #population time series for all homologies for all donors (if multiple donors)
@@ -189,6 +189,20 @@ dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name,
 dirnew=paste(rootdir,dirname,sep="")
 dir.create(dirnew)
 
+sink(paste(dirnew, "/logfile.txt", sep=""))
+cat("Number of time steps : ", num.time.steps, "\n")
+cat("Number of replicates : ", test.replicates, "\n")
+cat("Number of potential donors :", length(donors.list$id), "\n")
+cat("Kon : ", kon.prob, "\n")
+cat("Koff1 : ", koff1.prob, "\n")
+cat("Koff2 : ", koff2.prob, "\n")
+cat("Tethering per windows : ", bindings.per.tethering, "\n")
+cat("Search windows : ", search.window, "\n")
+cat("Proportion of rad54 : ", rad54.prop, "\n")
+cat("Proportion of rdh54 : ", rdh54.prop, "\n")
+sink()
+
+
 # Directory to save single runs
 dirnew_singles=paste(dirnew,"/single_runs",sep="")
 dir.create(dirnew_singles)
@@ -200,6 +214,9 @@ dir.create(dirnew_data)
 # Directory to save the 1st, 200 contact times, and the 200-1st time difference
 dirnew_plots = paste(dirnew,"/plots",sep="")
 dir.create(dirnew_plots)
+
+dirnew_timeseries = paste(dirnew,"/timeseries",sep="")
+dir.create(dirnew_timeseries)
 
 print(dirnew)
 
@@ -554,25 +571,21 @@ for (trial in 1:test.replicates){
   
   fname = paste("timeseries", num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
-  write.table(ly.binding.ts,file=paste(dirnew,"/", fname, sep = ""))
+  write.table(ly.binding.ts,file=paste(dirnew_timeseries,"/", fname, sep = ""))
   
-  if(saver < 3){
-    
+  if(saver < 5){
     ly.binding.ts$length = factor(ly.binding.ts$length)
-    single.runs()
+    single.runs(dirnew_singles = dirnew_singles, ly.binding.ts = ly.binding.ts)
   }
   
   saver=saver+1
 }#end process
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
-population.time.series()
 
-final.firsts = as.data.frame(matrix(-1,test.replicates,3))
-names(final.firsts) = c("500","1000","2000")
-final.firsts$`500` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 500)]
-final.firsts$`1000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 1000)]
-final.firsts$`2000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 2000)]
+population.time.series(dirnew_plots = dirnew_plots, donors.list = donors.list, 
+                       pop.time.series.all.zip = pop.time.series.all.zip, pop.time.series.all.homo = pop.time.series.all.homo, 
+                       pop.time.series.lys.zip = pop.time.series.lys.zip, pop.time.series.lys.homo = pop.time.series.lys.homo)
 
-stats.plots()
+stats.plots(dirnew_plots = dirnew_plots, lys.occupancy.firsts = lys.occupancy.firsts, stats.zipping = stats.zipping)
 
