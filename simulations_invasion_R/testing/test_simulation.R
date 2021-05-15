@@ -594,7 +594,7 @@ for (trial in 1:test.replicates){
       }
       
       
-      if(saver <3 ){
+      if(saver < 3 ){
         # tabulate occupancies vs. time step and length
         ly.binding.ts$bound[ly.binding.ts$time.step == time.step & 
                               ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
@@ -649,7 +649,7 @@ for (trial in 1:test.replicates){
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
   write.table(ly.binding.ts,file=paste(dirnew_timeseries,"/", fname, sep = ""))
   
-  if(saver < 5){
+  if(saver < 3){
     ly.binding.ts$length = factor(ly.binding.ts$length)
     single.runs(dirnew_singles = dirnew_singles, ly.binding.ts = ly.binding.ts)
   }

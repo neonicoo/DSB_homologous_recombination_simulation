@@ -43,7 +43,7 @@ population.time.series <- function(dirnew_plots, donors.list, pop.time.series.al
     ggsave(outname,plot=pop.plot)
     
     
-    write.table(pop.time.series.lys.homo, file=paste(dirnew_data,"/population_times_eries_lys2_homo.txt",sep=""))
+    write.table(pop.time.series.lys.homo, file=paste(dirnew_data,"/population_times_series_all_homo.txt",sep=""))
     outname=paste(dirnew_plots,"/population_time_series_all_homo.png",sep="")
     pop.plot<-
       ggplot(data = pop.time.series.all.homo) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
