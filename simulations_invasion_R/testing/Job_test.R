@@ -684,18 +684,18 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
-kon.group<-c(0.8) #binding probabilities for every binding try
+test.replicates = 100 # How many times to simulate, replicates
+kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
-m.group = c(3) #bindings allowed to occur per tethering
+m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-additional.donors <- 3
+# additional.donors <- 3
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -1234,7 +1234,7 @@ for (trial in 1:test.replicates){
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
   write.table(ly.binding.ts,file=paste(dirnew_timeseries,"/", fname, sep = ""))
   
-  if(saver < 5){
+  if(saver < 3){
     ly.binding.ts$length = factor(ly.binding.ts$length)
     single.runs(dirnew_singles = dirnew_singles, ly.binding.ts = ly.binding.ts)
   }
