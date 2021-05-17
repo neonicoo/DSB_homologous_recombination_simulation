@@ -110,7 +110,7 @@ m.group = c(3) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the lengh of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-additional.donors <- 2
+additional.donors <- 3
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -259,10 +259,15 @@ for (trial in 1:test.replicates){
   # print(trial)
   
   if(saver < 3){
-    ly.binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,5))
-    names(ly.binding.ts) = c('time.step', 'bound', "length", "heterologies", "homologies")
-    ly.binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
-    ly.binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
+    binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,5))
+    names(binding.ts) = c('time.step', "length", "total.bound", "heterologies", "homologies")
+    binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
+    binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
+    
+    for (i in 1:(additional.donors+1)) {
+      col = paste("bound", as.character(donors.list$id[i]), sep=".")
+      binding.ts[col] = rep(0, 3*num.time.steps/graph.resolution)
+    }
   }
   
   for (fragment in 1:3){
@@ -529,24 +534,28 @@ for (trial in 1:test.replicates){
       }
       
       prob.detection = rep(0, additional.donors+1)
-      for (d in 1:length(donors.list$id)){
-        prob.detection[d] = length(which(donors.occupancy$donor.id == donors.list$id[d]))/500
-        if (prob.detection[d] >= 1){
-          prob.detection[d] = 1
+      for (i in 1:length(donors.list$id)){
+        prob.detection[i] = length(which(donors.occupancy$donor.id == donors.list$id[i]))/500
+        if (prob.detection[i] >= 1){
+          prob.detection[i] = 1
         }
       }
       
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
-        ly.binding.ts$bound[ly.binding.ts$time.step == time.step & 
-                              ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
+        binding.ts$total.bound[binding.ts$time.step == time.step & 
+                              binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
         
-        ly.binding.ts$heterologies[ly.binding.ts$time.step == time.step & 
-                                     ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
+        binding.ts$heterologies[binding.ts$time.step == time.step & 
+                                     binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
         
-        #ly.binding.ts$homologies = ly.binding.ts$bound - ly.binding.ts$heterologies
-        ly.binding.ts$homologies[ly.binding.ts$time.step == time.step & 
-                                   ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+        binding.ts$homologies[binding.ts$time.step == time.step & 
+                                   binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+        
+        for (i in 1:length(donors.list$id)){
+          binding.ts[binding.ts$time.step == time.step & binding.ts$length == ly.type, i+5] = 
+            length(which(donors.occupancy$donor.id == donors.list$id[i]))
+        }
       }
       
       
@@ -573,11 +582,11 @@ for (trial in 1:test.replicates){
   
   fname = paste("timeseries", num.time.steps, kon.name, koff1.name, koff2.name, bindings.per.tethering, search.window, sep="_")
   fname = paste(fname,"_trial",as.character(trial),".txt",sep="")
-  write.table(ly.binding.ts,file=paste(dirnew_timeseries,"/", fname, sep = ""))
+  write.table(binding.ts,file=paste(dirnew_timeseries,"/", fname, sep = ""))
   
   if(saver < 3){
-    ly.binding.ts$length = factor(ly.binding.ts$length)
-    single.runs(dirnew_singles = dirnew_singles, ly.binding.ts = ly.binding.ts)
+    binding.ts$length = factor(binding.ts$length)
+    single.runs(dirnew_singles = dirnew_singles, binding.ts = binding.ts, saver = saver)
   }
   
   saver=saver+1

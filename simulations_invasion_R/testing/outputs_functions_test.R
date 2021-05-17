@@ -1,29 +1,38 @@
 #########################################################################################################
 ################################Outputs functions #######################################################
 
-single.runs <-function(dirnew_singles, ly.binding.ts){
+single.runs <-function(dirnew_singles, binding.ts, saver){
   
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
   occ_plot<-
-    ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
+    ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = total.bound, color = length)) +
     labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
-    scale_y_continuous(limits = c(0, 2070))
+    scale_y_continuous(limits = c(0, max(binding.ts$total.bound)+1))
   ggsave(outname,plot=occ_plot)
-  
+
   outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
   het_plot<-
-    ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+ 
-    scale_y_continuous(limits = c(0, 2070))
+    ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
+    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    scale_y_continuous(limits = c(0, max(binding.ts$heterologies)+1))
   ggsave(outname,plot=het_plot)
   
-  outname=paste(dirnew_singles,"/Occupancy_Lys2_",saver,".png",sep="")
-  lys2_plot<-
-    ggplot(data = ly.binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
-    scale_y_continuous(limits = c(0, 2070))
-  ggsave(outname,plot=lys2_plot)
+  for (i in 1:length(donors.list$id)){
+    
+    df <- subset(x=binding.ts, select=c(1, 2, i+5))
+    colnames(df) = c("time.step", "length", "donor.bound")
+    df.name <- paste("Homologies", as.character(donors.list$id[i]),as.character(donors.list$bins[i]), sep = "_")
+    
+    write.table(df, file=paste(dirnew_data, "/", df.name ,".txt", sep=""))
+    outname=paste(dirnew_singles,"/", df.name, "_" , saver, ".png",sep="")
+    
+    homo_plot<-
+      ggplot(data = df) + geom_step(aes(x = time.step, y = donor.bound, color = length)) +
+      labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+      scale_y_continuous(limits = c(0, max(df$donor.bound)+1))
+    ggsave(outname,plot=homo_plot)
   
+  }
 }
 
 #########################################################################################################
@@ -49,6 +58,7 @@ population.time.series <- function(dirnew_plots, donors.list, pop.time.series){
 
   }
 }
+
 #########################################################################################################
 #########################################################################################################
 
