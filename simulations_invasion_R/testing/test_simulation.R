@@ -25,8 +25,8 @@ library("Biostrings")
 ################################################################################
 ############################## Import the datas ################################
 
-source("./simulations_invasion_R/testing/simulation_functions.R") #Run the file containing the functions for the simulation 
-source("./simulations_invasion_R/testing/simulation_outputs.R") #Run the file containing the functions to create the outputs graphs
+source("./simulations_invasion_R/testing/simulation_functions_test.R") #Run the file containing the functions for the simulation 
+source("./simulations_invasion_R/testing/outputs_functions_test.R") #Run the file containing the functions to create the outputs graphs
 
 # genome-wide microhomology counts
 forward.sequences <- read.table("./LYS2/Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
@@ -99,10 +99,10 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 25 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.8) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -180,31 +180,16 @@ bigtracker = 0
 #   the general behavior of the simulation (with inclusion of all homologies for all donors) 
 #   from the behavior of lys2 associations ;
 
-if(additional.donors>0){
-  #population time series for all homologies for all donors (if multiple donors)
-  pop.time.series.all.homo = as.data.frame(matrix(0,num.time.steps*3,3))
-  names(pop.time.series.all.homo) = c("time.step","prob.detect","length")
-  pop.time.series.all.homo$length = rep(ly.names, each = num.time.steps)
-  pop.time.series.all.homo$time.step = rep(seq(1,num.time.steps,1),3)
-  
-  #population time series only for the zipped fragments bound  to all donors (if multiple donors) 
-  pop.time.series.all.zip = as.data.frame(matrix(0,num.time.steps*3,3))
-  names(pop.time.series.all.zip) = c("time.step","prob.detect","length")
-  pop.time.series.all.zip$length = rep(ly.names, each = num.time.steps)
-  pop.time.series.all.zip$time.step = rep(seq(1,num.time.steps,1),3)
+pop.time.series = as.data.frame(matrix(0.0,num.time.steps*3,2))
+names(pop.time.series) = c("time.step","length")
+pop.time.series$time.step = rep(seq(1,num.time.steps,1),3)
+pop.time.series$length = rep(ly.names, each = num.time.steps)
+
+for (i in 1:(additional.donors+1)) {
+  col = paste("prob.detect", as.character(donors.list$id[i]), sep=".")
+  pop.time.series[col] = rep(0, 3*num.time.steps)
 }
 
-#population time series for all the homologies bound to LYS2
-pop.time.series.lys.homo = as.data.frame(matrix(0,num.time.steps*3,3))
-names(pop.time.series.lys.homo) = c("time.step","prob.detect","length")
-pop.time.series.lys.homo$length = rep(ly.names, each = num.time.steps)
-pop.time.series.lys.homo$time.step = rep(seq(1,num.time.steps,1),3)
-
-#population time series only for the zipped fragments bound to LYS2
-pop.time.series.lys.zip = as.data.frame(matrix(0,num.time.steps*3,3))
-names(pop.time.series.lys.zip) = c("time.step","prob.detect","length")
-pop.time.series.lys.zip$length = rep(ly.names, each = num.time.steps)
-pop.time.series.lys.zip$time.step = rep(seq(1,num.time.steps,1),3)
 
 ################################################################################
 ############# Some other statistics dataframes #################################
@@ -217,14 +202,6 @@ pop.time.series.lys.zip$time.step = rep(seq(1,num.time.steps,1),3)
 lys.occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
 names(lys.occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
 lys.occupancy.firsts$length = rep(ly.names, times = test.replicates)
-
-# Same but for the zipping on lys2,contains :
-#   the time step of the first zip onto lys2,
-#   the time step were the probability of detection is egal to 1/2 (i.e at least 250/500 zipped nucléotides)
-
-stats.zipping = as.data.frame(matrix(-1, 3*test.replicates, 3))
-names(stats.zipping) = c("length", "first.zip", "half.detect")
-stats.zipping$length = rep(ly.names, times = test.replicates)
 
 # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
 chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*3, length(bins.id)+2))
@@ -305,6 +282,7 @@ for (trial in 1:test.replicates){
     
     current.donor = ""
     donors.blacklist = c()
+    donors.list$invasion = rep("no", additional.donors+1)
     
     SEI.binding.tries = floor((nchar(lys2.fragment)-7)/8)
     
@@ -399,7 +377,7 @@ for (trial in 1:test.replicates){
         for (i in 1:length(occupied.rad51$lys2.microhomology)){
           donors.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
           if(occupied.rad51$donor.invasions[i] != "H"){
-            if (substr(occupied.rad51$donor.invasions[i], 1, 4) == "!LYS"){
+            if (str_detect(pattern = "donor", occupied.rad51$donor.invasions[i])){
               donors.occupancy$bound.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
               donors.occupancy$donor.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = occupied.rad51$donor.invasions[i]
               
@@ -427,7 +405,7 @@ for (trial in 1:test.replicates){
          donors.list$invasion[which(donors.list$id == current.donor)] != "wrong"){
 
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
-          donors.list$invasion[which(donors.list$id == current.donor)] =="yes"
+          donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
         }
 
         for (pos in unzipped.rad54){
@@ -550,49 +528,13 @@ for (trial in 1:test.replicates){
         }
       }
       
-      if(occupied.rad51$bound != "unbound"){
-        # The probability of SEI detection depends of the number of zipped nts ;
-        # /500 : #take into accout the crosslink density ;
-        
-        if(additional.donors>0){
-          prob.detection.all.homo = length(which(donors.occupancy$bound.id == "homology"))
-          prob.detection.all.homo = prob.detection.all.homo/500
-          prob.detection.all.zip = length(which(donors.occupancy$zipped == "yes"))
-          prob.detection.all.zip = prob.detection.all.zip/500
-          
-          if(prob.detection.all.zip >= 1){prob.detection.all.zip = 1}
-          if(prob.detection.all.homo >= 1){prob.detection.all.homo = 1}
+      prob.detection = rep(0, additional.donors+1)
+      for (d in 1:length(donors.list$id)){
+        prob.detection[d] = length(which(donors.occupancy$donor.id == donors.list$id[d]))/500
+        if (prob.detection[d] >= 1){
+          prob.detection[d] = 1
         }
-        
-        prob.detection.lys.zip = length(which(donors.occupancy$zipped == "yes" & donors.occupancy$donor.id == "LYS"))
-        prob.detection.lys.zip = prob.detection.lys.zip/500 
-        prob.detection.lys.homo = length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == "LYS"))
-        prob.detection.lys.homo = prob.detection.lys.homo/500 
-        
-        if(prob.detection.lys.zip >= 1){prob.detection.lys.zip = 1}
-        if(prob.detection.lys.homo >= 1){prob.detection.lys.homo = 1}
-        
-      }else{
-        
-        if(additional.donors>0){
-          prob.detection.all.homo = 0
-          prob.detection.all.zip = 0
-        }
-        
-        prob.detection.lys.zip = 0
-        prob.detection.lys.homo = 0
       }
-      
-      if(length(which(donors.occupancy$zipped == "yes")) > 0 && first.zip == 0){
-        first.zip = 1
-        stats.zipping$first.zip[bigtracker] = time.step
-      }
-      
-      if(prob.detection.lys.zip > 0.5 & half.detect == 0){
-        half.detect = 1
-        stats.zipping$half.detect[bigtracker] = time.step
-      }
-      
       
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
@@ -607,27 +549,11 @@ for (trial in 1:test.replicates){
                                    ly.binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
       }
       
-      if(additional.donors>0){
-        pop.time.series.all.zip$prob.detect[pop.time.series.all.zip$time.step == time.step & 
-                                              pop.time.series.all.zip$length == ly.type] = 
-          pop.time.series.all.zip$prob.detect[pop.time.series.all.zip$time.step == time.step & 
-                                                pop.time.series.all.zip$length == ly.type] + prob.detection.all.zip
-        
-        pop.time.series.all.homo$prob.detect[pop.time.series.all.homo$time.step == time.step & 
-                                               pop.time.series.all.homo$length == ly.type] = 
-          pop.time.series.all.homo$prob.detect[pop.time.series.all.homo$time.step == time.step & 
-                                                 pop.time.series.all.homo$length == ly.type] + prob.detection.all.homo
+      
+      for (i in 1:length(donors.list$id)){
+        pop.time.series[pop.time.series$time.step == time.step & pop.time.series$length == ly.type, i+2] = 
+          pop.time.series[pop.time.series$time.step == time.step & pop.time.series$length == ly.type, i+2] + prob.detection[i]
       }
-      
-      pop.time.series.lys.zip$prob.detect[pop.time.series.lys.zip$time.step == time.step & 
-                                        pop.time.series.lys.zip$length == ly.type] = 
-        pop.time.series.lys.zip$prob.detect[pop.time.series.lys.zip$time.step == time.step & 
-                                          pop.time.series.lys.zip$length == ly.type] + prob.detection.lys.zip
-      
-      pop.time.series.lys.homo$prob.detect[pop.time.series.lys.homo$time.step == time.step & 
-                                        pop.time.series.lys.homo$length == ly.type] = 
-        pop.time.series.lys.homo$prob.detect[pop.time.series.lys.homo$time.step == time.step & 
-                                          pop.time.series.lys.homo$length == ly.type] + prob.detection.lys.homo
       
       if(occupied.rad51$bound != "unbound"){
         for (i in 1:length(table(occupied.rad51$genome.bins))){
@@ -658,10 +584,6 @@ for (trial in 1:test.replicates){
 }#end process
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
-
-population.time.series(dirnew_plots = dirnew_plots, donors.list = donors.list, 
-                       pop.time.series.all.zip = pop.time.series.all.zip, pop.time.series.all.homo = pop.time.series.all.homo, 
-                       pop.time.series.lys.zip = pop.time.series.lys.zip, pop.time.series.lys.homo = pop.time.series.lys.homo)
-
-stats.plots(dirnew_plots = dirnew_plots, lys.occupancy.firsts = lys.occupancy.firsts, stats.zipping = stats.zipping)
+population.time.series(dirnew_plots = dirnew_plots, donors.list = donors.list, pop.time.series = pop.time.series)
+stats.plots(dirnew_plots = dirnew_plots, lys.occupancy.firsts = lys.occupancy.firsts)
 
