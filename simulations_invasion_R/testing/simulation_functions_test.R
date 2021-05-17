@@ -254,7 +254,7 @@ donors.generator <- function(template, bins, N = 0){
   if(N >= 1){
     for (n in 1:N){
       new.donor <- template
-      new.donor.id = paste("!LYS", as.character(n), sep="")
+      new.donor.id = paste("donor", as.character(n), sep="")
       lower.limit <- floor(0.05*nchar(template))
       upper.limit <- floor(0.3*nchar(template))
       snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
@@ -425,3 +425,8 @@ zipping <- function(rad54, zipping.list, donor, limit = 10){
 
 #########################################################################################################
 #########################################################################################################
+
+donors.pop.time.series <- function(donors.list, ly.names, num.time.steps){
+  
+}
+
