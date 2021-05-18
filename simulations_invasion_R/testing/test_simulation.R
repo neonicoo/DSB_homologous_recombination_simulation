@@ -419,7 +419,11 @@ for (trial in 1:test.replicates){
               names(zipped.fragments.list) = c("start", "end", "sequences")
               current.zip.start <- as.integer(new.zip[1])
               current.zip.end <- as.integer(new.zip[2])
+              
               donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes" #set the state of zipped nucleotides as "yes
+              donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
+              donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
+              donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
 
             }else if (new.zip == -1){
               #i.e zipping failed because the current donor as too much differences with the invading strand
