@@ -335,10 +335,10 @@ for (trial in 1:test.replicates){
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
         }
       }
-
+      
       # Search new homologies for the free sites on the invading fragment
       new.bindings = genome.wide.sei(SEI.binding.tries)
-
+      
       if (occupied.rad51$bound == "unbound"){
         occupied.rad51 = new.bindings
         if(length(new.bindings$lys2.microhomology) > 0){
@@ -358,7 +358,7 @@ for (trial in 1:test.replicates){
       # print(num.bound)
       preserved = sample(c(FALSE,TRUE), num.bound, replace = TRUE, prob = c(koff1.prob,1-koff1.prob)) #dissociate if FALSE
       preserved[which(occupied.rad51$lys2.microhomology[preserved] %in% donors.occupancy$zipped=="yes")] = TRUE #koff1 can't dissociate zipped homologies
-
+      
       occupied.rad51$genome.bins = occupied.rad51$genome.bins[preserved]
       occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[preserved]
       occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[preserved]
@@ -392,9 +392,9 @@ for (trial in 1:test.replicates){
           }
         }
         
-        donors.occupancy$bound[which(donors.occupancy$bound == "no" & donors.occupancy$zipped == "yes") ] = "yes"
-        donors.occupancy$bound.id[which(donors.occupancy$bound.id == "unbound" & donors.occupancy$zipped == "yes") ] = "homology"
-        donors.occupancy$donor.id[which(donors.occupancy$donor.id == "unknown" & donors.occupancy$zipped == "yes") ] = current.donor
+        donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
+        donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
+        donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
       }
       
       ##########################################################################
@@ -439,7 +439,7 @@ for (trial in 1:test.replicates){
 
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
-              donors.occupancy$zipped[which(donors.occupancy$donor.id==current.donor)] = "no"
+              donors.occupancy$zipped = "no"
 
               donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
@@ -459,11 +459,11 @@ for (trial in 1:test.replicates){
       }
       ##########################################################################
       ######################## KOFF2 ###########################################
-
+      
       # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
-
+      
       if(koff2.prob > 0 & dim(zipped.fragments.list)[1] != 0){
         row2remove <- c()
         for(i in 1:nrow(zipped.fragments.list)){
@@ -472,28 +472,28 @@ for (trial in 1:test.replicates){
             current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
             row2remove = c(row2remove, i)
-
+            
             donors.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
             donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
             donors.occupancy$donor.id[current.zip.start : current.zip.end] = "unknown"
-
+            
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
-
+            
             remove.rad51 <- which(occupied.rad51$lys2.microhomology %in% (current.zip.start : current.zip.end))
-
+            
             #remove binding sites from the donor
             occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
             occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
             occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-
+            
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$lys2.microhomology) == 0){
               occupied.rad51$bound = "unbound"
               break
             }
           }
         }
-
+        
         if(length(row2remove) > 0){
           zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
           if(dim(zipped.fragments.list)[1] != 0){
@@ -501,7 +501,7 @@ for (trial in 1:test.replicates){
           }
         }
       }
-
+      
       ##########################################################################
       
       #first homology to LYS2
@@ -517,7 +517,7 @@ for (trial in 1:test.replicates){
           lys.occupancy.firsts$first.twoh.time.diff[bigtracker] = time.step - lys.occupancy.firsts$first.bound[bigtracker]
         }
       }
-        
+      
       if(current.donor == ""){
         for (candidate.donor in unique(donors.occupancy$donor.id)){
           if(candidate.donor != "unknown" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
@@ -546,13 +546,13 @@ for (trial in 1:test.replicates){
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
         binding.ts$total.bound[binding.ts$time.step == time.step & 
-                              binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
+                                 binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
         
         binding.ts$heterologies[binding.ts$time.step == time.step & 
-                                     binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
+                                  binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
         
         binding.ts$homologies[binding.ts$time.step == time.step & 
-                                   binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+                                binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
         
         for (i in 1:length(donors.list$id)){
           binding.ts[binding.ts$time.step == time.step & binding.ts$length == ly.type, i+5] = 
@@ -567,9 +567,9 @@ for (trial in 1:test.replicates){
                                      pop.time.series$length == ly.type] + prob.detection.homo
       
       pop.time.series$zip[pop.time.series$time.step == time.step & 
-                                   pop.time.series$length == ly.type] = 
+                            pop.time.series$length == ly.type] = 
         pop.time.series$zip[pop.time.series$time.step == time.step & 
-                                     pop.time.series$length == ly.type] + prob.detection.zip
+                              pop.time.series$length == ly.type] + prob.detection.zip
       
       
       for (i in 1:length(donors.list$id)){
