@@ -5,9 +5,9 @@ single.runs <-function(dirnew_singles, binding.ts, saver){
   
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
   occ_plot<-
-    ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = total.bound, color = length)) +
+    ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
     labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
-    scale_y_continuous(limits = c(0, max(binding.ts$total.bound)+1))
+    scale_y_continuous(limits = c(0, max(binding.ts$bound)+1))
   ggsave(outname,plot=occ_plot)
 
   outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
@@ -16,43 +16,60 @@ single.runs <-function(dirnew_singles, binding.ts, saver){
     labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$heterologies)+1))
   ggsave(outname,plot=het_plot)
+
+  outname=paste(dirnew_singles,"/Occupancy_Homologies_",saver,".png",sep="")
+  het_plot<-
+    ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
+    labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    scale_y_continuous(limits = c(0, max(binding.ts$homologies)+1))
+  ggsave(outname,plot=het_plot)
   
-  for (i in 1:length(donors.list$id)){
-    
-    df <- subset(x=binding.ts, select=c(1, 2, i+5))
-    colnames(df) = c("time.step", "length", "donor.bound")
-    df.name <- paste("Homologies", as.character(donors.list$id[i]),as.character(donors.list$bins[i]), sep = "_")
-    
-    write.table(df, file=paste(dirnew_data, "/", df.name ,".txt", sep=""))
-    outname=paste(dirnew_singles,"/", df.name, "_" , saver, ".png",sep="")
-    
-    homo_plot<-
-      ggplot(data = df) + geom_step(aes(x = time.step, y = donor.bound, color = length)) +
-      labs(x = "time step", y = "Occupancy at Lys2 (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
-      scale_y_continuous(limits = c(0, max(df$donor.bound)+1))
-    ggsave(outname,plot=homo_plot)
-  
-  }
 }
 
 #########################################################################################################
 #########################################################################################################
 
 
-population.time.series <- function(dirnew_plots, donors.list, pop.time.series){
+population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.time.series){
+  
+  # pop time series for all homologies
+  df <- subset(x=pop.time.series, select=c(1, 2, 3))
+  colnames(df) = c("time.step", "length", "homologies")
+  df.name <- paste("pop_timeseries", "homologies", sep = "_")
+  write.table(df, file=paste(dirnew_data, "/", df.name ,".txt", sep=""))
+  outname=paste(dirnew_plots, "/", df.name, ".png",sep="")
+  
+  pop.plot<-
+    ggplot(data = df) + geom_step(aes(x = time.step, y = homologies, color = length)) +
+    labs(x = "time step", y = "Probability of detection for homologies") + theme_minimal()+ theme(text = element_text(size = 14))+
+    scale_y_continuous(limits = c(0, max(df$homologies)+1))
+  ggsave(outname, plot=pop.plot)
+  
+  #pop time series for all zipped homologies 
+  df <- subset(x=pop.time.series, select=c(1, 2, 4))
+  colnames(df) = c("time.step", "length", "zip")
+  df.name <- paste("pop_timeseries", "zipped_homologies", sep = "_")
+  write.table(df, file=paste(dirnew_data, "/", df.name ,".txt", sep=""))
+  outname=paste(dirnew_plots, "/", df.name, ".png",sep="")
+  
+  pop.plot<-
+    ggplot(data = df) + geom_step(aes(x = time.step, y = zip, color = length)) +
+    labs(x = "time step", y = "Probability of detection for zips") + theme_minimal()+ theme(text = element_text(size = 14))+
+    scale_y_continuous(limits = c(0, max(df$zip)+1))
+  ggsave(outname, plot=pop.plot)
+  
   
   for (i in 1:length(donors.list$id)){
-    df <- subset(x=pop.time.series, select=c(1, 2, i+2))
+    df <- subset(x=pop.time.series, select=c(1, 2, i+4))
     colnames(df) = c("time.step", "length", "prob.detect")
-    
     df.name <- paste("pop_timeseries", as.character(donors.list$id[i]),as.character(donors.list$bins[i]), sep = "_")
-
     write.table(df, file=paste(dirnew_data, "/", df.name ,".txt", sep=""))
     outname=paste(dirnew_plots, "/", df.name, ".png",sep="")
     
     pop.plot<-
       ggplot(data = df) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
-      labs(x = "time step", y = "Probability of Detection") + theme_minimal()+ theme(text = element_text(size = 16))+
+      labs(x = "time step", y = paste("Probability of detection", as.character(donors.list$id[i]), sep = " ")) + 
+      theme_minimal()+ theme(text = element_text(size = 14))+
       scale_y_continuous(limits = c(0, max(df$prob.detect)+1))
     ggsave(outname, plot=pop.plot)
 

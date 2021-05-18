@@ -93,8 +93,8 @@ koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(1/125) #proportional to the lengh of invading strand
-rdh54.group <- c(1/8) #proportional to the number of rad54
+rad54.group <- c(1/200) #proportional to the lengh of invading strand
+rdh54.group <- c(1/10) #proportional to the number of rad54
 additional.donors <- 2
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -255,14 +255,9 @@ for (trial in 1:test.replicates){
   
   if(saver < 3){
     binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,5))
-    names(binding.ts) = c('time.step', "length", "total.bound", "heterologies", "homologies")
+    names(binding.ts) = c('time.step', "length", "bound", "heterologies", "homologies")
     binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
     binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
-    
-    for (i in 1:(additional.donors+1)) {
-      col = paste("bound", as.character(donors.list$id[i]), sep=".")
-      binding.ts[col] = rep(0, 3*num.time.steps/graph.resolution)
-    }
   }
   
   for (fragment in 1:3){
@@ -545,7 +540,7 @@ for (trial in 1:test.replicates){
       
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
-        binding.ts$total.bound[binding.ts$time.step == time.step & 
+        binding.ts$bound[binding.ts$time.step == time.step & 
                                  binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
         
         binding.ts$heterologies[binding.ts$time.step == time.step & 
@@ -554,10 +549,6 @@ for (trial in 1:test.replicates){
         binding.ts$homologies[binding.ts$time.step == time.step & 
                                 binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
         
-        for (i in 1:length(donors.list$id)){
-          binding.ts[binding.ts$time.step == time.step & binding.ts$length == ly.type, i+5] = 
-            length(which(donors.occupancy$donor.id == donors.list$id[i]))
-        }
       }
       
       
