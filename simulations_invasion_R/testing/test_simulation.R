@@ -216,6 +216,10 @@ dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name,
               bindings.per.tethering, search.window, rad54.name, rdh54.name, additional.donors, sep="_")
 
 dirnew=paste(rootdir,dirname,sep="")
+
+if(file.exists(dirnew)){
+  unlink(dirnew, recursive = TRUE)
+}
 dir.create(dirnew)
 
 #Logfile to have a traceback of the parameters we used for the simulation
