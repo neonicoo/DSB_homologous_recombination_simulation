@@ -84,7 +84,7 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 700 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
 test.replicates = 5 # How many times to simulate, replicates
@@ -319,6 +319,10 @@ for (trial in 1:test.replicates){
     #probability of detection proportional to the length of invading strand :
     crosslink.density <- 500 * 1.75 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
     
+    # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
+    # The time for this operation is quite random, therefore we simulate it with a normal law :
+    exonuclease.job <- as.integer(abs(rnorm(n=1, mean = 40, sd = 10)))
+    
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
       if(kon.prob == 0){
@@ -326,7 +330,7 @@ for (trial in 1:test.replicates){
       }
       
       # Seach homologies in the binding tethering window : new.microhomologizer 
-      if (occupied.rad51$bound != "unbound"){
+      if (occupied.rad51$bound != "unbound" & time.step > exonuclease.job){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
           new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
           occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
@@ -335,20 +339,23 @@ for (trial in 1:test.replicates){
         }
       }
       
-      # Search new homologies for the free sites on the invading fragment
-      new.bindings = genome.wide.sei(SEI.binding.tries)
-      
-      if (occupied.rad51$bound == "unbound"){
-        occupied.rad51 = new.bindings
-        if(length(new.bindings$lys2.microhomology) > 0){
-          occupied.rad51$bound = "bound"
-        }
+      # Check if exonuclease opening DSB is done ;
+      if(time.step > exonuclease.job){
+        # Search new homologies for the free sites on the invading fragment
+        new.bindings = genome.wide.sei(SEI.binding.tries)
         
-      }else{
-        # print("bound and adding")
-        occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
-        occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
-        occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
+        if (occupied.rad51$bound == "unbound"){
+          occupied.rad51 = new.bindings
+          if(length(new.bindings$lys2.microhomology) > 0){
+            occupied.rad51$bound = "bound"
+          }
+          
+        }else{
+          # print("bound and adding")
+          occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
+          occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions, new.bindings$donor.invasions)
+          occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
+        }
       }
       
       ###################### KOFF1 #############################################
