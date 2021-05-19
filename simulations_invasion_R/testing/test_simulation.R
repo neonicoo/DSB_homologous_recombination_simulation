@@ -84,10 +84,10 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 700 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
+test.replicates = 10 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments

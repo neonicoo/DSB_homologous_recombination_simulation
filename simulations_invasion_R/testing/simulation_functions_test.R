@@ -405,7 +405,7 @@ zipping <- function(rad54, zipping.list, donor, limit = 4){
       }else{
         consecutive.mismatches = consecutive.mismatches + 1
         if (consecutive.mismatches >= limit){
-          return(-1) # too much misalignments, this donor isn't good enough to lead an HR
+          return(-1) # too much misalignment, this donor isn't good enough to lead an HR
           
         }else if (consecutive.mismatches < limit){
           new.nt <- substr(lys2.fragment, pos, pos)
