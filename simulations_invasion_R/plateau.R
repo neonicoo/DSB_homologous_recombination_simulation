@@ -4,12 +4,14 @@
 # Set wd to directory containing all the directories that contain population time series 
 #   for individual sets of parameters
 
+
+rm(list=ls())
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
 
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
 # Only take the directories that start with the number of time steps, this might have to be adjusted
-rd<-grep(pattern="^./600",run.dirs)
+rd<-grep(pattern="^./700",run.dirs)
 run.dirs<-run.dirs[rd]
 
 # Grab the directories with data in their path
@@ -17,14 +19,15 @@ rdd<-grep(pattern="/data$",run.dirs)
 run.dirs<-run.dirs[rdd]
 
 # How many replicates did you use?
-test.replicates = 3
+test.replicates = 30
 
 # How many parameters sets are there?
-num.parameters = 676
+num.parameters = 7
 
 # construct the data structure that will save all the data
-plateau_data = as.data.frame(matrix(0,num.parameters,10))
-names(plateau_data) = c("kon","koff1","tethering","window","time2000","time1000","time500","plat2000","plat1000","plat500")
+plateau_data = as.data.frame(matrix(0,num.parameters,14))
+names(plateau_data) = c("kon","koff1", "koff2", "tethering", "window", "prop.rad54", "prop.rdh54", 
+                        "additionnal.donors", "time2000","time1000","time500","plat2000","plat1000","plat500")
 
 # file name and directory where you want the processed data to be stored. 
 processed_file = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/"
@@ -42,14 +45,20 @@ for(pp in run.dirs){
   dir<-gsub("/data$", "", dir)
 
   ww<-strsplit(dir,"_")[[1]]
+  
   time.step<-noquote(ww[1])
   kon<-noquote(ww[2])
   koff1<-noquote(ww[3])
-  tethering<-noquote(ww[4])
-  window<-noquote(ww[5])
+  koff2<-noquote(ww[4])
+  tethering<-noquote(ww[5])
+  window<-noquote(ww[6])
+  rad54<-noquote(ww[7])
+  rdh54<-noquote(ww[8])
+  donors<-noquote(ww[9])
   
   tethering<-as.numeric(tethering)
   window<-as.numeric(window)
+  donors<-as.numeric(donors)
   
   kon<- gsub("^0", "0.", kon)
   kon<-as.numeric(kon)
@@ -61,16 +70,38 @@ for(pp in run.dirs){
   koff1<-format(koff1,scientific = F)
   koff1<-as.numeric(koff1)
   
+  koff2<- gsub("^0", "0.", koff2)
+  koff2<-as.numeric(koff2)
+  koff2<-format(koff2,scientific = F)
+  koff2<-as.numeric(koff2)
+  
+  rad54<- gsub("^0", "0.", rad54)
+  rad54<-as.numeric(rad54)
+  rad54<-format(rad54,scientific = F)
+  rad54<-as.numeric(rad54)
+  
+  rdh54<- gsub("^0", "0.", rdh54)
+  rdh54<-as.numeric(rdh54)
+  rdh54<-format(rdh54,scientific = F)
+  rdh54<-as.numeric(rdh54)
+  
+  
+
   parameter_counter = parameter_counter + 1
   
   # fill in the parameter data for the plateau data structure
   plateau_data$kon[parameter_counter] = kon
   plateau_data$koff1[parameter_counter] = koff1
+  plateau_data$koff2[parameter_counter] = koff2
   plateau_data$tethering[parameter_counter] = tethering
   plateau_data$window[parameter_counter] = window
+  plateau_data$prop.rad54[parameter_counter] = rad54
+  plateau_data$prop.rdh54[parameter_counter] = rdh54
+  plateau_data$additionnal.donors[parameter_counter] = donors
   
   # time series data for current parameter set
-  dat1<-read.table(paste(pp,"/population_timeseries.txt",sep=""),header=T)
+  dat1<-read.table(paste(pp,"/pop_timeseries_homologies.txt",sep=""),header=T)
+  names(dat1) = c("time.step", "length", "prob.detect")
   
   # doing names on dat show that we have time.step, prob.detect, length
   # get the x and y vectors, (time and prob.detect)
@@ -181,4 +212,4 @@ for(pp in run.dirs){
 }
 
 # write the plateau data structure to a file in a directory called processed data. You can change this to your liking. 
-write.table(plateau_data, file=processed_file, sep="\t")
+write.table(plateau_data, file=paste(processed_file, "plateau_data.txt", sep=""), sep="\t")
