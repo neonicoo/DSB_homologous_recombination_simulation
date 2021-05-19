@@ -261,6 +261,10 @@ for (trial in 1:test.replicates){
     binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
   }
   
+  # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
+  # The time for this operation is quite random, therefore we simulate it with a normal law :
+  exonuclease.job <- as.integer(abs(rnorm(n=1, mean = 40, sd = 10)))
+  
   for (fragment in 1:3){
     # initialize the ID and state of the current invading strand 
     bigtracker = bigtracker +1
@@ -318,10 +322,6 @@ for (trial in 1:test.replicates){
     
     #probability of detection proportional to the length of invading strand :
     crosslink.density <- 500 * 1.75 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
-    
-    # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
-    # The time for this operation is quite random, therefore we simulate it with a normal law :
-    exonuclease.job <- as.integer(abs(rnorm(n=1, mean = 40, sd = 10)))
     
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
