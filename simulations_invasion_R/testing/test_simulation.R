@@ -95,7 +95,8 @@ m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-additional.donors <- 2
+misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor 
+additional.donors <- 2 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -315,6 +316,9 @@ for (trial in 1:test.replicates){
     
     unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
     
+    #probability of detection proportional to the length of invading strand :
+    crosslink.density <- 500 * 1.75 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
+    
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
       if(kon.prob == 0){
@@ -408,7 +412,7 @@ for (trial in 1:test.replicates){
           # Check if the sequence to zip is big enough ;
           #   We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
-            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = 4)
+            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
 
             if(length(new.zip) > 1){
               #i.e new.zip is a vector,
@@ -529,15 +533,15 @@ for (trial in 1:test.replicates){
       
       prob.detection.donors = rep(0, additional.donors+1)
       for (i in 1:length(donors.list$id)){
-        prob.detection.donors[i] = length(which(donors.occupancy$donor.id == donors.list$id[i]))/500
+        prob.detection.donors[i] = length(which(donors.occupancy$donor.id == donors.list$id[i]))/ crosslink.density
         if (prob.detection.donors[i] >= 1){
           prob.detection.donors[i] = 1
         }
       }
       
-      prob.detection.homo = length(which(donors.occupancy$bound.id=="homology"))/500
+      prob.detection.homo = length(which(donors.occupancy$bound.id=="homology"))/ crosslink.density
       if (prob.detection.homo >= 1){prob.detection.homo = 1}
-      prob.detection.zip = length(which(donors.occupancy$zipped=="yes"))/500
+      prob.detection.zip = length(which(donors.occupancy$zipped=="yes"))/ crosslink.density
       if (prob.detection.zip >= 1){prob.detection.zip = 1}
       
       
