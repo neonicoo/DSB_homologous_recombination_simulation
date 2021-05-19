@@ -255,8 +255,8 @@ donors.generator <- function(template, bins, N = 0){
     for (n in 1:N){
       new.donor <- template
       new.donor.id = paste("donor", as.character(n), sep="")
-      lower.limit <- floor(0.05*nchar(template))
-      upper.limit <- floor(0.3*nchar(template))
+      lower.limit <- floor(0.1*nchar(template))
+      upper.limit <- floor(0.4*nchar(template))
       snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
       
       for (i in snp.location){
@@ -375,13 +375,13 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor, limit = 10){
+zipping <- function(rad54, zipping.list, donor, limit = 4){
   
   pos <- rad54
   zip.indexe <- c()
   zip.fragment <-"" 
-  counter <- 0
   donor.seq = donors.list$sequence[which(donors.list$id == donor)]
+  consecutive.mismatches <- 0
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
@@ -392,6 +392,7 @@ zipping <- function(rad54, zipping.list, donor, limit = 10){
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
       pos = pos + 1
+      consecutive.mismatches = 0
       
     }else{
       if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
@@ -399,13 +400,14 @@ zipping <- function(rad54, zipping.list, donor, limit = 10){
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")
         pos = pos + 1
+        consecutive.mismatches = 0
         
       }else{
-        counter = counter + 1
-        if (counter > limit){
-          return(-1) #wrong donor
+        consecutive.mismatches = consecutive.mismatches + 1
+        if (consecutive.mismatches >= limit){
+          return(-1) # too much misalignments, this donor isn't good enough to lead an HR
           
-        }else if (counter <= limit){
+        }else if (consecutive.mismatches < limit){
           new.nt <- substr(lys2.fragment, pos, pos)
           zip.indexe = c(zip.indexe, pos)
           zip.fragment = paste(zip.fragment, new.nt, sep="")
@@ -425,8 +427,4 @@ zipping <- function(rad54, zipping.list, donor, limit = 10){
 
 #########################################################################################################
 #########################################################################################################
-
-donors.pop.time.series <- function(donors.list, ly.names, num.time.steps){
-  
-}
 

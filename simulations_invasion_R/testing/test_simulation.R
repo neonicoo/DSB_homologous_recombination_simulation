@@ -87,13 +87,13 @@ rm(sequences.bins, contacts)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 5 # How many times to simulate, replicates
 kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(1/200) #proportional to the lengh of invading strand
+rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
 additional.donors <- 2
 
@@ -397,7 +397,7 @@ for (trial in 1:test.replicates){
 
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(length(unzipped.rad54 > 0) && current.donor != "" &&
-         donors.list$invasion[which(donors.list$id == current.donor)] != "wrong"){
+         donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
 
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
           donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
@@ -408,7 +408,7 @@ for (trial in 1:test.replicates){
           # Check if the sequence to zip is big enough ;
           #   We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
-            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = 10)
+            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = 4)
 
             if(length(new.zip) > 1){
               #i.e new.zip is a vector,
@@ -444,7 +444,7 @@ for (trial in 1:test.replicates){
               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
               names(zipped.fragments.list ) = c("start", "end", "sequences")
               unzipped.rad54 = pos.rad54
-              donors.list$invasion[which(donors.list$id == current.donor)] = "wrong"
+              donors.list$invasion[which(donors.list$id == current.donor)] = "failed"
               donors.blacklist = c(donors.blacklist, current.donor)
               current.donor = ""
 
