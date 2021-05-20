@@ -87,10 +87,10 @@ rm(sequences.bins, contacts)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
-kon.group<-c(0.4) #binding probabilities for every binding try
+test.replicates = 15 # How many times to simulate, replicates
+kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
@@ -263,7 +263,8 @@ for (trial in 1:test.replicates){
   
   # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
   # The time for this operation is quite random, therefore we simulate it with a normal law :
-  exonuclease.job <- as.integer(abs(rnorm(n=1, mean = 40, sd = 10)))
+  exonuclease.job <- as.integer(rnorm(n=1, mean = 25, sd = 10))
+  if(exonuclease.job <=1){exonuclease.job = 1}
   
   for (fragment in 1:3){
     # initialize the ID and state of the current invading strand 
@@ -321,7 +322,7 @@ for (trial in 1:test.replicates){
     unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
     
     #probability of detection proportional to the length of invading strand :
-    crosslink.density <- 500 * 1.75 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
+    crosslink.density <- 500 * 1.5 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
     
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
@@ -332,7 +333,7 @@ for (trial in 1:test.replicates){
       # Seach homologies in the binding tethering window : new.microhomologizer 
       if (occupied.rad51$bound != "unbound" & time.step > exonuclease.job){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
-          new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
+          new.bindings = new.microhomologizer2.0(occupied.rad51, search.window, bindings.per.tethering, kon.prob=kon.prob)
           occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
