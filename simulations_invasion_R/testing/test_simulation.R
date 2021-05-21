@@ -87,10 +87,10 @@ rm(sequences.bins, contacts)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 15 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
