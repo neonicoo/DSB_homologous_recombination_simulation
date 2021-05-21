@@ -8,7 +8,6 @@ rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_s
 
 
 ###################### Import librairies #######################################
-
 library(ggplot2)
 library(stringr)
 
@@ -100,22 +99,21 @@ genome.wide.sei = function(initial.binding.tries){
   #matches : vector of possible bounding sites for MHs
   matches = c()
   bins = c()
+  
   for (i in 1:initial.binding.tries){
     if (length(open.sites) == 1){ 
       # If there is only one available binding site :
       matches[i] = open.sites
-      
-      contact.freq = sequences.contacts.bins[matches[i], ]
-      possible.bins = bins.id[which(contact.freq > 0)]
-      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])
+      contact.freq = sequences.contacts.bins[matches[i], ] #check for all bins the frequence of contact for the current matche ;
+      possible.bins = bins.id[which(contact.freq > 0)] #Keep only the bins where the matche has a non-null contact frequence ;
+      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0]) #select a bin among the possible.bins by using frequence of contact as probability ;
       
     }else{ 
       # Draw a site among those available which will be matched with a MH according to the respective weighted probabilities :
       matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites])
-      
-      contact.freq = sequences.contacts.bins[matches[i], ]
-      possible.bins = bins.id[which(contact.freq > 0)]
-      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])
+      contact.freq = sequences.contacts.bins[matches[i], ] #check for all bins the frequence of contact for the current matche ;
+      possible.bins = bins.id[which(contact.freq > 0)] #Keep only the bins where the matche has a non-null contact frequence ;
+      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0]) #select a bin among the possible.bins by using frequence of contact as probability ;
     }
     
     # Where there is a match with a MH, we consider that the site concerned is no longer available ;
@@ -143,23 +141,34 @@ genome.wide.sei = function(initial.binding.tries){
     return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
   }
   
+  
   # Set IDs of each bound (Heterology (H) vs LYS); 
   # If LYS, set as genomic position in + strand notation
-  
   identities = c()
   for (b in 1:length(matches)){
-    if(bins[b] %in% donors.list$bins){
-      this.donor = donors.list$id[which(donors.list$bins == bins[b])]
-      if(length(this.donor)>1){
-        this.donor = sample(this.donor, size = 1)
+    if(bins[b] %in% donors.list$bins){ #if the bin where the current microhomology is bound countains a donor (in the donor.list)
+      donor = donors.list$id[which(donors.list$bins == bins[b])] #list of the donor(s) contained into the current.bin
+      # If we found a microhomology in a bin that also contains a potential donor ,
+      #   we consider a probability of 1/2 for this microhomology to homologous, and thus 1/2 to be heterologous in the other case.
+      yy = runif(1)
+      if(yy <= 0.5){ #probability to be a donor
+        if(length(donor)>1){
+          donor = sample(donor, size = 1) #rare case where we have more than one donor into a bin
+          identities = c(identities, donor) #homology, bound to a potential donor
+        }else{
+          identities = c(identities, donor) #homology, bound to a potential donor
+        }
+      }else{
+        identities = c(identities, "H") #heterology
       }
-      identities = c(identities, this.donor)
     }else{
-      identities = c(identities, "H")
+      identities = c(identities, "H") #heterology
     }
   }
   
-  # donor.ids : vector of homologous MHs  ;
+  # For hologies bound to LYS2 (good donor at chromosome 2);
+  #   We just modify the occupied.rad51
+  # donor.ids : vector of homologous MHs bound to LYS2  ;
   donor.ids = matches[which(identities == "LYS")]
   
   # If the MH is also a self-micro,
@@ -193,16 +202,14 @@ genome.wide.sei = function(initial.binding.tries){
 #########################################################################################################
 #########################################################################################################
 
-new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
-  # When a binding is homologous, we have to search others MHs in a distance search windows ;
-  # The number of bindings per search window is the bindings.per.tethering variable ;
+new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, kon.prob){
   
-  # correct.binding : vector of indexes for the micro-homologies (LYS) donors ;
-  # new.bindings : deep copy of an empty occupied.rad51 ;
-  correct.bindings = which(occupied.rad51$donor.invasions != "H" & occupied.rad51$donor.invasions %!in% donors.blacklist)
-  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c())
+  genome.bindings = which(occupied.rad51$donor.invasions %!in% donors.blacklist) #list of all bound MHs with the whole genome (genome.wide.sei step)
+  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()) #initialize the list that will be return (copy of an empty occupied.rad51 list)
   
-  # Check for unbound sites :
+  # Check for unbound sites.
+  #   If not, don't go futher and just return an empty list.
+  #   All the rad51 are matched somewhere in the genome. 
   if (length(find.occupancies()) == 0){
     return(new.bindings)
   }
@@ -212,17 +219,19 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
   bins = c()
   identities= c()
   
-  for (binding.index in correct.bindings){
+  for (binding.index in genome.bindings){
     if (length(bindings) > 0){
       if (length(find.occupancies(additional.removals = bindings)) == 0){break}
     }else{ 
       if (length(find.occupancies()) == 0){break} 
     }
+    
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
     current.selocus = occupied.rad51$lys2.microhomology[binding.index]
     current.bin = occupied.rad51$genome.bins[binding.index]
-    this.donor = occupied.rad51$donor.invasions[binding.index]
+    current.id = occupied.rad51$donor.invasions[binding.index]
     
+    # "additionals" will be past as argument during the next calls of the find.occupancies() function.
     if (length(bindings) <=0){
       additionals = "none"
     }else{
@@ -237,45 +246,96 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering){
     if (length(open.sites) <= 0){next}
     current.bindings = c()
     
-    # Bind an unoccupied site located in the search window around our current locus ;
-    for (j in 1:bindings.per.tethering){
-      if (length(open.sites)==1){
-        current.bindings[j] = open.sites
-        bins = c(bins, current.bin)
-        identities = c(identities, this.donor)
-        
-      }else{
-        candidate = sample(open.sites, size = 1)
-        yy = runif(1)
-        if(yy <= kon){
-          current.bindings = c(current.bindings,candidate)
-          bins = c(bins, current.bin)
-          identities = c(identities, this.donor)
+    # Here, for each binding Mh, we want to bind j other MHs in a window, this is the tethering phase. 
+    # Of course, we can only bind new microhomologies onto free sites of the invading fragment (i.e only the open.sites can be matched).
+    
+    # In the case where the current MH is heterologous :
+    #   We look at other MHs in the window distance that are in the same bin that the current heterology.
+    
+    if(current.id == "H"){
+      for (j in 1:bindings.per.tethering){
+        if (length(open.sites)==1){
+          # if only one open.site remains free, i.e. the invading fragment is almost fully bound
+          contact.freq = sequences.contacts.bins[open.sites, ] #check for all bins the frequence of contact for remaining open.site ;
+          possible.bins = bins.id[which(contact.freq > 0)] #Keep only the bins where the matche has a non-null contact frequence ;
+          if(current.bin %in% possible.bins){ #check if we can bind an MH that is in the same bin as the current hetetology
+            yy = runif(1)
+            if(yy <= kon.prob){ #kon : probability of association for each binding
+              candidate = open.sites
+              current.bindings = c(current.bindings,candidate)
+              bins = c(bins, current.bin)
+              identities = c(identities, current.id)
+              open.sites = open.sites[-which(open.sites %in% (candidate-7):(candidate+7))]
+              if (length(open.sites) <1){break}
+            }
+          }
+        }else{
+          #Most often case where we have more than one open.sites.
+          # That the same process as above (with one remaining open.site), but we just sample the possible open.sites
+          candidate = sample(open.sites, size = 1) #select one sites among the open.sites
+          contact.freq = sequences.contacts.bins[candidate, ]
+          possible.bins = bins.id[which(contact.freq > 0)]
+          if(current.bin %in% possible.bins){
+            yy = runif(1)
+            if(yy <= kon.prob){ #kon
+              current.bindings = c(current.bindings,candidate)
+              bins = c(bins, current.bin)
+              identities = c(identities, current.id)
+              open.sites = open.sites[-which(open.sites %in% (candidate-7):(candidate+7))]
+              if (length(open.sites) <1){break}
+            }
+          }
         }
       }
-      # Remove the candidates and the 7 positions upstream and downstream it from the free sites index ;
-      open.sites = open.sites[-which(open.sites %in% (current.bindings[j]-7):(current.bindings[j] + 7))]
-      if (length(open.sites) <1){break}
+    }else{
+      # In the case where the current MH is homologous, i.e. bound to a donor (in the donors.list) :
+      #   We make also a tethering but for homologous MHs
+      for (j in 1:bindings.per.tethering){
+        if (length(open.sites)==1){
+          yy = runif(1)
+          if(yy <= kon.prob){
+            candidate = open.sites
+            current.bindings = c(current.bindings,candidate)
+            bins = c(bins, current.bin)
+            identities = c(identities, current.id)
+            open.sites = open.sites[-which(open.sites %in% (candidate-7):(candidate+7))]
+            if (length(open.sites) <1){break}
+          }
+        }else{
+          candidate = sample(open.sites, size = 1)
+          yy = runif(1)
+          if(yy <= kon.prob){
+            current.bindings = c(current.bindings,candidate)
+            bins = c(bins, current.bin)
+            identities = c(identities, current.id)
+            open.sites = open.sites[-which(open.sites %in% (candidate-7):(candidate+7))]
+            if (length(open.sites) <1){break}
+          }
+        }
+      }
     }
     bindings = c(bindings, current.bindings)
   }
   
-  # donor.ids : same as in the genome.wide.sei function  ;
-  donor.ids = bindings[which(identities == "LYS")]
+  # If some rad51 are bound to LYS2 (good donor) ,
+  #   their identities will become something like "472957",
+  #   it's the exact genomic position of lys2 bound nucléotide.
+  #   The start of lys2 gene in the genome is 473927.
+  lys.ids = bindings[which(identities %!in% donors.list$id & identities != "H")]
   
-  for (index in which(donor.ids %in% self.micros$position1)){
-    y = which(self.micros$position1 == donor.ids[index])[1]
+  for (index in which(lys.ids %in% self.micros$position1)){
+    y = which(self.micros$position1 == lys.ids[index])[1]
     sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
     if(!is.na(self.micros$position3[y])){
       sampling.micros =   c(sampling.micros,self.micros$position3[y])
     }
-    donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
+    lys.ids[index] = sample(as.numeric(sampling.micros), size = 1)
   }
   
-  identities[which(identities == "LYS")] = 473927 - donor.ids
+  identities[which(identities == "LYS")] = 473927 - lys.ids
   new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
   new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
-  new.bindings$donor.invasions    = c(new.bindings$donor.invasions, identities)
+  new.bindings$donor.invasions  = c(new.bindings$donor.invasions, identities)
   
   if (occupied.rad51$bound != "unbound"){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
@@ -471,6 +531,8 @@ zipping <- function(rad54, zipping.list, donor, limit = 4){
   }
 }
 
+#########################################################################################################
+#########################################################################################################
 
 #########################################################################################################
 ################################Outputs functions #######################################################
@@ -627,15 +689,12 @@ stats.plots <- function(dirnew_plots, lys.occupancy.firsts){
 chr_pos_occurences = c()
 for (i in 2:ncol(sequences.bins)){
   chr_pos_occurences= c(chr_pos_occurences, 
-                        paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], 
-                              str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
+                        paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
 }
-
 chr_pos_contacts = c()
 for (i in 1:length(bins.id)){
   chr_pos_contacts= c(chr_pos_contacts, 
-                      paste(str_split(bins.id[i], "_")[[1]][1], 
-                            str_split(bins.id[i], "_")[[1]][2], sep="_"))
+                      paste(str_split(bins.id[i], "_")[[1]][1], str_split(bins.id[i], "_")[[1]][2], sep="_"))
 }
 
 remove = which(chr_pos_occurences %!in% chr_pos_contacts)+1
@@ -655,19 +714,19 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 600 # Length of simulation in time steps
+num.time.steps = 800 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
-kon.group<-c(0.4) #binding probabilities for every binding try
+test.replicates = 30 # How many times to simulate, replicates
+kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor 
-additional.donors <- 2 # Additional donors ( without LYS2)
+misalignments.cutoff <- 4 #How many mismatches are allowed before break the zipping phase for the current donor 
+# additional.donors <- 2 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -832,6 +891,11 @@ for (trial in 1:test.replicates){
     binding.ts$length = rep(ly.names, each = (num.time.steps / graph.resolution))
   }
   
+  # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
+  # The time for this operation is quite random, therefore we simulate it with a normal law :
+  exonuclease.job <- as.integer(rnorm(n=1, mean = 25, sd = 10))
+  if(exonuclease.job <=1){exonuclease.job = 1}
+  
   for (fragment in 1:3){
     # initialize the ID and state of the current invading strand 
     bigtracker = bigtracker +1
@@ -859,13 +923,14 @@ for (trial in 1:test.replicates){
     occupied.rad51$lys2.microhomology = c()
     
     # State of the invading fragment (occupancy) with donor(s)
-    donors.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),5))
-    names(donors.occupancy) = c('bp', 'bound', "bound.id", "donor.id", "zipped")
+    donors.occupancy = as.data.frame(matrix(0, nchar(lys2.fragment),6))
+    names(donors.occupancy) = c('bp', 'bound', "bound.id", "donor.id", "zipped", "bins")
     donors.occupancy$bp = 1:nchar(lys2.fragment)
     donors.occupancy$bound = "no"
     donors.occupancy$bound.id = "unbound"
     donors.occupancy$donor.id = "unknown"
     donors.occupancy$zipped = "no"
+    donors.occupancy$bins = "unknown"
     
     first.lys = 0 #the first homology bound to lys2
     twoh.lys = 0 # the first two hundred homologies bound to lys2
@@ -888,11 +953,7 @@ for (trial in 1:test.replicates){
     unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
     
     #probability of detection proportional to the length of invading strand :
-    crosslink.density <- 500 * 1.75 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
-    
-    # exonucleases are involved in the resection process of broken strands before starting the homologies search via rad51
-    # The time for this operation is quite random, therefore we simulate it with a normal law :
-    exonuclease.job <- as.integer(abs(rnorm(n=1, mean = 40, sd = 10)))
+    crosslink.density <- 500 * 1.5 * (nchar(lys2.fragment) / as.integer(max(ly.type))) 
     
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
@@ -903,7 +964,7 @@ for (trial in 1:test.replicates){
       # Seach homologies in the binding tethering window : new.microhomologizer 
       if (occupied.rad51$bound != "unbound" & time.step > exonuclease.job){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
-          new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering)
+          new.bindings = new.microhomologizer(occupied.rad51, search.window, bindings.per.tethering, kon.prob=kon.prob)
           occupied.rad51$genome.bins = c(occupied.rad51$genome.bins, new.bindings$genome.bins)
           occupied.rad51$donor.invasions = c(occupied.rad51$donor.invasions,new.bindings$donor.invasions)
           occupied.rad51$lys2.microhomology = c(occupied.rad51$lys2.microhomology, new.bindings$lys2.microhomology)
@@ -929,6 +990,24 @@ for (trial in 1:test.replicates){
         }
       }
       
+      ############# Dissociate large number of heterologies #############################
+      
+      #Kind of zipping but for heterologies :
+      # In the case where 200 or more hétérologies from the same bin are bound to the invading strand,
+      # as there are heterologous, we simulate an SEI that will failed because of mismatches during zipping
+      # and lead to the dissociation of these heterologies :
+      
+      for (bin in unique(donors.occupancy$bins)){
+        if(bin != "unknown" & length(which(donors.occupancy$bound.id == "heterology" & donors.occupancy$bins == bin)) > 200){
+          remove.rad51 = which(occupied.rad51$donor.invasions == "H" & occupied.rad51$genome.bins == bin)
+          occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
+          occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
+          occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
+          break
+        }
+      }
+      
+      ##########################################################################
       ###################### KOFF1 #############################################
       #simulate random dissociation(s)
       num.bound = length(occupied.rad51$donor.invasions)
@@ -945,14 +1024,17 @@ for (trial in 1:test.replicates){
       }
       
       ##########################################################################
-      ############################## Ocuupancy #################################
+      ############################## Occupancy #################################
       donors.occupancy$bound = "no"
       donors.occupancy$bound.id = "unbound"
       donors.occupancy$donor.id = "unknown"
+      donors.occupancy$bins = "unknown"
       
       if(occupied.rad51$bound != "unbound"){
         for (i in 1:length(occupied.rad51$lys2.microhomology)){
           donors.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
+          donors.occupancy$bins[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = occupied.rad51$genome.bins[i]
+          
           if(occupied.rad51$donor.invasions[i] != "H"){
             if (str_detect(pattern = "donor", occupied.rad51$donor.invasions[i])){
               donors.occupancy$bound.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
@@ -972,6 +1054,7 @@ for (trial in 1:test.replicates){
         donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
         donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
         donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
+        donors.occupancy$bins[which(donors.occupancy$zipped == "yes")] = donors.list$bins[which(donors.list$id == current.donor)] 
       }
       
       ##########################################################################
@@ -1006,6 +1089,7 @@ for (trial in 1:test.replicates){
               donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
               donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
               donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
+              donors.occupancy$bins[which(donors.occupancy$zipped== "yes")] = donors.list$bins[which(donors.list$id == current.donor)]
               
             }else if (new.zip == -1){
               #i.e zipping failed because the current donor as too much differences with the invading strand
@@ -1021,8 +1105,9 @@ for (trial in 1:test.replicates){
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
               donors.occupancy$zipped = "no"
-              
+              donors.occupancy$bins[which(donors.occupancy$donor.id==current.donor)] = "unknown"
               donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
+              
               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
               names(zipped.fragments.list ) = c("start", "end", "sequences")
               unzipped.rad54 = pos.rad54
@@ -1058,6 +1143,7 @@ for (trial in 1:test.replicates){
             donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
             donors.occupancy$donor.id[current.zip.start : current.zip.end] = "unknown"
+            donors.occupancy$bins[current.zip.start : current.zip.end] = "unknown"
             
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
             
