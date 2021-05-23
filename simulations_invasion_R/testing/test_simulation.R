@@ -11,6 +11,7 @@ rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_s
 
 library(ggplot2)
 library(stringr)
+library(dplyr)
 
 ################################################################################
 ############################## Import the datas ################################
@@ -84,7 +85,7 @@ rm(sequences.bins, contacts)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -327,7 +328,6 @@ for (trial in 1:test.replicates){
       if(kon.prob == 0){
         next
       }
-      
       # Seach homologies in the binding tethering window : new.microhomologizer 
       if (occupied.rad51$bound != "unbound" & time.step > exonuclease.job){
         if (length(occupied.rad51$donor.invasions) != sum(occupied.rad51$donor.invasions == "H")){
@@ -373,7 +373,6 @@ for (trial in 1:test.replicates){
           break
         }
       }
-      
       ##########################################################################
       ###################### KOFF1 #############################################
       #simulate random dissociation(s)
@@ -423,29 +422,27 @@ for (trial in 1:test.replicates){
         donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
         donors.occupancy$bins[which(donors.occupancy$zipped == "yes")] = donors.list$bins[which(donors.list$id == current.donor)] 
       }
-      
       ##########################################################################
       ################################# Zipping ################################
-
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(length(unzipped.rad54 > 0) && current.donor != "" &&
          donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
-
+        
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
           donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
         }
-
+        
         for (pos in unzipped.rad54){
-
+          
           # Check if the sequence to zip is big enough ;
           #   We decided >= 16 (2*8 nts) arbitrary (could be more or less)
           if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
             new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
-
+            
             if(length(new.zip) > 1){
               #i.e new.zip is a vector,
               #i.e the zipping successes
-
+              
               unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)] #remove the current overlapped rad54 from the list
               zipped.fragments.list = rbind(zipped.fragments.list, new.zip) # add the zipped fragment to list of all the zip
               names(zipped.fragments.list) = c("start", "end", "sequences")
@@ -457,18 +454,18 @@ for (trial in 1:test.replicates){
               donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
               donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
               donors.occupancy$bins[which(donors.occupancy$zipped== "yes")] = donors.list$bins[which(donors.list$id == current.donor)]
-
+              
             }else if (new.zip == -1){
               #i.e zipping failed because the current donor as too much differences with the invading strand
               # Therefore we know that the current donor is not good enough to lead to homologous recombination,
               # We have to search for another potential donor, and remove the current donor from the list;
-
+              
               #Dissociate all rad51 bound to this wrong donor
               remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
               occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
               occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
               occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
-
+              
               donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
               donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
               donors.occupancy$zipped = "no"
@@ -481,7 +478,7 @@ for (trial in 1:test.replicates){
               donors.list$invasion[which(donors.list$id == current.donor)] = "failed"
               donors.blacklist = c(donors.blacklist, current.donor)
               current.donor = ""
-
+              
               if(length(occupied.rad51$donor.invasions) == 0){
                 occupied.rad51$bound = "unbound"
                 break
@@ -535,7 +532,6 @@ for (trial in 1:test.replicates){
           }
         }
       }
-      
       ##########################################################################
       
       #first homology to LYS2
@@ -580,7 +576,7 @@ for (trial in 1:test.replicates){
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
         binding.ts$bound[binding.ts$time.step == time.step & 
-                                 binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
+                           binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
         
         binding.ts$heterologies[binding.ts$time.step == time.step & 
                                   binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
@@ -619,7 +615,7 @@ for (trial in 1:test.replicates){
         }
       }
       
-      
+    #print(c(ly.type, time.step, trial))
     }#next time step
   }#next fragment
   
@@ -638,4 +634,3 @@ for (trial in 1:test.replicates){
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
 stats.plots(dirnew_plots = dirnew_contacts, lys.occupancy.firsts = lys.occupancy.firsts)
-

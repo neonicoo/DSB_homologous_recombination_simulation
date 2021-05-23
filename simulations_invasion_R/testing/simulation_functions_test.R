@@ -96,7 +96,7 @@ genome.wide.sei = function(initial.binding.tries){
     return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
   }
   
-
+  
   # Set IDs of each bound (Heterology (H) vs LYS); 
   # If LYS, set as genomic position in + strand notation
   identities = c()
@@ -120,7 +120,7 @@ genome.wide.sei = function(initial.binding.tries){
       identities = c(identities, "H") #heterology
     }
   }
-
+  
   # For hologies bound to LYS2 (good donor at chromosome 2);
   #   We just modify the occupied.rad51
   # donor.ids : vector of homologous MHs bound to LYS2  ;
