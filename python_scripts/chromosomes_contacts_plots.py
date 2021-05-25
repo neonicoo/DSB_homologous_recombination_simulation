@@ -40,9 +40,9 @@ if __name__ == "__main__" :
 	plt.figure(figsize = (30,20))
 	df2000_filtered = copy.deepcopy(df2000)
 	df2000_filtered[df2000 < 1 ]= np.nan
-	sns.color_palette("mako", as_cmap=True)
-	ax = sns.heatmap(df2000_filtered, cmap = "mako_r")
-	ax.vlines(chr_vline, *ax.get_xlim(), color="orange", alpha = 0.8, linewidth =1)
+	#sns.color_palette("mako", as_cmap=True)
+	ax = sns.heatmap(df2000_filtered, cmap = "rocket_r")
+	#ax.vlines(chr_vline, *ax.get_xlim(), color="orange", alpha = 0.8, linewidth =1)
 	plt.savefig(path + "chromosomes_contact_heatmap.jpg")
 	plt.show()
 
