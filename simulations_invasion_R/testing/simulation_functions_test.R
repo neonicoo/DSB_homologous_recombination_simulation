@@ -436,7 +436,7 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor, limit = 4){
+zipping <- function(rad54, zipping.list, donor, limit){
   
   pos <- rad54
   zip.indexe <- c()

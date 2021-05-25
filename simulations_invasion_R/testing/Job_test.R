@@ -481,7 +481,7 @@ check.before.zipping <- function(current.rad54, donor){
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor, limit = 4){
+zipping <- function(rad54, zipping.list, donor, limit){
   
   pos <- rad54
   zip.indexe <- c()
@@ -714,10 +714,10 @@ rm(sequences.bins, contacts)
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 30 # How many times to simulate, replicates
+test.replicates = 20 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -725,8 +725,8 @@ m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-misalignments.cutoff <- 4 #How many mismatches are allowed before break the zipping phase for the current donor 
-# additional.donors <- 2 # Additional donors ( without LYS2)
+misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
+#additional.donors <- 0 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005

@@ -93,7 +93,7 @@ m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
-misalignments.cutoff <- 4 #How many mismatches are allowed before break the zipping phase for the current donor 
+misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
 additional.donors <- 2 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
