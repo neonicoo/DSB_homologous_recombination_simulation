@@ -101,7 +101,7 @@ additional.donors <- 2 # Additional donors ( without LYS2)
 kon.group.names<- gsub("\\.", "", as.character(kon.group))
 koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
 koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
-rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
+rad54.group.names<-gsub("\\.", "", as.character(round(rad54.group, 4)))
 
 print(kon.group.names)
 print(koff1.group.names)
@@ -128,7 +128,7 @@ kon.name=kon.group.names[kon]
 koff1.name=koff1.group.names[koff]
 koff2.name=koff2.group.names[koff2]
 rad54.name=rad54.group.names[rad54]
-rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
+rdh54.name=gsub("\\.", "", as.character(round(rad54.prop*rdh54.prop, 4)))
 
 # Initialize the occupied.rad51 list that contains :
 #   the state of the invading fragment : bound or unbound ,

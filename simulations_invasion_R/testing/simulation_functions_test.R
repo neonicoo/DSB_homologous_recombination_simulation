@@ -103,10 +103,10 @@ genome.wide.sei = function(initial.binding.tries){
   for (b in 1:length(matches)){
     if(bins[b] %in% donors.list$bins){ #if the bin where the current microhomology is bound countains a donor (in the donor.list)
       donor = donors.list$id[which(donors.list$bins == bins[b])] #list of the donor(s) contained into the current.bin
-      # If we found a microhomology in a bin that also contains a potential donor ,
+      # If we found a microhomology in a bin that contains a potential donor ,
       #   we consider a probability of 1/2 for this microhomology to homologous, and thus 1/2 to be heterologous in the other case.
       yy = runif(1)
-      if(yy <= 0.5){ #probability to be a donor
+      if(yy <= 0.5){ #probability to be a donor 
         if(length(donor)>1){
           donor = sample(donor, size = 1) #rare case where we have more than one donor into a bin
           identities = c(identities, donor) #homology, bound to a potential donor

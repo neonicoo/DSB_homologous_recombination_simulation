@@ -717,23 +717,23 @@ rm(sequences.bins, contacts)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 20 # How many times to simulate, replicates
+test.replicates = 25 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(1/200) #proportional to the length of invading strand
+#rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
 misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
-#additional.donors <- 0 # Additional donors ( without LYS2)
+additional.donors <- 0 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
 kon.group.names<- gsub("\\.", "", as.character(kon.group))
 koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
 koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
-rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
+rad54.group.names<-gsub("\\.", "", as.character(round(rad54.group, 4)))
 
 print(kon.group.names)
 print(koff1.group.names)
@@ -760,7 +760,7 @@ kon.name=kon.group.names[kon]
 koff1.name=koff1.group.names[koff]
 koff2.name=koff2.group.names[koff2]
 rad54.name=rad54.group.names[rad54]
-rdh54.name=gsub("\\.", "", as.character(rad54.prop*rdh54.prop))
+rdh54.name=gsub("\\.", "", as.character(round(rad54.prop*rdh54.prop, 4)))
 
 # Initialize the occupied.rad51 list that contains :
 #   the state of the invading fragment : bound or unbound ,

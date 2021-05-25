@@ -15,33 +15,33 @@ setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simul
 parallel::detectCores()
 
 #Simulation 0
-additional.donors = 0
+rad54.group <- c(1/10) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 1
-additional.donors = 1
+rad54.group <- c(1/1000) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 2
-additional.donors = 2
+rad54.group <- c(1/20) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 3
-additional.donors = 4
+rad54.group <- c(1/750) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 4
-additional.donors = 5
+rad54.group <- c(1/500) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 5
-additional.donors = 6
+rad54.group <- c(1/200) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 6
-additional.donors = 8
+rad54.group <- c(1/100) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 7
-additional.donors = 10
+rad54.group <- c(1/50) 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
