@@ -120,28 +120,8 @@ genome.wide.sei = function(initial.binding.tries){
       identities = c(identities, "H") #heterology
     }
   }
-  
-  # For hologies bound to LYS2 (good donor at chromosome 2);
-  #   We just modify the occupied.rad51
-  # donor.ids : vector of homologous MHs bound to LYS2  ;
-  donor.ids = matches[which(identities == "LYS")]
-  
-  # If the MH is also a self-micro,
-  #  Choose randomly a binding site  between all the self micros occurrences (position1, position2, position3 etc...:
-  for (index in which(donor.ids %in% self.micros$position1)){
-    y = which(self.micros$position1 == donor.ids[index])[1]
-    sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
-    if(!is.na(self.micros$position3[y])){
-      sampling.micros = c(sampling.micros,self.micros$position3[y])
-    }
-    donor.ids[index] = sample(as.numeric(sampling.micros), size = 1)
-  }
-  
-  # 473927 - donor.ids : position of the last nt for the ly.sequence in the chr II - postion of the donor where the MH is "LYS"
-  identities[which(identities == "LYS")] = 473927 - donor.ids
-  
+
   if (occupied.rad51$bound != "unbound"){
-    #remove = which((identities !="H") & (as.character(identities) %in% occupied.rad51$donor.invasions) )
     remove = which(matches %in% occupied.rad51$lys2.microhomology)
     if (length(remove)>0){
       identities = identities[-remove]
@@ -271,30 +251,13 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
     }
     bindings = c(bindings, current.bindings)
   }
-  
-  # If some rad51 are bound to LYS2 (good donor) ,
-  #   their identities will become something like "472957",
-  #   it's the exact genomic position of lys2 bound nucléotide.
-  #   The start of lys2 gene in the genome is 473927.
-  lys.ids = bindings[which(identities %!in% donors.list$id & identities != "H")]
-  
-  for (index in which(lys.ids %in% self.micros$position1)){
-    y = which(self.micros$position1 == lys.ids[index])[1]
-    sampling.micros = c(self.micros$position1[y], self.micros$position2[y])
-    if(!is.na(self.micros$position3[y])){
-      sampling.micros =   c(sampling.micros,self.micros$position3[y])
-    }
-    lys.ids[index] = sample(as.numeric(sampling.micros), size = 1)
-  }
-  
-  identities[which(identities == "LYS")] = 473927 - lys.ids
+ 
   new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
   new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
   new.bindings$donor.invasions  = c(new.bindings$donor.invasions, identities)
   
   if (occupied.rad51$bound != "unbound"){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
-    #remove = which((new.bindings$donor.invasions !="H") & (as.character(new.bindings$donor.invasions) %in% occupied.rad51$donor.invasions) )
     remove = which(bindings %in% occupied.rad51$lys2.microhomology)
     if (length(remove) > 0){
       new.bindings$genome.bins = new.bindings$genome.bins[-remove]

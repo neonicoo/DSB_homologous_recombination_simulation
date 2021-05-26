@@ -129,11 +129,11 @@ rdh54.name=gsub("\\.", "", as.character(round(rad54.prop*rdh54.prop, 4)))
 #   the respective genome bins were heterologies and homologies are found,
 #   the nature of the donor :
 #     "H" if heterology ;
-#     "!LYS#" if it's a donor (in the donors.list$id)
-#     "473927 - position of rad51 in invading fragment" if the donor is LYS2
+#     "donor#" if it's a donor (in the donors.list$id)
+#     "LYS" if the donor is LYS2
 #   the position of rad51 in invading fragment for each bound microhomologies ;
 
-occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = 473927, lys2.microhomology = 368)
+occupied.rad51 = list(bound = "unbound",strand = "negative", genome.bins = c("chr2_470001_480001"), donor.invasions = "LYS", lys2.microhomology = 368)
 
 # Generate N additional donors (other than lys2),
 #   with a random number of mutations (between 10% and 40% snp ),
@@ -391,23 +391,24 @@ for (fragment in 1:3){
     
     if(occupied.rad51$bound != "unbound"){
       for (i in 1:length(occupied.rad51$lys2.microhomology)){
-        donors.occupancy$bound[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "yes"
-        donors.occupancy$bins[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = occupied.rad51$genome.bins[i]
+        micros.idx = occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)
+        micros.bin = occupied.rad51$genome.bins[i]
+        micros.donor = occupied.rad51$donor.invasions[i]
         
-        if(occupied.rad51$donor.invasions[i] != "H"){
-          if (str_detect(pattern = "donor", occupied.rad51$donor.invasions[i])){
-            donors.occupancy$bound.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
-            donors.occupancy$donor.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = occupied.rad51$donor.invasions[i]
-            
-          }else{
-            donors.occupancy$bound.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "homology"
-            donors.occupancy$donor.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "LYS"
-          }
-          
-        }else if(occupied.rad51$donor.invasions[i] == "H"){
-          donors.occupancy$bound.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)]  = "heterology"
-          donors.occupancy$donor.id[occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)] = "unknown"
-        }
+        donors.occupancy$bound[micros.idx]  = "yes"
+        donors.occupancy$bins[micros.idx] = micros.bin
+        
+        donors.occupancy$bound.id[micros.idx] = ifelse(micros.donor != "H", "homology", "heterology")
+        donors.occupancy$donor.id[micros.idx] = ifelse(micros.donor != "H", micros.donor, "unknown")
+        
+        # if(micros.donor != "H"){
+        #   donors.occupancy$bound.id[micros.idx] = "homology" 
+        #   donors.occupancy$donor.id[micros.idx] =  micros.donor
+        #   
+        # }else{
+        #   donors.occupancy$bound.id[micros.idx]  = "heterology"
+        #   donors.occupancy$donor.id[micros.idx] = "unknown"
+        # }
       }
       
       donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
@@ -596,17 +597,6 @@ for (fragment in 1:3){
     }
     
     if(occupied.rad51$bound != "unbound"){
-  
-      # for (i in 1:length(table(occupied.rad51$genome.bins))){
-      #   bin <- names(table(occupied.rad51$genome.bins))[i]
-      #   count <- table(occupied.rad51$genome.bins)[[i]]
-      # 
-      #   chromosome.contacts[chromosome.contacts$time.step == time.step &
-      #                         chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] =
-      #     chromosome.contacts[chromosome.contacts$time.step == time.step &
-      #                           chromosome.contacts$length == ly.type, names(chromosome.contacts) == bin] + count
-      # }
-    
       occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
       names(occupied.bins) = c("bins", "freq")
       for(i in 1:nrow(occupied.bins)){
