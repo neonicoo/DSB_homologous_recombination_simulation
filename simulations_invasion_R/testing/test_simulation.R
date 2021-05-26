@@ -78,7 +78,7 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 5 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -390,27 +390,13 @@ for (fragment in 1:3){
     donors.occupancy$bins = "unknown"
     
     if(occupied.rad51$bound != "unbound"){
-      for (i in 1:length(occupied.rad51$lys2.microhomology)){
-        micros.idx = occupied.rad51$lys2.microhomology[i]:(occupied.rad51$lys2.microhomology[i] + 7)
-        micros.bin = occupied.rad51$genome.bins[i]
-        micros.donor = occupied.rad51$donor.invasions[i]
+      rad51.cover.index = c(sapply(occupied.rad51$lys2.microhomology, function(x){seq(from=x, to=x+7)}))
+      donors.occupancy$bound[rad51.cover.index]  = "yes"
+      donors.occupancy$bins[rad51.cover.index] = c(sapply(occupied.rad51$genome.bins, function(x){rep(x, each = 8)}))
+      donors.occupancy$donor.id[rad51.cover.index] = c(sapply(occupied.rad51$donor.invasions, function(x){rep(x, each = 8)}))
+      donors.occupancy$bound.id[which(donors.occupancy$donor.id == "H")] = "heterology"
+      donors.occupancy$bound.id[which(donors.occupancy$donor.id != "H" & donors.occupancy$donor.id != "unknown")] = "homology"
         
-        donors.occupancy$bound[micros.idx]  = "yes"
-        donors.occupancy$bins[micros.idx] = micros.bin
-        
-        donors.occupancy$bound.id[micros.idx] = ifelse(micros.donor != "H", "homology", "heterology")
-        donors.occupancy$donor.id[micros.idx] = ifelse(micros.donor != "H", micros.donor, "unknown")
-        
-        # if(micros.donor != "H"){
-        #   donors.occupancy$bound.id[micros.idx] = "homology" 
-        #   donors.occupancy$donor.id[micros.idx] =  micros.donor
-        #   
-        # }else{
-        #   donors.occupancy$bound.id[micros.idx]  = "heterology"
-        #   donors.occupancy$donor.id[micros.idx] = "unknown"
-        # }
-      }
-      
       donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
       donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
       donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
@@ -544,7 +530,7 @@ for (fragment in 1:3){
     
     if(current.donor == ""){
       for (candidate.donor in unique(donors.occupancy$donor.id)){
-        if(candidate.donor != "unknown" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
+        if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
            donors.list$invasion[which(donors.list$id == candidate.donor)] == "no"){
           
           current.donor = candidate.donor
