@@ -11,7 +11,7 @@ setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simul
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
 # Only take the directories that start with the number of time steps, this might have to be adjusted
-rd<-grep(pattern="^./700",run.dirs)
+rd<-grep(pattern="^./600",run.dirs)
 run.dirs<-run.dirs[rd]
 
 # Grab the directories with data in their path
@@ -19,10 +19,10 @@ rdd<-grep(pattern="/data$",run.dirs)
 run.dirs<-run.dirs[rdd]
 
 # How many replicates did you use?
-test.replicates = 30
+test.replicates = 25
 
 # How many parameters sets are there?
-num.parameters = 7
+num.parameters = 16
 
 # construct the data structure that will save all the data
 plateau_data = as.data.frame(matrix(0,num.parameters,14))
