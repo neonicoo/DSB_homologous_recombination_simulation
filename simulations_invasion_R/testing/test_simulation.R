@@ -13,6 +13,7 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(profvis)
+library(Rcpp)
 
 ################################################################################
 ############################## Import the datas ################################
@@ -86,7 +87,7 @@ search.window.group = c(250) #the genomic distance of the tethering effect (per 
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
 misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
-additional.donors <- 4 # Additional donors ( without LYS2)
+additional.donors <- 2 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -103,7 +104,7 @@ print(koff2.group.names)
 
 ################################################################################
 ############################ Single run simulation #############################
-#profvis({
+profvis({
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; #for single Job run
 
@@ -392,7 +393,10 @@ for (fragment in 1:3){
     donors.occupancy$bins = "unknown"
     
     if(occupied.rad51$bound != "unbound"){
-      rad51.cover.index = c(sapply(occupied.rad51$lys2.microhomology, function(x){seq(from=x, to=x+7)}))
+      
+      rad51.cover.index = occupied.rad51$lys2.microhomology
+      for(i in 1:7){rad51.cover.index = c(rad51.cover.index, occupied.rad51$lys2.microhomology+i)}
+      
       donors.occupancy$bound[rad51.cover.index]  = "yes"
       donors.occupancy$bins[rad51.cover.index] = c(sapply(occupied.rad51$genome.bins, function(x){rep(x, each = 8)}))
       donors.occupancy$donor.id[rad51.cover.index] = c(sapply(occupied.rad51$donor.invasions, function(x){rep(x, each = 8)}))
@@ -608,7 +612,7 @@ if(saver < 3){
 
 saver=saver+1
 }#end process
-#})
+})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)

@@ -17,21 +17,18 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
   if (occupied.rad51$bound=="unbound"){
     return(indices)
   }
-  
-  remove = c(occupied.rad51$lys2.microhomology)
-  for (i in 1:7){
-    remove = c(remove, (occupied.rad51$lys2.microhomology - i), 
-               (occupied.rad51$lys2.microhomology + i))
+
+  remove = c()
+  for (i in 0:7){
+    remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
+    if(length(additional.removals) > 1){
+      remove = c(remove, (additional.removals - i), (additional.removals + i))
+    }
   }
   
   if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
   if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
-  
-  if (additional.removals[1] != "none"){
-    for (i in 0:7){
-      remove = c(remove, (additional.removals - i), (additional.removals + i))
-    }
-  }
+
   remove = remove[which(remove > 0)] #remove the negative and null indices 
   return(indices[-remove])
 }
