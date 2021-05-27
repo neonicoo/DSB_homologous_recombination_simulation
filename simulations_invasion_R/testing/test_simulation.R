@@ -51,7 +51,6 @@ colnames(contacts)[7] <- "id"
 
 ################################################################################
 ################### Creation of the chromosome contact frequency matrix ########
-profvis({
 # We have to check that the bins are the same between the 2 tables (sequences.bins and contacts) ;
 # For example, for LY sequences.bins we have 2 more bins than in the contacts dataframe, so we remove them ;
 # The comparison is made with the chromosome id and the start position for each bin 
@@ -78,7 +77,7 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -87,7 +86,7 @@ search.window.group = c(250) #the genomic distance of the tethering effect (per 
 rad54.group <- c(1/200) #proportional to the length of invading strand
 rdh54.group <- c(1/10) #proportional to the number of rad54
 misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
-additional.donors <- 2 # Additional donors ( without LYS2)
+additional.donors <- 4 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -104,7 +103,7 @@ print(koff2.group.names)
 
 ################################################################################
 ############################ Single run simulation #############################
-
+#profvis({
 # kon = 2; koff = 3; m = 2; sw = 2; koff2 = 3
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; #for single Job run
 
@@ -357,15 +356,18 @@ for (fragment in 1:3){
     # as there are heterologous, we simulate an SEI that will failed because of mismatches during zipping
     # and lead to the dissociation of these heterologies :
 
-    for (bin in unique(donors.occupancy$bins)){
-      if(bin != "unknown" & length(which(donors.occupancy$bound.id == "heterology" & donors.occupancy$bins == bin)) > 200){
-        remove.rad51 = which(occupied.rad51$donor.invasions == "H" & occupied.rad51$genome.bins == bin)
+    heterologies.stats = as.data.frame(table(donors.occupancy$bins[which(donors.occupancy$bound.id == "heterology")]))
+    if(nrow(heterologies.stats) > 0){
+      names(heterologies.stats) = c("bins", "freq")
+      heterologies.stats = heterologies.stats %>% filter(freq >= 200)
+      remove.rad51 = which(occupied.rad51$genome.bins %in% as.character(heterologies.stats$bins))
+      if(length(remove.rad51)>0){
         occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
         occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
         occupied.rad51$lys2.microhomology = occupied.rad51$lys2.microhomology[-remove.rad51]
-        break
       }
     }
+    
     ##########################################################################
     ###################### KOFF1 #############################################
     #simulate random dissociation(s)
@@ -585,12 +587,10 @@ for (fragment in 1:3){
     if(occupied.rad51$bound != "unbound"){
       occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
       names(occupied.bins) = c("bins", "freq")
-      for(i in 1:nrow(occupied.bins)){
+      chromosome.contacts[chromosome.contacts$time.step == time.step &
+                             chromosome.contacts$length == ly.type, as.character(occupied.bins$bins)] = 
         chromosome.contacts[chromosome.contacts$time.step == time.step &
-                              chromosome.contacts$length == ly.type, names(chromosome.contacts) == occupied.bins$bins[i]] = 
-          chromosome.contacts[chromosome.contacts$time.step == time.step &
-                                chromosome.contacts$length == ly.type, names(chromosome.contacts) == occupied.bins$bins[i]] + occupied.bins$freq[i]
-      }
+                               chromosome.contacts$length == ly.type, as.character(occupied.bins$bins)] + occupied.bins$freq
     }
 
   #print(c(ly.type, time.step, trial))
@@ -608,7 +608,7 @@ if(saver < 3){
 
 saver=saver+1
 }#end process
-})
+#})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
