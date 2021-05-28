@@ -8,29 +8,41 @@
 #########################################################################################################
 
 find.occupancies = function(lower.window ="none", upper.window = "none", additional.removals = "none"){
-  # Find the positions where there is no MH bounded ;
-  # Takes into account distance search window, if they are specified ;
-  # Additional positions not to be retained can be specified as parameters ;
-  # Return a vector of indices of free binding sites ;
+  # # Find the positions where there is no MH bounded ;
+  # # Takes into account distance search window, if they are specified ;
+  # # Additional positions not to be retained can be specified as parameters ;
+  # # Return a vector of indices of free binding sites ;
+  # 
+  # indices = 1:(nchar(lys2.fragment) -7)
+  # if (occupied.rad51$bound=="unbound"){
+  #   return(indices)
+  # }
+  # 
+  # remove = c()
+  # for (i in 0:7){
+  #   remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
+  #   if(length(additional.removals) > 1){
+  #     remove = c(remove, (additional.removals - i), (additional.removals + i))
+  #   }
+  # }
+  # 
+  # if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
+  # if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
+  # 
+  # remove = remove[which(remove > 0)] #remove the negative and null indices
+  # return(indices[-remove])
   
-  indices = 1:(nchar(lys2.fragment) -7)
-  if (occupied.rad51$bound=="unbound"){
-    return(indices)
-  }
+  if(occupied.rad51$bound=="unbound"){
+    indices = 1:(nchar(lys2.fragment) -7)
+  }else{
+    if (lower.window == "none"){lower.window=0}
+    if (upper.window == "none"){upper.window=0}
+    if (additional.removals == "none"){additional.removals=c(0)}
 
-  remove = c()
-  for (i in 0:7){
-    remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
-    if(length(additional.removals) > 1){
-      remove = c(remove, (additional.removals - i), (additional.removals + i))
-    }
+    indices = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = additional.removals,
+                                          upper_window = upper.window, lower_window = lower.window, n = nchar(lys2.fragment))
   }
-  
-  if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
-  if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
-
-  remove = remove[which(remove > 0)] #remove the negative and null indices 
-  return(indices[-remove])
+  return(indices)
 }
 
 #########################################################################################################
@@ -41,6 +53,11 @@ genome.wide.sei = function(initial.binding.tries){
   # Choose region of LY weighted by available microhomologies (MHs);
   # Dont let those already occupied be chosen (by the use of the find.occupancies() function) ;
   
+  # if(occupied.rad51$bound=="unbound"){
+  #   open.sites = 1:(nchar(lys2.fragment) -7)
+  # }else{
+  #   open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))
+  # }
   
   open.sites = find.occupancies() #indexes of unoccupied sites
   

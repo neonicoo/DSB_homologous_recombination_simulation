@@ -12,14 +12,15 @@ rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_s
 library(ggplot2)
 library(stringr)
 library(dplyr)
-library(profvis)
 library(Rcpp)
+library(profvis)
 
 ################################################################################
 ############################## Import the datas ################################
-
+sourceCpp("./simulations_invasion_R/testing/RCPP_functions.cpp")
 source("./simulations_invasion_R/testing/simulation_functions_test.R") #Run the file containing the functions for the simulation 
 source("./simulations_invasion_R/testing/outputs_functions_test.R") #Run the file containing the functions to create the outputs graphs
+
 
 # genome-wide microhomology counts
 forward.sequences <- read.table("./LYS2/Occurences_per_8bp_motif(for+rev_donor).txt", sep="\t", header = TRUE)
