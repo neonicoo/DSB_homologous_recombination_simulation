@@ -8,41 +8,29 @@
 #########################################################################################################
 
 find.occupancies = function(lower.window ="none", upper.window = "none", additional.removals = "none"){
-  # # Find the positions where there is no MH bounded ;
-  # # Takes into account distance search window, if they are specified ;
-  # # Additional positions not to be retained can be specified as parameters ;
-  # # Return a vector of indices of free binding sites ;
-  # 
-  # indices = 1:(nchar(lys2.fragment) -7)
-  # if (occupied.rad51$bound=="unbound"){
-  #   return(indices)
-  # }
-  # 
-  # remove = c()
-  # for (i in 0:7){
-  #   remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
-  #   if(length(additional.removals) > 1){
-  #     remove = c(remove, (additional.removals - i), (additional.removals + i))
-  #   }
-  # }
-  # 
-  # if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
-  # if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
-  # 
-  # remove = remove[which(remove > 0)] #remove the negative and null indices
-  # return(indices[-remove])
-  
-  if(occupied.rad51$bound=="unbound"){
-    indices = 1:(nchar(lys2.fragment) -7)
-  }else{
-    if (lower.window == "none"){lower.window=0}
-    if (upper.window == "none"){upper.window=0}
-    if (additional.removals == "none"){additional.removals=c(0)}
+  # Find the positions where there is no MH bounded ;
+  # Takes into account distance search window, if they are specified ;
+  # Additional positions not to be retained can be specified as parameters ;
+  # Return a vector of indices of free binding sites ;
 
-    indices = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = additional.removals,
-                                          upper_window = upper.window, lower_window = lower.window, n = nchar(lys2.fragment))
+  indices = 1:(nchar(lys2.fragment) -7)
+  if (occupied.rad51$bound=="unbound"){
+    return(indices)
   }
-  return(indices)
+
+  remove = c()
+  for (i in 0:7){
+    remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
+    if(length(additional.removals) > 1){
+      remove = c(remove, (additional.removals - i), (additional.removals + i))
+    }
+  }
+
+  if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
+  if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
+
+  remove = remove[which(remove > 0)] #remove the negative and null indices
+  return(indices[-remove])
 }
 
 #########################################################################################################
@@ -52,14 +40,14 @@ genome.wide.sei = function(initial.binding.tries){
   
   # Choose region of LY weighted by available microhomologies (MHs);
   # Dont let those already occupied be chosen (by the use of the find.occupancies() function) ;
+
+  if(occupied.rad51$bound=="unbound"){
+    open.sites = 1:(nchar(lys2.fragment) -7)
+  }else{
+    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))
+  }
   
-  # if(occupied.rad51$bound=="unbound"){
-  #   open.sites = 1:(nchar(lys2.fragment) -7)
-  # }else{
-  #   open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))
-  # }
-  
-  open.sites = find.occupancies() #indexes of unoccupied sites
+  # open.sites = find.occupancies() #indexes of unoccupied sites
   
   if (length(open.sites)== 0){ #if all the sites are occupied
     return(list(bound = occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
@@ -75,14 +63,14 @@ genome.wide.sei = function(initial.binding.tries){
       matches[i] = open.sites
       contact.freq = sequences.contacts.bins[matches[i], ] #check for all bins the frequence of contact for the current matche ;
       possible.bins = bins.id[which(contact.freq > 0)] #Keep only the bins where the matche has a non-null contact frequence ;
-      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0]) #select a bin among the possible.bins by using frequence of contact as probability ;
+      bins = c(bins, sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])) #select a bin among the possible.bins by using frequence of contact as probability ;
       
     }else{ 
       # Draw a site among those available which will be matched with a MH according to the respective weighted probabilities :
       matches[i] = sample(x=open.sites, size=1, prob = microhomology.probs[open.sites])
       contact.freq = sequences.contacts.bins[matches[i], ] #check for all bins the frequence of contact for the current matche ;
       possible.bins = bins.id[which(contact.freq > 0)] #Keep only the bins where the matche has a non-null contact frequence ;
-      bins[i] = sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0]) #select a bin among the possible.bins by using frequence of contact as probability ;
+      bins = c(bins, sample(x=possible.bins, size=1, prob = contact.freq[contact.freq > 0])) #select a bin among the possible.bins by using frequence of contact as probability ;
     }
     
     # Where there is a match with a MH, we consider that the site concerned is no longer available ;
@@ -97,7 +85,7 @@ genome.wide.sei = function(initial.binding.tries){
       break
     }
   }
-  
+
   # Choose if/which binds;
   # successes : list of sample positions among the matches where the probability of association is good enough to have a bond;
   # The probability of association is called 'Kon'.
@@ -159,7 +147,8 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
   # Check for unbound sites.
   #   If not, don't go futher and just return an empty list.
   #   All the rad51 are matched somewhere in the genome. 
-  if (length(find.occupancies()) == 0){
+  
+  if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))) == 0){
     return(new.bindings)
   }
   
@@ -170,9 +159,13 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
   
   for (binding.index in genome.bindings){
     if (length(bindings) > 0){
-      if (length(find.occupancies(additional.removals = bindings)) == 0){break}
+      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = bindings, n = nchar(lys2.fragment))) == 0){
+        break
+      }
     }else{ 
-      if (length(find.occupancies()) == 0){break} 
+      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))) == 0){
+        break
+      } 
     }
     
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
@@ -188,9 +181,17 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
     }
     
     # We look if we have available open sites around the current MH locus, i.e into the search windows around it;
-    open.sites = find.occupancies(lower.window = current.selocus - window,
-                                  upper.window = current.selocus + window, 
-                                  additional.removals = additionals)
+    # open.sites = find.occupancies(lower.window = current.selocus - window,
+    #                               upper.window = current.selocus + window, 
+    #                               additional.removals = additionals)
+    
+    
+    lower.window = ifelse(current.selocus - window <1, 1, current.selocus - window)
+    upper.window = ifelse(current.selocus + window >nchar(lys2.fragment), nchar(lys2.fragment), current.selocus + window)
+    if (additionals[1]== "none"){additionals=c(0)}
+    
+    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = additionals, 
+                                             lower_window = lower.window, upper_window = upper.window, n = nchar(lys2.fragment))
     
     if (length(open.sites) <= 0){next}
     current.bindings = c()
