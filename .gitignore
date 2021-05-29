@@ -45,3 +45,6 @@ vignettes/*.pdf
 
 # genome datas 
 /yeast-genome
+
+#profiler test script
+/simulations_invasion_R/testing/profvis_test.R
