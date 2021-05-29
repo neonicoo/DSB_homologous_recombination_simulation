@@ -5,7 +5,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 IntegerVector find_occupancies_remastered(const IntegerVector occupiedRAD51, const IntegerVector additional_removals, 
-                                          const int lower_window = 0,  const int upper_window = 0, const int n = 2069){
+                                          int lower_window = 1,  int upper_window = 0, int n = 2069){
   IntegerVector indices ;
   IntegerVector remove (n);
   int x1;
@@ -33,33 +33,11 @@ IntegerVector find_occupancies_remastered(const IntegerVector occupiedRAD51, con
     }
   }
   
-  if(lower_window >0){
-    for (i = 0; i<=lower_window; i++){
-      remove[i] = i  ;
+  if(upper_window == 0){upper_window = n-7;}
+  for(int w = lower_window; w <= upper_window; w++){
+      if(remove[w] == 0){
+        indices.push_back(w);
     }
   }
-  
-  if(upper_window >0){
-    for (i = upper_window; i<remove.length(); i++){
-      remove[i] = i  ;
-    }
-  }
-  
-  //remove = remove[remove > 0];
-  
-  /*
-  if(remove.length() > 0){
-    for(i =0; i<remove.length();i++){
-      indices = indices[indices != remove[i]];
-    }
-  }
-  */
-  
-  for(i = 1; i<(n-7);i++){
-    if(remove[i] == 0){
-      indices.push_back(i);
-    }
-  }
-  
   return(indices);
 }
