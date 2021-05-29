@@ -187,7 +187,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
     
     
     lower.window = ifelse(current.selocus - window <1, 1, current.selocus - window)
-    upper.window = ifelse(current.selocus + window >nchar(lys2.fragment), nchar(lys2.fragment), current.selocus + window)
+    upper.window = ifelse(current.selocus + window >nchar(lys2.fragment)-7, nchar(lys2.fragment)-7, current.selocus + window)
     if (additionals[1]== "none"){additionals=c(0)}
     
     open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = additionals, 

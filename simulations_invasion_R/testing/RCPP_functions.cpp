@@ -33,7 +33,7 @@ IntegerVector find_occupancies_remastered(const IntegerVector occupiedRAD51, con
     }
   }
   
-  if(upper_window == 0){upper_window = n-7;}
+  if(upper_window == 0 || upper_window > n-7){upper_window = n-7;}
   for(int w = lower_window; w <= upper_window; w++){
       if(remove[w] == 0){
         indices.push_back(w);
