@@ -8,6 +8,7 @@ library(parallel)
 
 ###Set working directory :
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+sourceCpp("./simulations_invasion_R/testing/RCPP_functions.cpp")
 
 ### Detect how many CPU you have 
 ### You can run as many simulations as you have CPUs ;
