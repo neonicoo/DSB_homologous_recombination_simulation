@@ -138,6 +138,24 @@ stats.plots <- function(dirnew_plots, lys.occupancy.firsts){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot)
   
+  fname = "start_extensions.txt";
+  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+  file = paste(dirnew_plots,"/start_extensions.png",sep="")
+  extensions.boxplot<-
+    ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),], 
+           aes(x=length, y=time.step, fill=length)) +
+    geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+    stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+  ggsave(file,plot=extensions.boxplot)
+  
+  fname = "ke_occurences.txt";
+  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+  file = paste(dirnew_plots,"/ke_occurences.png",sep="")
+  ke.hist<-
+    ggplot(extensions.stats[c(which(extensions.stats$ke!= -1)),],
+           aes(x=ke)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity", color="black", fill="lightblue")
+  ggsave(file,plot=ke.hist)
+
 }
 
 #########################################################################################################
