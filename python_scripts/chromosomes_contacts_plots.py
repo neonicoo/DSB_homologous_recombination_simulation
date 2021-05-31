@@ -29,19 +29,20 @@ if __name__ == "__main__" :
 	df1000.index = range(num_time_steps)
 	df2000 = df[df["length"]== 2000].iloc[:, 1:]
 	df2000.index = range(num_time_steps)
+	dftotal = (df500+df1000+df2000)/3
 
 
 	chr_vline = []
-	for i,v in enumerate(df2000.columns):
+	for i,v in enumerate(dftotal.columns):
 		if (v.split("_")[1] == '1'):
 		    chr_vline.append(i)
 	chr_vline
 
 	plt.figure(figsize = (30,20))
-	df2000_filtered = copy.deepcopy(df2000)
-	df2000_filtered[df2000 < 1 ]= np.nan
+	df_filtered = copy.deepcopy(dftotal)
+	df_filtered[dftotal < 1 ]= np.nan
 	#sns.color_palette("mako", as_cmap=True)
-	ax = sns.heatmap(df2000_filtered, cmap = "rocket_r")
+	ax = sns.heatmap(df_filtered, cmap = "rocket_r")
 	#ax.vlines(chr_vline, *ax.get_xlim(), color="orange", alpha = 0.8, linewidth =1)
 	plt.savefig(path + "chromosomes_contact_heatmap.jpg")
 	plt.show()
