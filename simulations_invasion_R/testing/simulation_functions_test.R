@@ -286,17 +286,18 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
 #########################################################################################################
 
 donors.generator <- function(template, bins, N = 0){
-  new.donors.list<-list(sequence = c(template), bins = c("chr2_470001_480001"), 
-                        id = c("LYS"), invasion = c("no", rep("no", times = N)))
-  bases <- c("a", "t", "g", "c")
+  new.donors.list<-list(sequence = c(template), bins = c("chr2_470001_480001"), id = c("LYS"), 
+                        invasion = c("no", rep("no", times = N)), mutations = c(0))
   
+  bases <- c("a", "t", "g", "c")
   if(N >= 1){
     for (n in 1:N){
       new.donor <- template
       new.donor.id = paste("donor", as.character(n), sep="")
-      lower.limit <- floor(0.1*nchar(template))
-      upper.limit <- floor(0.4*nchar(template))
-      snp.location <- sample(1:nchar(template), size = (sample(lower.limit:upper.limit, size = 1)), replace = FALSE)
+      lower.limit <- floor(0.05*nchar(template))
+      upper.limit <- floor(0.5*nchar(template))
+      nb.snp <-sample(lower.limit:upper.limit, size = 1)
+      snp.location <- sample(1:nchar(template), size = nb.snp, replace = FALSE)
       
       for (i in snp.location){
         snp <- sample(bases[-which(bases == substr(template, i, i))], size = 1)
@@ -305,6 +306,7 @@ donors.generator <- function(template, bins, N = 0){
       new.donors.list$sequence = c(new.donors.list$sequence, new.donor)
       new.donors.list$bins = c(new.donors.list$bins, sample(bins, size = 1))
       new.donors.list$id = c(new.donors.list$id, new.donor.id)
+      new.donors.list$mutations = c(new.donors.list$mutations, (nb.snp/nchar(template))*100 )
     }
   }
   return(new.donors.list)
@@ -346,7 +348,7 @@ rev.comp<-function(x,rev=TRUE){
 rad54.rdh54.placement <- function(number.rad54, number.rdh54, lys2.fragment){
   
   #the last rad54 is the most important, it will start the extension (recombination) step once it will be zipped ;
-  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 16, max=32)) #max chosen arbitraly (2xmin here) ; min = minimum size for zipped fragment
+  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 8, max=24)) #min/max chosen arbitraly
   location.rad54 <- c(pos.last.rad54)
   number.rad54 = number.rad54 -1
   location.rdh54 <- c()

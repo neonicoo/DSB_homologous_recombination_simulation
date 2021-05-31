@@ -79,10 +79,10 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
-kon.group<-c(0.5) #binding probabilities for every binding try
+test.replicates = 10 # How many times to simulate, replicates
+kon.group<-c(0.4) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(1e-3)
 m.group = c(2) #bindings allowed to occur per tethering
@@ -90,7 +90,7 @@ search.window.group = c(250) #the genomic distance of the tethering effect (per 
 rad54.group <- c(10) #proportional to the length of invading strand
 rdh54.group <- c(2) #proportional to the number of rad54
 misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor 
-additional.donors <- 2 # Additional donors ( without LYS2)
+additional.donors <- 4 # Additional donors ( without LYS2)
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -110,7 +110,7 @@ print(koff2.group.names)
 
 ################################################################################
 ############################ Single run simulation #############################
-profvis({
+#profvis({
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; ke1 = 1; ke2 = 1; #for single Job run
 
 kon.prob=kon.group[kon]
@@ -224,7 +224,10 @@ cat("Ke2 : ", ke2.prob, "\n")
 cat("Tethering per windows : ", bindings.per.tethering, "\n")
 cat("Search windows : ", search.window, "\n")
 cat("Number of rad54 : ", nb.rad54, "\n")
-cat("Number of rdh54 : ", nb.rdh54, "\n")
+cat("Number of rdh54 : ", nb.rdh54, "\n\n")
+for(i in 1:length(donors.list$id)){
+  cat("Donor #",i,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
+}
 sink()
 
 
@@ -574,57 +577,61 @@ for (fragment in 1:3){
     
     ############################################################################
     ######################## KE1 & KE2 #########################################
-    
-    yy = runif(1)
-    
-    ## KE1 :
-    if (tail(pos.rad54,1) %in% zipped.fragments.list$start & yy<ke1.prob){
-      for (i in 1:length(donors.list$id)){
-        pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] =
-          pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] + prob.detection.donors[i]
-      }
-      
-      pop.time.series$homologies[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] =
-        pop.time.series$homologies[pop.time.series$time.step >= time.step &pop.time.series$length == ly.type] + prob.detection.homo
-      
-      pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] = 
-        pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] + prob.detection.zip
-      
-      extensions.stats$time.step[bigtracker] = time.step
-      extensions.stats$ke[bigtracker] = 1
-      
-      if(saver < 3 ){
-        #tabulate occupancies vs. time step and length
-        binding.ts$bound[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
-        binding.ts$heterologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
-        binding.ts$homologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
-      }
-      break
-      
-    }else{
-      ## KE2 :
-      if(max(nchar(zipped.fragments.list$sequences))>200 & yy<ke2.prob){
-        for (i in 1:length(donors.list$id)){
-          pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] =
-            pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] + prob.detection.donors[i]
+    if(length(unzipped.rad54)<prop.rad54){
+      yy = runif(1)
+      ## KE1 :
+      if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>200){ #do it every 10 time steps
+        if(yy < ke1){
+          for (i in 1:length(donors.list$id)){
+            pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] =
+              pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] + prob.detection.donors[i]
+          }
+          
+          pop.time.series$homologies[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] =
+            pop.time.series$homologies[pop.time.series$time.step >= time.step &pop.time.series$length == ly.type] + prob.detection.homo
+          
+          pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] = 
+            pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] + prob.detection.zip
+          
+          extensions.stats$time.step[bigtracker] = time.step
+          extensions.stats$ke[bigtracker] = 1
+          
+          if(saver < 3 ){
+            #tabulate occupancies vs. time step and length
+            binding.ts$bound[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
+            binding.ts$heterologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
+            binding.ts$homologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+          }
+          break
         }
         
-        pop.time.series$homologies[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] =
-          pop.time.series$homologies[pop.time.series$time.step >= time.step &pop.time.series$length == ly.type] + prob.detection.homo
-        
-        pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] = 
-          pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] + prob.detection.zip
-        
-        extensions.stats$time.step[bigtracker] = time.step
-        extensions.stats$ke[bigtracker] = 2
-        
-        if(saver < 3 ){
-          #tabulate occupancies vs. time step and length
-          binding.ts$bound[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
-          binding.ts$heterologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
-          binding.ts$homologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+      }else{
+        ## KE2 :
+        if(max(nchar(zipped.fragments.list$sequences))>200){
+          if(yy<ke2.prob){
+            for (i in 1:length(donors.list$id)){
+              pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] =
+                pop.time.series[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type, i+4] + prob.detection.donors[i]
+            }
+            
+            pop.time.series$homologies[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] =
+              pop.time.series$homologies[pop.time.series$time.step >= time.step &pop.time.series$length == ly.type] + prob.detection.homo
+            
+            pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] = 
+              pop.time.series$zip[pop.time.series$time.step >= time.step & pop.time.series$length == ly.type] + prob.detection.zip
+            
+            extensions.stats$time.step[bigtracker] = time.step
+            extensions.stats$ke[bigtracker] = 2
+            
+            if(saver < 3 ){
+              #tabulate occupancies vs. time step and length
+              binding.ts$bound[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound == "yes"))
+              binding.ts$heterologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "heterology"))
+              binding.ts$homologies[binding.ts$time.step >= time.step & binding.ts$length == ly.type] = length(which(donors.occupancy$bound.id == "homology"))
+            }
+            break
+          }
         }
-        break
       }
     }
     ############################################################################
@@ -675,7 +682,7 @@ if(saver < 3){
 
 saver=saver+1
 }#end process
-})
+#})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
