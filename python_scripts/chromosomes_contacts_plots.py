@@ -40,7 +40,7 @@ if __name__ == "__main__" :
 
 	plt.figure(figsize = (30,20))
 	df_filtered = copy.deepcopy(dftotal)
-	df_filtered[dftotal < 1 ]= np.nan
+	df_filtered[dftotal < 1/3 ]= np.nan
 	#sns.color_palette("mako", as_cmap=True)
 	ax = sns.heatmap(df_filtered, cmap = "rocket_r")
 	#ax.vlines(chr_vline, *ax.get_xlim(), color="orange", alpha = 0.8, linewidth =1)
