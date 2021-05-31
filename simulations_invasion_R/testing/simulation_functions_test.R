@@ -346,7 +346,7 @@ rev.comp<-function(x,rev=TRUE){
 rad54.rdh54.placement <- function(number.rad54, number.rdh54, lys2.fragment){
   
   #the last rad54 is the most important, it will start the extension (recombination) step once it will be zipped ;
-  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 10, max=20)) 
+  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 16, max=32)) #max chosen arbitraly (2xmin here) ; min = minimum size for zipped fragment
   location.rad54 <- c(pos.last.rad54)
   number.rad54 = number.rad54 -1
   location.rdh54 <- c()
