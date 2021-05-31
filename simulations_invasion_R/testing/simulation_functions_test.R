@@ -343,26 +343,30 @@ rev.comp<-function(x,rev=TRUE){
 #########################################################################################################
 #########################################################################################################
 
-rad54.rdh54.placement <- function(nb.rad54, nb.rdh54, lys2.fragment){
+rad54.rdh54.placement <- function(number.rad54, number.rdh54, lys2.fragment){
   
-  location.rad54 <- c()
+  #the last rad54 is the most important, it will start the extension (recombination) step once it will be zipped ;
+  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 10, max=20)) 
+  location.rad54 <- c(pos.last.rad54)
+  number.rad54 = number.rad54 -1
   location.rdh54 <- c()
-  while (nb.rad54 > 0){ #place the required rad54 randomly (according uniform distro) over the invading fragment ;
+  
+  while (number.rad54 > 0){ #place the required rad54 randomly (according uniform distro) over the invading fragment ;
     new.location <- 0
     while (new.location == 0 | new.location %in% location.rad54){
-      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
+      new.location <- floor(runif(1, min = 1, max=pos.last.rad54))
     }
     location.rad54 = c(location.rad54, new.location)
-    nb.rad54 = nb.rad54 - 1
+    number.rad54 = number.rad54 - 1
   }
   
-  while (nb.rdh54 > 0){
+  while (number.rdh54 > 0){
     new.location <-  0
     while (new.location == 0 | new.location %in% location.rad54 | new.location %in% location.rdh54){
-      new.location <- floor(runif(1, min = 1, max=str_length(lys2.fragment)))
+      new.location <- floor(runif(1, min = 1, max=pos.last.rad54))
     }
     location.rdh54 = c(location.rdh54, new.location) #location.rad54 becomes location.rdh54
-    nb.rdh54 = nb.rdh54 - 1
+    number.rdh54 = number.rdh54 - 1
   }
   
   return(list(sort(location.rad54), sort(location.rdh54)))
@@ -383,8 +387,7 @@ check.before.zipping <- function(current.rad54, donor){
     
     while(left !=0 && right != 0){
       while(left != 0){
-        if (donors.occupancy$bound[current.rad54 - left] == "yes" && 
-            donors.occupancy$bound.id[current.rad54 - left] == "homology" && 
+        if (donors.occupancy$bound.id[current.rad54 - left] == "homology" && 
             donors.occupancy$donor.id[current.rad54 - left] == donor &&
             left < current.rad54){
           
@@ -396,8 +399,7 @@ check.before.zipping <- function(current.rad54, donor){
       }
       
       while(right != 0){
-        if(donors.occupancy$bound[current.rad54 + right] == "yes" && 
-           donors.occupancy$bound.id[current.rad54 + right] == "homology" && 
+        if(donors.occupancy$bound.id[current.rad54 + right] == "homology" && 
            donors.occupancy$donor.id[current.rad54 + right] == donor &&
            (current.rad54 + right) < str_length(lys2.fragment)){
           
@@ -427,7 +429,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
         pos < nchar(lys2.fragment)){
     
     if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
-      new.nt <- substr(lys2.fragment, pos, pos)
+      new.nt <- substr(donor.seq, pos, pos)
       zip.indexe = c(zip.indexe, pos)
       zip.fragment = paste(zip.fragment, new.nt, sep="")
       pos = pos + 1
@@ -435,7 +437,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
       
     }else{
       if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
-        new.nt <- substr(lys2.fragment, pos, pos)
+        new.nt <- substr(donor.seq, pos, pos)
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")
         pos = pos + 1
@@ -447,7 +449,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
           return(-1) # too much misalignment, this donor isn't good enough to lead an HR
           
         }else if (consecutive.mismatches < limit){
-          new.nt <- substr(lys2.fragment, pos, pos)
+          new.nt <- substr(donor.seq, pos, pos)
           zip.indexe = c(zip.indexe, pos)
           zip.fragment = paste(zip.fragment, new.nt, sep="")
           pos = pos + 1
