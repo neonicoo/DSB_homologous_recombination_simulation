@@ -13,21 +13,21 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
   # Additional positions not to be retained can be specified as parameters ;
   # Return a vector of indices of free binding sites ;
 
-  indices = 1:(nchar(lys2.fragment) -7)
+  indices = 1:(nchar(invading.sequence) -7)
   if (occupied.rad51$bound=="unbound"){
     return(indices)
   }
 
   remove = c()
   for (i in 0:7){
-    remove = c(remove, (occupied.rad51$lys2.microhomology - i), (occupied.rad51$lys2.microhomology + i))
+    remove = c(remove, (occupied.rad51$pos.microhomology - i), (occupied.rad51$pos.microhomology + i))
     if(length(additional.removals) > 1){
       remove = c(remove, (additional.removals - i), (additional.removals + i))
     }
   }
 
   if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
-  if (upper.window != "none"){remove=c(remove, upper.window:nchar(lys2.fragment))} # same, but for the upstream sites
+  if (upper.window != "none"){remove=c(remove, upper.window:nchar(invading.sequence))} # same, but for the upstream sites
 
   remove = remove[which(remove > 0)] #remove the negative and null indices
   return(indices[-remove])
@@ -42,15 +42,15 @@ genome.wide.sei = function(initial.binding.tries){
   # Dont let those already occupied be chosen (by the use of the find.occupancies() function) ;
 
   if(occupied.rad51$bound=="unbound"){
-    open.sites = 1:(nchar(lys2.fragment) -7)
+    open.sites = 1:(nchar(invading.sequence) -7)
   }else{
-    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))
+    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$pos.microhomology, additional_removals = c(0), n = nchar(invading.sequence))
   }
   
   # open.sites = find.occupancies() #indexes of unoccupied sites
   
   if (length(open.sites)== 0){ #if all the sites are occupied
-    return(list(bound = occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
+    return(list(bound = occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), pos.microhomology = c()))
   }
   
   #matches : vector of possible bounding sites for MHs
@@ -95,7 +95,7 @@ genome.wide.sei = function(initial.binding.tries){
   bins = bins[successes]
   
   if (length(matches)<1){
-    return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()))
+    return(list(bound = occupied.rad51$bound,strand = "negative", genome.bins = c(), donor.invasions = c(), pos.microhomology = c()))
   }
   
   
@@ -124,7 +124,7 @@ genome.wide.sei = function(initial.binding.tries){
   }
 
   if (occupied.rad51$bound != "unbound"){
-    remove = which(matches %in% occupied.rad51$lys2.microhomology)
+    remove = which(matches %in% occupied.rad51$pos.microhomology)
     if (length(remove)>0){
       identities = identities[-remove]
       matches = matches[-remove]
@@ -134,7 +134,7 @@ genome.wide.sei = function(initial.binding.tries){
   
   
   # LYS alignment or misalignments :
-  return(list(bound=occupied.rad51$bound, strand = "negative", genome.bins = bins, donor.invasions = identities, lys2.microhomology = matches))
+  return(list(bound=occupied.rad51$bound, strand = "negative", genome.bins = bins, donor.invasions = identities, pos.microhomology = matches))
 }  
 #########################################################################################################
 #########################################################################################################
@@ -142,13 +142,13 @@ genome.wide.sei = function(initial.binding.tries){
 new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, kon.prob){
   
   genome.bindings = which(occupied.rad51$donor.invasions %!in% donors.blacklist) #list of all bound MHs with the whole genome (genome.wide.sei step)
-  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), lys2.microhomology = c()) #initialize the list that will be return (copy of an empty occupied.rad51 list)
+  new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), pos.microhomology = c()) #initialize the list that will be return (copy of an empty occupied.rad51 list)
   
   # Check for unbound sites.
   #   If not, don't go futher and just return an empty list.
   #   All the rad51 are matched somewhere in the genome. 
   
-  if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))) == 0){
+  if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$pos.microhomology, additional_removals = c(0), n = nchar(invading.sequence))) == 0){
     return(new.bindings)
   }
   
@@ -159,17 +159,17 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
   
   for (binding.index in genome.bindings){
     if (length(bindings) > 0){
-      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = bindings, n = nchar(lys2.fragment))) == 0){
+      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$pos.microhomology, additional_removals = bindings, n = nchar(invading.sequence))) == 0){
         break
       }
     }else{ 
-      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = c(0), n = nchar(lys2.fragment))) == 0){
+      if (length(find_occupancies_remastered(occupiedRAD51 = occupied.rad51$pos.microhomology, additional_removals = c(0), n = nchar(invading.sequence))) == 0){
         break
       } 
     }
     
     #current.selocus : index of the MH we are currently looking around it (search window) to place another MHs;
-    current.selocus = occupied.rad51$lys2.microhomology[binding.index]
+    current.selocus = occupied.rad51$pos.microhomology[binding.index]
     current.bin = occupied.rad51$genome.bins[binding.index]
     current.id = occupied.rad51$donor.invasions[binding.index]
     
@@ -187,11 +187,11 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
     
     
     lower.window = ifelse(current.selocus - window <1, 1, current.selocus - window)
-    upper.window = ifelse(current.selocus + window >nchar(lys2.fragment)-7, nchar(lys2.fragment)-7, current.selocus + window)
+    upper.window = ifelse(current.selocus + window >nchar(invading.sequence)-7, nchar(invading.sequence)-7, current.selocus + window)
     if (additionals[1]== "none"){additionals=c(0)}
     
-    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$lys2.microhomology, additional_removals = additionals, 
-                                             lower_window = lower.window, upper_window = upper.window, n = nchar(lys2.fragment))
+    open.sites = find_occupancies_remastered(occupiedRAD51 = occupied.rad51$pos.microhomology, additional_removals = additionals, 
+                                             lower_window = lower.window, upper_window = upper.window, n = nchar(invading.sequence))
     
     if (length(open.sites) <= 0){next}
     current.bindings = c()
@@ -268,16 +268,16 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
   }
  
   new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
-  new.bindings$lys2.microhomology = c(new.bindings$lys2.microhomology, bindings)
+  new.bindings$pos.microhomology = c(new.bindings$pos.microhomology, bindings)
   new.bindings$donor.invasions  = c(new.bindings$donor.invasions, identities)
   
   if (occupied.rad51$bound != "unbound"){
     #remove MHs ids in new.bindings that have already been counted as donor in occupied.rad51 :
-    remove = which(bindings %in% occupied.rad51$lys2.microhomology)
+    remove = which(bindings %in% occupied.rad51$pos.microhomology)
     if (length(remove) > 0){
       new.bindings$genome.bins = new.bindings$genome.bins[-remove]
       new.bindings$donor.invasions = new.bindings$donor.invasions[-remove]
-      new.bindings$lys2.microhomology = new.bindings$lys2.microhomology[-remove]}
+      new.bindings$pos.microhomology = new.bindings$pos.microhomology[-remove]}
   }
   return(new.bindings)
 }
@@ -285,8 +285,8 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
 #########################################################################################################
 #########################################################################################################
 
-donors.generator <- function(template, bins, N = 0){
-  new.donors.list<-list(sequence = c(template), bins = c("chr2_470001_480001"), id = c("LYS"), 
+donors.generator <- function(template,realdonor.id, realdonor.location, bins, N = 0){
+  new.donors.list<-list(sequence = c(template), bins = c(realdonor.location), id = c(realdonor.id), 
                         invasion = c("no", rep("no", times = N)), mutations = c(0))
   
   bases <- c("a", "t", "g", "c")
@@ -345,10 +345,10 @@ rev.comp<-function(x,rev=TRUE){
 #########################################################################################################
 #########################################################################################################
 
-rad54.rdh54.placement <- function(number.rad54, number.rdh54, lys2.fragment){
+rad54.rdh54.placement <- function(number.rad54, number.rdh54, invading.sequence){
   
   #the last rad54 is the most important, it will start the extension (recombination) step once it will be zipped ;
-  pos.last.rad54 <- nchar(lys2.fragment) - as.integer(runif(1, min = 8, max=24)) #min/max chosen arbitraly
+  pos.last.rad54 <- nchar(invading.sequence) - as.integer(runif(1, min = 8, max=24)) #min/max chosen arbitraly
   location.rad54 <- c(pos.last.rad54)
   number.rad54 = number.rad54 -1
   location.rdh54 <- c()
@@ -403,7 +403,7 @@ check.before.zipping <- function(current.rad54, donor){
       while(right != 0){
         if(donors.occupancy$bound.id[current.rad54 + right] == "homology" && 
            donors.occupancy$donor.id[current.rad54 + right] == donor &&
-           (current.rad54 + right) < str_length(lys2.fragment)){
+           (current.rad54 + right) < str_length(invading.sequence)){
           
           microhomologies.right = microhomologies.right +1
           right = right+1
@@ -428,7 +428,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos < nchar(lys2.fragment)){
+        pos < nchar(invading.sequence)){
     
     if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
       new.nt <- substr(donor.seq, pos, pos)
@@ -438,7 +438,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
       consecutive.mismatches = 0
       
     }else{
-      if (str_sub(string = lys2.fragment, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
+      if (str_sub(string = invading.sequence, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
         new.nt <- substr(donor.seq, pos, pos)
         zip.indexe = c(zip.indexe, pos)
         zip.fragment = paste(zip.fragment, new.nt, sep="")

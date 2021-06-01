@@ -79,26 +79,26 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
 #########################################################################################################
 #########################################################################################################
 
-stats.plots <- function(dirnew_plots, lys.occupancy.firsts){
+stats.plots <- function(dirnew_plots, occupancy.firsts){
   
   final.firsts = as.data.frame(matrix(-1,test.replicates,3))
   names(final.firsts) = c("500","1000","2000")
-  final.firsts$`500` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 500)]
-  final.firsts$`1000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 1000)]
-  final.firsts$`2000` = lys.occupancy.firsts$first.bound[which(lys.occupancy.firsts$length == 2000)]
+  final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
+  final.firsts$`1000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 1000)]
+  final.firsts$`2000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 2000)]
   
   fname = "first_contact_time.txt";
   write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
   first.hist<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.bound != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),], 
            aes(x=first.bound, fill=length)) +
     geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
   ggsave(file,plot=first.hist)
   
   file = paste(dirnew_plots,"/first_contact_time_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.bound!= -1)),], aes(x=length, y=first.bound, fill=length)) +
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound!= -1)),], aes(x=length, y=first.bound, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot)
@@ -107,14 +107,14 @@ stats.plots <- function(dirnew_plots, lys.occupancy.firsts){
   write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
   first.hist<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$twoh.bound != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$twoh.bound != -1)),], 
            aes(x=twoh.bound, fill=length)) +
     geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
   ggsave(file,plot=first.hist)
   
   file = paste(dirnew_plots,"/200_contact_time_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
            aes(x=length, y=twoh.bound, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
@@ -125,14 +125,14 @@ stats.plots <- function(dirnew_plots, lys.occupancy.firsts){
   write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
   first.hist<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff!= -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff!= -1)),], 
            aes(x=first.twoh.time.diff, fill=length)) +
     geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity")
   ggsave(file,plot=first.hist)
   
   file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(lys.occupancy.firsts[c(which(lys.occupancy.firsts$first.twoh.time.diff != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
            aes(x=length, y=first.twoh.time.diff, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
