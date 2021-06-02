@@ -3,30 +3,27 @@
 
 single.runs <-function(dirnew_singles, binding.ts, saver, w=14, h=8){
   
-  print(paste("saving the ", saver, "th single run plots :", sep=""))
-  
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
   occ_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
     labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$bound)+1))
   ggsave(outname,plot=occ_plot, width = w, height = h)
-
+  
   outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
     labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$heterologies)+1))
-  ggsave(outname,plot=het_plot)
-
+  ggsave(outname,plot=het_plot, width = w, height = h)
+  
   outname=paste(dirnew_singles,"/Occupancy_Homologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
     labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$homologies)+1))
-  ggsave(outname,plot=het_plot)
+  ggsave(outname,plot=het_plot, width = w, height = h)
   
-  print("success")
 }
 
 #########################################################################################################
@@ -34,8 +31,6 @@ single.runs <-function(dirnew_singles, binding.ts, saver, w=14, h=8){
 
 
 population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.time.series, w=14, h=8){
-  
-  print("saving the population time series : ")
   
   # pop time series for all homologies
   df <- subset(x=pop.time.series, select=c(1, 2, 3))
@@ -79,15 +74,12 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
     ggsave(outname, plot=pop.plot, width = w, height = h)
     
   }
-  print("success")
 }
 
 #########################################################################################################
 #########################################################################################################
 
 stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
-  
-  print("saving the statistic plots :")
   
   final.firsts = as.data.frame(matrix(-1,test.replicates,3))
   names(final.firsts) = c("500","1000","2000")
@@ -180,8 +172,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     ggplot(extensions.stats[c(which(extensions.stats$ke!= -1)),],
            aes(x=ke)) + geom_histogram(binwidth = 0.5, alpha = 0.5, position="identity", color="black", fill="lightblue")
   ggsave(file,plot=ke.hist, width = w, height = h)
-
-  print("success")
+  
 }
 
 #########################################################################################################
