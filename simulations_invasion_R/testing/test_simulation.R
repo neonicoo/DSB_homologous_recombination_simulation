@@ -229,8 +229,8 @@ cat("Tethering per windows : ", bindings.per.tethering, "\n")
 cat("Search windows : ", search.window, "\n")
 cat("Number of rad54 : ", nb.rad54, "\n")
 cat("Number of rdh54 : ", nb.rdh54, "\n\n")
-for(i in 0:length(donors.list$id)-1){
-  cat("Donor #",i,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
+for(i in 1:length(donors.list$id)){
+  cat("Donor #",i-1,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
 }
 sink()
 
@@ -316,8 +316,10 @@ for (fragment in 1:length(invading.fragments$names)){
   # The number of rad54 depends of the length of the fragment,
   # and the number of rdh54 depends of the number of rad54 ;
   prop.rad54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rad54) #number of rad54 to be placed into the invading strand ;
-  prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54)+1 # number of rdh54 to be placed into the invading strand;
-  rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = prop.rad54, number.rdh54 = prop.rdh54, invading.sequence = invading.sequence) 
+  if(prop.rad54<=1){prop.rad54=1}
+  prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54) # number of rdh54 to be placed into the invading strand;
+  if(prop.rdh54<=1){prop.rdh54=1}  rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = prop.rad54, number.rdh54 = prop.rdh54, invading.sequence = invading.sequence) 
+ 
   pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
   pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
   zipped.fragments.list <- as.data.frame(matrix(0,0,3)) #all the macrohomologies after zipping with start/end positions

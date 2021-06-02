@@ -776,13 +776,13 @@ graph.resolution = 1 #save occupancy data at every nth time step. Plots will hav
 test.replicates = 25 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0, 0.01, 0.1, 0.2, 0.4) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(1e-3)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(12) #proportional to the length of invading strand
-rdh54.group <- c(2) #proportional to the number of rad54
+rad54.group <- c(5, 10, 20, 50) #proportional to the length of invading strand
+rdh54.group <- c(4) #proportional to the number of rad54
 misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor 
 additional.donors <- 2 # Additional donors ( without 'real' donor(s))
 
@@ -940,8 +940,8 @@ for(kon in 1:length(kon.group)){
                   cat("Search windows : ", search.window, "\n")
                   cat("Number of rad54 : ", nb.rad54, "\n")
                   cat("Number of rdh54 : ", nb.rdh54, "\n\n")
-                  for(i in 0:length(donors.list$id)-1){
-                    cat("Donor #",i,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
+                  for(i in 1:length(donors.list$id)){
+                    cat("Donor #",i-1,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
                   }
                   sink()
                   
@@ -1027,7 +1027,10 @@ for(kon in 1:length(kon.group)){
                       # The number of rad54 depends of the length of the fragment,
                       # and the number of rdh54 depends of the number of rad54 ;
                       prop.rad54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rad54) #number of rad54 to be placed into the invading strand ;
-                      prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54)+1 # number of rdh54 to be placed into the invading strand;
+                      if(prop.rad54<=1){prop.rad54=1}
+                      prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54) # number of rdh54 to be placed into the invading strand;
+                      if(prop.rdh54<=1){prop.rdh54=1}
+                      
                       rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = prop.rad54, number.rdh54 = prop.rdh54, invading.sequence = invading.sequence) 
                       pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
                       pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
