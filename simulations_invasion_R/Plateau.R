@@ -7,26 +7,27 @@
 
 rm(list=ls())
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
+# How many time steps did you use ?
+time.steps = 600
+# How many replicates did you use?
+test.replicates = 25
+# How many parameters combinations sets are there?
+num.parameters = 5
 
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
 # Only take the directories that start with the number of time steps, this might have to be adjusted
-rd<-grep(pattern="^./600",run.dirs)
+rd<-grep(pattern=paste("^./", time.steps, sep=""),run.dirs)
 run.dirs<-run.dirs[rd]
 
 # Grab the directories with data in their path
 rdd<-grep(pattern="/data$",run.dirs)
 run.dirs<-run.dirs[rdd]
 
-# How many replicates did you use?
-test.replicates = 25
-
-# How many parameters sets are there?
-num.parameters = 16
 
 # construct the data structure that will save all the data
-plateau_data = as.data.frame(matrix(0,num.parameters,14))
-names(plateau_data) = c("kon","koff1", "koff2", "tethering", "window", "prop.rad54", "prop.rdh54", 
+plateau_data = as.data.frame(matrix(0,num.parameters,16))
+names(plateau_data) = c("kon","koff1", "koff2", "ke1", "ke2", "tethering", "window", "prop.rad54", "prop.rdh54", 
                         "additionnal.donors", "time2000","time1000","time500","plat2000","plat1000","plat500")
 
 # file name and directory where you want the processed data to be stored. 
@@ -50,49 +51,34 @@ for(pp in run.dirs){
   kon<-noquote(ww[2])
   koff1<-noquote(ww[3])
   koff2<-noquote(ww[4])
-  tethering<-noquote(ww[5])
-  window<-noquote(ww[6])
-  rad54<-noquote(ww[7])
-  rdh54<-noquote(ww[8])
-  donors<-noquote(ww[9])
+  ke1<-noquote(ww[5])
+  ke2<-noquote(ww[6])
+  tethering<-noquote(ww[7])
+  window<-noquote(ww[8])
+  rad54<-noquote(ww[9])
+  rdh54<-noquote(ww[10])
+  donors<-noquote(ww[11])
   
   tethering<-as.numeric(tethering)
   window<-as.numeric(window)
   donors<-as.numeric(donors)
   
-  kon<- gsub("^0", "0.", kon)
-  kon<-as.numeric(kon)
-  kon<-format(kon,scientific = F)
-  kon<-as.numeric(kon)
+  kon<- gsub("^0", "0.", kon); kon<-as.numeric(kon); kon<-format(kon,scientific = F); kon<-as.numeric(kon)
+  koff1<- gsub("^0", "0.", koff1); koff1<-as.numeric(koff1); koff1<-format(koff1,scientific = F); koff1<-as.numeric(koff1)
+  koff2<- gsub("^0", "0.", koff2); koff2<-as.numeric(koff2); koff2<-format(koff2,scientific = F); koff2<-as.numeric(koff2)
+  ke1<- gsub("^0", "0.", ke1); ke1<-as.numeric(ke1); ke1<-format(ke1,scientific = F); ke1<-as.numeric(ke1)
+  ke2<- gsub("^0", "0.", ke2); ke2<-as.numeric(ke2); ke2<-format(ke2,scientific = F); ke2<-as.numeric(ke2)
+  rad54<- gsub("^0", "0.", rad54); rad54<-as.numeric(rad54); rad54<-format(rad54,scientific = F); rad54<-as.numeric(rad54)
+  rdh54<- gsub("^0", "0.", rdh54); rdh54<-as.numeric(rdh54); rdh54<-format(rdh54,scientific = F); rdh54<-as.numeric(rdh54)
   
-  koff1<- gsub("^0", "0.", koff1)
-  koff1<-as.numeric(koff1)
-  koff1<-format(koff1,scientific = F)
-  koff1<-as.numeric(koff1)
-  
-  koff2<- gsub("^0", "0.", koff2)
-  koff2<-as.numeric(koff2)
-  koff2<-format(koff2,scientific = F)
-  koff2<-as.numeric(koff2)
-  
-  rad54<- gsub("^0", "0.", rad54)
-  rad54<-as.numeric(rad54)
-  rad54<-format(rad54,scientific = F)
-  rad54<-as.numeric(rad54)
-  
-  rdh54<- gsub("^0", "0.", rdh54)
-  rdh54<-as.numeric(rdh54)
-  rdh54<-format(rdh54,scientific = F)
-  rdh54<-as.numeric(rdh54)
-  
-  
-
   parameter_counter = parameter_counter + 1
   
   # fill in the parameter data for the plateau data structure
   plateau_data$kon[parameter_counter] = kon
   plateau_data$koff1[parameter_counter] = koff1
   plateau_data$koff2[parameter_counter] = koff2
+  plateau_data$ke1[parameter_counter] = ke1
+  plateau_data$ke2[parameter_counter] = ke2
   plateau_data$tethering[parameter_counter] = tethering
   plateau_data$window[parameter_counter] = window
   plateau_data$prop.rad54[parameter_counter] = rad54
@@ -111,7 +97,6 @@ for(pp in run.dirs){
   y2000<-dat1$prob.detect[dat1$length == "2000"] # ''
   
   # Do a window average on the data
-  
   dummy500<-c()
   dummy1000<-c()
   dummy2000<-c()
