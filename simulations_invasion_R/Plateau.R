@@ -6,13 +6,15 @@
 
 
 rm(list=ls())
+library(dplyr)
+
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
 # How many time steps did you use ?
 time.steps = 600
 # How many replicates did you use?
 test.replicates = 25
 # How many parameters combinations sets are there?
-num.parameters = 5
+num.parameters = 9
 
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
