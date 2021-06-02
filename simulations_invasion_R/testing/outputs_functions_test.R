@@ -138,6 +138,24 @@ stats.plots <- function(dirnew_plots, occupancy.firsts){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot)
   
+  fname = "first_zip_contact_time.txt";
+  file = paste(dirnew_plots,"/first_zip_contact_time_boxplot.png",sep="")
+  first.boxplot<-
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.zip != -1)),], 
+           aes(x=length, y=first.zip, fill=length)) +
+    geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+    stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+  ggsave(file,plot=first.boxplot)
+  
+  fname = "half_detect.txt";
+  file = paste(dirnew_plots,"/half_detect_boxplot.png",sep="")
+  first.boxplot<-
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$half.detect != -1)),], 
+           aes(x=length, y=half.detect, fill=length)) +
+    geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
+    stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
+  ggsave(file,plot=first.boxplot)
+  
   fname = "start_extensions.txt";
   write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/start_extensions.png",sep="")

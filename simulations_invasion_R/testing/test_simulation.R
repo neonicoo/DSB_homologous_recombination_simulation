@@ -82,7 +82,7 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 15 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
@@ -185,9 +185,11 @@ for (i in 1:(additional.donors+1)){
 #   the first homology with the real (expected) donor,
 #   the two hundredth (also called twoh) homology with the real (expected) donor, 
 #   the number of time steps between the first and the two hundredth ;
+#   the first zipped fragment between real donor and invading strand ;
+#   the probability of detect (based on the experimental crosslink density) half-detect (~ 250/500 nts) ;
 
-occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 4))
-names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff")
+occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 6))
+names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
 occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
 
 extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 3))
@@ -542,6 +544,11 @@ for (fragment in 1:length(invading.fragments$names)){
       }
     }
     
+    if(length(which(donors.occupancy$zipped == "yes" & donors.occupancy$donor.id == real.id)) >= 200 && first.zip == 0){
+      first.zip <- 1
+      occupancy.firsts$first.zip[bigtracker] = time.step
+    }
+    
     if(current.donor == ""){
       for (candidate.donor in unique(donors.occupancy$donor.id)){
         if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
@@ -567,6 +574,10 @@ for (fragment in 1:length(invading.fragments$names)){
     if (prob.detection.homo >= 1){prob.detection.homo = 1}
     prob.detection.zip = length(which(donors.occupancy$zipped=="yes"))/ crosslink.density
     if (prob.detection.zip >= 1){prob.detection.zip = 1}
+    if(current.donor == real.id & prob.detection.zip >= 0.5){
+      half.detect <- 1
+      occupancy.firsts$half.detect[bigtracker] = time.step
+    }
     
     ############################################################################
     ######################## KE1 & KE2 #########################################
