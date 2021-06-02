@@ -105,9 +105,9 @@ ke2.group.names<- gsub("\\.", "", as.character(ke2.group))
 rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
 rdh54.group.names<-gsub("\\.", "", as.character(rdh54.group))
 
-print(kon.group.names)
-print(koff1.group.names)
-print(koff2.group.names)
+# print(kon.group.names)
+# print(koff1.group.names)
+# print(koff2.group.names)
 
 ################################################################################
 
@@ -229,7 +229,7 @@ cat("Tethering per windows : ", bindings.per.tethering, "\n")
 cat("Search windows : ", search.window, "\n")
 cat("Number of rad54 : ", nb.rad54, "\n")
 cat("Number of rdh54 : ", nb.rdh54, "\n\n")
-for(i in 1:length(donors.list$id)){
+for(i in 0:length(donors.list$id)-1){
   cat("Donor #",i,", on bin",donors.list$bins[i]," with", round(donors.list$mutations[i], 1)," % of SNPs", "\n")
 }
 sink()
