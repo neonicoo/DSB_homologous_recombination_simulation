@@ -16,6 +16,9 @@ test.replicates = 25
 # How many parameters combinations sets are there?
 num.parameters = 9
 
+resolution = 8
+while(time.steps%%resolution != 0){resoltion = resolution+1}
+
 # Get all off the paths to the directories underneath where you setwd
 run.dirs<-list.dirs(recursive=TRUE)
 # Only take the directories that start with the number of time steps, this might have to be adjusted
@@ -112,7 +115,7 @@ for(pp in run.dirs){
     dummy1000<-c(dummy1000,y1000[i]);
     dummy2000<-c(dummy2000,y2000[i]);
     counter=counter+1;
-    if(counter==10){
+    if(counter==resolution){
       mea500<-c(mea500,mean(dummy500));
       mea1000<-c(mea1000,mean(dummy1000));
       mea2000<-c(mea2000,mean(dummy2000));
@@ -131,38 +134,33 @@ for(pp in run.dirs){
   
   plat2000="nope"
   if(max(mea2000) >= 0.2*test.replicates){
-    for(qq in 1:58){
+    for(qq in 1:(max(nx)-2)){
       fit<-lm(mea2000[1:(length(mea2000)-qq)] ~ nx[1:(length(mea2000)-qq)])
-      if(abs(fit$coefficients[2]) < .001 && fit$coefficients[1] >= 0.2*test.replicates){
+      if(abs(fit$coefficients[2]) <= .003 && fit$coefficients[1] >= 0.2*test.replicates){
         plat2000=fit$coefficients[1]
         plat2000=sprintf("%.3f",plat2000)
         plat2000=as.numeric(plat2000)
         plateau_data$plat2000[parameter_counter] = plat2000
-        tracker = qq*10 + 5
-        plateau_data$time2000[parameter_counter] = tracker
-#        print(tracker)
+        plateau_data$time2000[parameter_counter] = (qq+0.5)*resolution
         break
       }
     }
   }
-#  stop()
   if(plat2000 == "nope"){
     plateau_data$plat2000[parameter_counter] = -1
     plateau_data$time2000[parameter_counter] = -1
   }
-#  stop()
 
   plat1000="nope"
-  if(max(mea1000) >= .20*test.replicates){
-    for(qq in 1:58){
+  if(max(mea1000) >= 0.2*test.replicates){
+    for(qq in 1:(max(nx)-2)){
       fit<-lm(mea1000[1:(length(mea1000)-qq)] ~ nx[1:(length(mea1000)-qq)])
-      if(abs(fit$coefficients[2]) < .005 && fit$coefficients[1] >= 0.2*test.replicates){
+      if(abs(fit$coefficients[2]) <= .004 && fit$coefficients[1] >= 0.2*test.replicates){
         plat1000=fit$coefficients[1]
         plat1000=sprintf("%.3f",plat1000)
         plat1000=as.numeric(plat1000)
         plateau_data$plat1000[parameter_counter] = plat1000
-        tracker = qq*10 + 5
-        plateau_data$time1000[parameter_counter] = tracker
+        plateau_data$time1000[parameter_counter] = (qq+0.5)*resolution
         break
       }
     }
@@ -176,17 +174,16 @@ for(pp in run.dirs){
 
   plat500="nope"
 
-  if(max(mea500) >= .20*test.replicates){
-    for(qq in 1:58){
+  if(max(mea500) >= 0.2*test.replicates){
+    for(qq in 1:(max(nx)-2)){
       fit<-lm(mea500[1:(length(mea500)-qq)] ~ nx[1:(length(mea500)-qq)])
 
-      if(abs(fit$coefficients[2]) < .005 && fit$coefficients[1] >= 0.2*test.replicates){
+      if(abs(fit$coefficients[2]) <= .005 && fit$coefficients[1] >= 0.2*test.replicates){
         plat500=fit$coefficients[1]
         plat500=sprintf("%.3f",plat500)
         plat500=as.numeric(plat500)
         plateau_data$plat500[parameter_counter] = plat500
-        tracker = qq*10 + 5
-        plateau_data$time500[parameter_counter] = tracker
+        plateau_data$time500[parameter_counter] = (qq+0.5)*resolution
         break
       }
     }
