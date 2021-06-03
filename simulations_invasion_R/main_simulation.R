@@ -1,4 +1,5 @@
 #! /usr/bin/env Rscript
+
 rm(list=ls()) #clean global environment
 
 ###Set working directory
@@ -49,12 +50,12 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
-kon.group<-c(0.6) #binding probabilities for every binding try
+test.replicates = 30 # How many times to simulate, replicates
+kon.group<-c(0.5, 0.2) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-2)
-ke2.group<-c(1e-3)
+koff2.group<-c(0.01, 0.001) #dissociation probabilities for each zipped fragments
+ke1.group<-c(1e-3, 1e-4)
+ke2.group<-c(1e-4)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand
@@ -1216,7 +1217,6 @@ for(kon in 1:length(kon.group)){
                               
                               if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$pos.microhomology) == 0){
                                 occupied.rad51$bound = "unbound"
-                                current.donor = ""
                                 break
                               }
                             }
@@ -1230,9 +1230,10 @@ for(kon in 1:length(kon.group)){
                           }
                         }
                         
-                        if(length(which(donors.occupancy$bound.id=="homology" & donors.occupancy$donor.id == current.donor))==0){
+                        if(length(which(donors.occupancy$zipped == "yes")) == 0){
                           current.donor = ""
                         }
+                        
                         ############################################################################
                         
                         #first homology to the real donor
@@ -1256,8 +1257,7 @@ for(kon in 1:length(kon.group)){
                         
                         if(current.donor == ""){
                           for (candidate.donor in unique(donors.occupancy$donor.id)){
-                            if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
-                               donors.list$invasion[which(donors.list$id == candidate.donor)] == "no"){
+                            if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && candidate.donor %!in% donors.blacklist){
                               
                               current.donor = candidate.donor
                             }

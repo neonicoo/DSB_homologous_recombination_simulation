@@ -510,7 +510,6 @@ for (trial in 1:test.replicates){
   
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$pos.microhomology) == 0){
               occupied.rad51$bound = "unbound"
-              current.donor = ""
               break
             }
           }
@@ -524,7 +523,7 @@ for (trial in 1:test.replicates){
         }
       }
       
-      if(length(which(donors.occupancy$bound.id=="homology" & donors.occupancy$donor.id == current.donor))==0){
+      if(length(which(donors.occupancy$zipped == "yes")) == 0){
         current.donor = ""
       }
   
@@ -551,8 +550,7 @@ for (trial in 1:test.replicates){
       
       if(current.donor == ""){
         for (candidate.donor in unique(donors.occupancy$donor.id)){
-          if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && 
-             donors.list$invasion[which(donors.list$id == candidate.donor)] == "no"){
+          if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && candidate.donor %!in% donors.blacklist){
             
             current.donor = candidate.donor
           }
@@ -581,7 +579,7 @@ for (trial in 1:test.replicates){
       
       ##########################################################################
       ######################## KE1 & KE2 #######################################
-      if(length(unzipped.rad54)<prop.rad54){
+      if(length(unzipped.rad54)<prop.rad54 & time.step%%10==0){
         yy = runif(1)
         ## KE1 :
         if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>200){ #do it every 10 time steps
