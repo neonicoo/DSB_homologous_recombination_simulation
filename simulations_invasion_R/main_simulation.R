@@ -5,8 +5,7 @@ rm(list=ls()) #clean global environment
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
-rootdir = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas/"
-
+rootdir = paste(getwd(), "/datas/", sep="")
 
 ###################### Import librairies #######################################
 
@@ -28,17 +27,11 @@ forward.sequences = forward.sequences[,c("start", "sequence", "total")]
 row.names(forward.sequences) = 1:nrow(forward.sequences)
 microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
 
-# within-lys microhomologies (misalignments)
-L500.self.micros = as.data.frame(matrix(c("aacaagct","aacaagct",98,319,319,98),2,3),stringsAsFactors = F); names(L500.self.micros) = c("L500", "position1", "position2"); L500.self.micros$position3 = NA
-L1000.selfmicros <- read.delim("./LYS2/L1000_self-microhomologies.txt", stringsAsFactors=FALSE); L1000.selfmicros$position3 = NA
-LY2000.selfmicros <- read.csv("./LYS2/LY2000_self-microhomologies.txt", sep="", stringsAsFactors=FALSE)
-
 # Name the DNA sequences of the invading strands:
 LY = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACATGACTTTTTACGCCCACAACAAGAACCTTATACGAAACAAGCTACATATTCGTTACAGCTACCTCAGCTCGATGTGCCTCATGATAGTTTTTCTAACAAATACGCTGTCGCTTTGAGTGTATGGGCTGCATTGATATATAGAGTAACCGGTGACGATGATATTGTTCTTTATATTGCGAATAACAAAATCTTAAGATTCAATATTCAACCAACGTGGTCATTTAATGAGCTGTATTCTACAATTAACAATGAGTTGAACAAGCTCAATTCTATTGAGGCCAATTTTTCCTTTGACGAGCTAGCTGAAAAAATTCAAAGTTGCCAAGATCTGGAAAGGACCCCTCAGTTGTTCCGTTTGGCCTTTTTGGAAAACCAAGATTTCAAATTAGACGAGTTCAAGCATCATTTAGTGGACTTTGCTTTGAATTTGGATACCAGTAATAATGCGCATGTTTTGAACTTAATTTATAACAGCTTACTGTATTCGAATGAAAGAGTAACCATTGTTGCGGACCAATTTACTCAATATTTGACTGCTGCGCTAAGCGATCCATCCAATTGCATAACTAAAATCTCTCTGATCACCGCATCATCCAAGGATAGTTTACCTGATCCAACTAAGAACTTGGGCTGGTGCGATTTCGTGGGGTGTATTCACGACATTTTCCAGGACAATGCTGAAGCCTTCCCAGAGAGAACCTGTGTTGTGGAGACTCCAACACTAAATTCCGACAAGTCCCGTTCTTTCACTTATCGCGACATCAACCGCACTTCTAACATAGTTGCCCATTATTTGATTAAAACAGGTATCAAAAGAGGTGATGTAGTGATGATCTATTCTTCTAGGGGTGTGGATTTGATGGTATGTGTGATGGGTGTCTTGAAAGCCGGCGCAACCTTTTCAGTTATCGACCCTGCATATCCCCCAGCCAGACAAACCATTTACTTAGGTGTTGCTAAACCACGTGGGTTGATTGTTATTAGAGCTGCTGGACAATTGGATCAACTAGTAGAAGATTACATCAATGATGAATTGGAGATTGTTTCAAGAATCAATTCCATCGCTATTCAAGAAAATGGTACCATTGAAGGTGGCAAATTGGACAATGGCGAGGATGTTTTGGCTCCATATGATCACTACAAAGACACCAGAACAGGTGTTGTAGTTGGACCAGATTCCAACCCAACCCTATCTTTCACATCTGGTTCCGAAGGTATTCCTAAGGGTGTTCTTGGTAGACATTTTTCCTTGGCTTATTATTTCAATTGGATGTCCAAAAGGTTCAACTTAACAGAAAATGATAAATTCACAATGCTGAGCGGTATTGCACATGATCCAATTCAAAGAGATATGTTTACACCATTATTTTTAGGTGCCCAATTGTATGTCCCTACTCAAGATGATATTGGTACACCGGGCCGTTTAGCGGAATGGATGAGTAAGTATGGTTGCACAGTTACCCATTTAACACCTGCCATGGGTCAATTACTTACTGCCCAAGCTACTACACCATTCCCTAAGTTACATCATGCGTTCTTTGTGGGTGACATTTTAACAAAACGTGATTGTCTGAGGTTACAAACCTTGGCAGAAAATTGCCGTATTGTTAATATGTACGGTACCACTGAAACACAGCGTGCAGTTTCTTATTTCGAAGTTAAATCAAAAAATGACGATCCAAACTTTTTGAAAAAATTGAAAGATGTCATGCCTGCTGGTAAAGGTATGTTGAACGTTCAGCTACTAGTTGTTAACAGGAACGATCGTACTCAAATATGTGGTATTGGCGAAATAGGTGAGATTTATGTTCGTGCAGGTGGTTTGGCCGAAGGTTATAGAGGATTACCAGAATTGAATAAAGAAAAATTTGTGAACAACTGGTTTGTTGAAAAAGATCACTGGAATTATTTGGATAAGGATAATGGTGAACCTTGGAGACAATTCTGGTTAGGTCCAAGAGATAGATTGTACAGAACGGGTGATTTAGGTCGTTATCTACCAAACGG"))
 L = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACATGACTTTTTACGCCCACAACAAGAACCTTATACGAAACAAGCTACATATTCGTTACAGCTACCTCAGCTCGATGTGCCTCATGATAGTTTTTCTAACAAATACGCTGTCGCTTTGAGTGTATGGGCTGCATTGATATATAGAGTAACCGGTGACGATGATATTGTTCTTTATATTGCGAATAACAAAATCTTAAGATTCAATATTCAACCAACGTGGTCATTTAATGAGCTGTATTCTACAATTAACAATGAGTTGAACAAGCTCAATTCTATTGAGGCCAATTTTTCCTTTGACGAGCTAGCTGAAAAAATTCAAAGTTGCCAAGATCTGGAAAGGACCCCTCAGTTGTTCCGTTTGGCCTTTTTGGAAAACCAAGATTTCAAATTAGACGAGTTCAAGCATCATTTAGTGGACTTTGCTTTGAATTTGGATACCAGTAATAATGCGCATGTTTTGAACTTAATTTATAACAGCTTACTGTATTCGAATGAAAGAGTAACCATTGTTGCGGACCAATTTACTCAATATTTGACTGCTGCGCTAAGCGATCCATCCAATTGCATAACTAAAATCTCTCTGATCACCGCATCATCCAAGGATAGTTTACCTGATCCAACTAAGAACTTGGGCTGGTGCGATTTCGTGGGGTGTATTCACGACATTTTCCAGGACAATGCTGAAGCCTTCCCAGAGAGAACCTGTGTTGTGGAGACTCCAACACTAAATTCCGACAAGTCCCGTTCTTTCACTTATCGCGACATCAACCGCACTTCTAACATAGTTGCCCATTATTTGATTAAAACAGGTATCAAAAGAGGTGATGTAGTGATGATCTATTCTTCTAGGGGTGTGGATTTGATGGTATGTGTGATGGGTGTCTTGAAAGCCGGCGCAACCTTTTCAGTTATCGACCCTGCATATCCCCCAGCCAGACAAACCATTTACTTAGGTGTTGCTAAACCACGTGGGTTGATTGTTATTA"))
 L500 = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACATGACTTTTTACGCCCACAACAAGAACCTTATACGAAACAAGCTACATATTCGTTACAGCTACCTCAGCTCGATGTGCCTCATGATAGTTTTTCTAACAAATACGCTGTCGCTTTGAGTGTATGGGCTGCATTGATATATAGAGTAACCGGTGACGATGATATTGTTCTTTATATTGCGAATAACAAAATCTTAAGATTCAATATTCAACCAACGTGGTCATTTAATGAGCTGTATTCTACAATTAACAATGAGTTGAACAAGCTCAATTCTATTGAGGCCAATTTTTCCTTTGACGAGCTAGCTGAAAAAATTCAAAGTTGCCAAGATCTGGAAAGGACCCCTCAGTTGTTCCGTTTGGCCTTTTTGGAAAACCAAGATTTCAAATTAGACGAGTTCAAGCATCATTTAGTGGACTTTGCTTTGAATTTGGATACCAG"))
-invading.fragments = list(names = c("500", "1000", "2000"), sequences = c(L500, L, LY),
-                          self.micros = list(L500.self.micros, L1000.selfmicros, LY2000.selfmicros))
+invading.fragments = list(names = c("500", "1000", "2000"), sequences = c(L500, L, LY))
 
 # genome-wide microhomology counts but with bins of 10kb
 sequences.bins <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bins.csv")[-1] #doesn't take the first column containing sequences
@@ -49,6 +42,36 @@ bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_
 contacts <- cbind(contacts, bins.id)
 colnames(contacts)[6] <- "frequency"
 colnames(contacts)[7] <- "id"
+
+################################################################################
+####################### Parameters #############################################
+
+num.time.steps = 600 # Length of simulation in time steps
+graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
+
+test.replicates = 5 # How many times to simulate, replicates
+kon.group<-c(0.6) #binding probabilities for every binding try
+koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
+ke1.group<-c(1e-2)
+ke2.group<-c(1e-3)
+m.group = c(2) #bindings allowed to occur per tethering
+search.window.group = c(250) #the genomic distance of the tethering effect (per side)
+rad54.group <- c(12) #proportional to the length of invading strand
+rdh54.group <- c(2) #proportional to the number of rad54
+misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
+crosslink.density <- 500 #minimum density to get a probability of detection eguals to 1
+additional.donors <- 2 # Additional donors ( without 'real' donor(s))
+
+# Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
+# For example 0005 is really 0.005
+kon.group.names<- gsub("\\.", "", as.character(kon.group))
+koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
+koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
+ke1.group.names<- gsub("\\.", "", as.character(ke1.group))
+ke2.group.names<- gsub("\\.", "", as.character(ke2.group))
+rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
+rdh54.group.names<-gsub("\\.", "", as.character(rdh54.group))
 
 #########################################################################################################
 #################################### FUNCTIONS ##########################################################
@@ -767,42 +790,6 @@ contacts <- subset(contacts, select=-remove)
 sequences.contacts.bins = mapply("*", sequences.bins, contacts$frequency)
 rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 
-################################################################################
-####################### Parameters #############################################
-
-num.time.steps = 600 # Length of simulation in time steps
-graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
-
-test.replicates = 25 # How many times to simulate, replicates
-kon.group<-c(0.6) #binding probabilities for every binding try
-koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-2)
-ke2.group<-c(1e-3)
-m.group = c(2) #bindings allowed to occur per tethering
-search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(5, 10, 20, 50) #proportional to the length of invading strand
-rdh54.group <- c(4) #proportional to the number of rad54
-misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor 
-additional.donors <- 2 # Additional donors ( without 'real' donor(s))
-
-# Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
-# For example 0005 is really 0.005
-kon.group.names<- gsub("\\.", "", as.character(kon.group))
-koff1.group.names<- gsub("\\.", "", as.character(koff1.group))
-koff2.group.names<- gsub("\\.", "", as.character(koff2.group))
-ke1.group.names<- gsub("\\.", "", as.character(ke1.group))
-ke2.group.names<- gsub("\\.", "", as.character(ke2.group))
-rad54.group.names<-gsub("\\.", "", as.character(rad54.group))
-rdh54.group.names<-gsub("\\.", "", as.character(rdh54.group))
-
-# print(kon.group.names)
-# print(koff1.group.names)
-# print(koff2.group.names)
-
-################################################################################
-
-
 #########################################################################################################
 ######################################### Simulation Start ##############################################
 #########################################################################################################
@@ -1039,7 +1026,7 @@ for(kon in 1:length(kon.group)){
                       unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
                       
                       #probability of detection proportional to the length of invading strand :
-                      crosslink.density <- 500 * 1.5 * (nchar(invading.sequence) / as.integer(max(fragment.type))) 
+                      crosslink.density <- 500
                       
                       # Loop through the time-steps
                       for (time.step in 1:num.time.steps){
@@ -1229,6 +1216,7 @@ for(kon in 1:length(kon.group)){
                               
                               if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$pos.microhomology) == 0){
                                 occupied.rad51$bound = "unbound"
+                                current.donor = ""
                                 break
                               }
                             }
@@ -1242,6 +1230,9 @@ for(kon in 1:length(kon.group)){
                           }
                         }
                         
+                        if(length(which(donors.occupancy$bound.id=="homology" & donors.occupancy$donor.id == current.donor))==0){
+                          current.donor = ""
+                        }
                         ############################################################################
                         
                         #first homology to the real donor
