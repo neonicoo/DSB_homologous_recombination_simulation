@@ -81,14 +81,31 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
 
 stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   
+  fname = "first_contact_time.txt"
   final.firsts = as.data.frame(matrix(-1,test.replicates,3))
   names(final.firsts) = c("500","1000","2000")
   final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
   final.firsts$`1000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 1000)]
   final.firsts$`2000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 2000)]
-  
-  fname = "first_contact_time.txt";
   write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+  
+  fname = "200_contact_time.txt"
+  final.twoh = as.data.frame(matrix(-1,test.replicates,3))
+  names(final.twoh) = c("500","1000","2000")
+  final.twoh$`500` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 500)]
+  final.twoh$`1000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 1000)]
+  final.twoh$`2000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 2000)]
+  write.table(final.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
+  
+  fname = "first_200_contact_time_diff.txt"
+  final.firsts.twoh = as.data.frame(matrix(-1,test.replicates,3))
+  names(final.firsts.twoh) = c("500","1000","2000")
+  final.firsts.twoh$`500` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 500)]
+  final.firsts.twoh$`1000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 1000)]
+  final.firsts.twoh$`2000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 2000)]
+  write.table(final.firsts.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
+  
+  
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
   first.hist<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$first.bound != -1)),], 
@@ -103,8 +120,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "200_contact_time.txt";
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/200_contact_time_hist.png",sep="")
   first.hist<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$twoh.bound != -1)),], 
@@ -120,8 +135,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "first_200_contact_time_diff.txt";
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/1st_to_200_contact_timediff_hist.png",sep="")
   first.hist<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff!= -1)),], 
@@ -131,7 +144,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   
   file = paste(dirnew_plots,"/1st_to_200_contact_timediff_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.twoh.time.diff != -1)),],
            aes(x=length, y=first.twoh.time.diff, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
@@ -140,7 +153,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   fname = "first_zip_contact_time.txt";
   file = paste(dirnew_plots,"/first_zip_contact_time_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.zip != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$first.zip != -1)),],
            aes(x=length, y=first.zip, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
@@ -149,24 +162,22 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   fname = "half_detect.txt";
   file = paste(dirnew_plots,"/half_detect_boxplot.png",sep="")
   first.boxplot<-
-    ggplot(occupancy.firsts[c(which(occupancy.firsts$half.detect != -1)),], 
+    ggplot(occupancy.firsts[c(which(occupancy.firsts$half.detect != -1)),],
            aes(x=length, y=half.detect, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
   fname = "start_extensions.txt";
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/start_extensions.png",sep="")
   extensions.boxplot<-
-    ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),], 
+    ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),],
            aes(x=length, y=time.step, fill=length)) +
     geom_boxplot(outlier.colour ="red", position = position_dodge(1)) +
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=extensions.boxplot, width = w, height = h)
   
   fname = "ke_occurences.txt";
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   file = paste(dirnew_plots,"/ke_occurences.png",sep="")
   ke.hist<-
     ggplot(extensions.stats[c(which(extensions.stats$ke!= -1)),],
