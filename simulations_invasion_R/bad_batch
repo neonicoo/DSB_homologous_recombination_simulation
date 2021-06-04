@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+### variables SGE
+### shell du job
+#$ -S /bin/bash
+### nom du job (a changer)
+#$ -N simulation_log
+### file d'attente (a changer)
+#$ -q E5_test
+### charger l'environnement utilisateur pour SGE
+#$ -cwd
+### exporter les variables d'environnement sur tous les noeuds d'execution
+#$ -V
+### mails en debut et fin d'execution
+#$ -m be
+ 
+# aller dans le repertoire de travail/soumission
+# important, sinon, le programme est lancé depuis ~/
+cd ${SGE_O_WORKDIR}
+ 
+# init env (should be in ~/.profile)
+source /usr/share/lmod/lmod/init/bash
+ 
+### configurer l'environnement (a changer)
+module load R/4.0.3
+ 
+### execution du programme (a changer avec votre executable)
+EXECDIR=${HOME}/simulations4juin
+${EXECDIR}/main_simulation_no_plot.R
+
+# fin
+
