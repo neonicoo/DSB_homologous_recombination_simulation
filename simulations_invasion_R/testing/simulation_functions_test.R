@@ -348,7 +348,7 @@ rev.comp<-function(x,rev=TRUE){
 rad54.rdh54.placement <- function(number.rad54, number.rdh54, invading.sequence){
   
   #the last rad54 is the most important, it will start the extension (recombination) step once it will be zipped ;
-  pos.last.rad54 <- nchar(invading.sequence) - as.integer(runif(1, min = 8, max=24)) #min/max chosen arbitraly
+  pos.last.rad54 <- nchar(invading.sequence) - as.integer(runif(1, min = 8, max=24)) #min/max chosen arbitrary
   location.rad54 <- c(pos.last.rad54)
   number.rad54 = number.rad54 -1
   location.rdh54 <- c()
@@ -376,48 +376,6 @@ rad54.rdh54.placement <- function(number.rad54, number.rdh54, invading.sequence)
 
 #########################################################################################################
 #########################################################################################################
-check.before.zipping <- function(current.rad54, donor){
-  
-  microhomologies.left <- 0
-  microhomologies.right <- 0
-  left <- 1
-  right <- 1
-  
-  if (donors.occupancy$bound[current.rad54] == "yes" && 
-      donors.occupancy$bound.id[current.rad54] == "homology" &&
-      donors.occupancy$donor.id[current.rad54] == donor){
-    
-    while(left !=0 && right != 0){
-      while(left != 0){
-        if (donors.occupancy$bound.id[current.rad54 - left] == "homology" && 
-            donors.occupancy$donor.id[current.rad54 - left] == donor &&
-            left < current.rad54){
-          
-          microhomologies.left = microhomologies.left +1
-          left = left+1
-        }else{
-          left = 0
-        }
-      }
-      
-      while(right != 0){
-        if(donors.occupancy$bound.id[current.rad54 + right] == "homology" && 
-           donors.occupancy$donor.id[current.rad54 + right] == donor &&
-           (current.rad54 + right) < str_length(invading.sequence)){
-          
-          microhomologies.right = microhomologies.right +1
-          right = right+1
-        }else{
-          right = 0
-        }
-      }
-    }
-  } 
-  return(sum(microhomologies.left + 1 + microhomologies.right))
-} 
-
-#########################################################################################################
-#########################################################################################################
 zipping <- function(rad54, zipping.list, donor, limit){
   
   pos <- rad54
@@ -425,6 +383,21 @@ zipping <- function(rad54, zipping.list, donor, limit){
   zip.fragment <-"" 
   donor.seq = donors.list$sequence[which(donors.list$id == donor)]
   consecutive.mismatches <- 0
+  
+  # Check the length of the macrohomology 
+  downstream <- pos-8
+  upstream <- pos+8
+  if(downstream < 0){
+    upstream = upstream + abs(downstream)-1
+    downstream = 1
+  }
+  
+  if(sum(donors.occupancy$bound.id[(downstream):(upstream)] == "homology") < 15){
+    # before to start the zipped process we have to check if the current rad54 (pos) is overlapped by a big enough macrohomology ;
+    # We arbitrary fix the minimum length for a macrohomology at 15 nts (7nts homologies in downstream + current homologous position (rad54) + 7nts homologies in upstream) ;
+    # Something like 1 macrohomology ~= 2 microhomologies (at least) ;
+    return(0) #too unstable to be zipped
+  }
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 

@@ -54,12 +54,12 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
+test.replicates = 25 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-3)
-ke2.group<-c(1e-4)
+ke1.group<-c(1e-2)
+ke2.group<-c(2e-3)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand
@@ -108,7 +108,7 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 
 ################################################################################
 ############################ Single run simulation #############################
-profvis({
+#profvis({
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; ke1 = 1; ke2 = 1; #for single Job run
 
 kon.prob=kon.group[kon]
@@ -420,63 +420,56 @@ for (trial in 1:test.replicates){
       ############################################################################
       ################################# Zipping ##################################
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(length(unzipped.rad54 > 0) && current.donor != "" &&
-         donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
+      if(length(unzipped.rad54 > 0) & current.donor != "" && donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
         
-        if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
-          donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
-        }
-        
+        if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
+    
         for (pos in unzipped.rad54){
-          # Check if the sequence to zip is big enough ;
-          #   We decided >= 16 (2*8 nts) arbitrary (could be more or less)
-          if(donors.occupancy$zipped[pos] != "yes" & check.before.zipping(pos, donor = current.donor) >= 16){
-            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
+          new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
+          
+          if(length(new.zip) > 1){
+            #i.e new.zip is a vector,
+            #i.e the zipping successes
             
-            if(length(new.zip) > 1){
-              #i.e new.zip is a vector,
-              #i.e the zipping successes
-              
-              unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)] #remove the current overlapped rad54 from the list
-              zipped.fragments.list = rbind(zipped.fragments.list, new.zip) # add the zipped fragment to list of all the zip
-              names(zipped.fragments.list) = c("start", "end", "sequences")
-              current.zip.start <- as.integer(new.zip[1])
-              current.zip.end <- as.integer(new.zip[2])
-              
-              donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes" #set the state of zipped nucleotides as "yes
-              donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
-              donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
-              donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
-              donors.occupancy$bins[which(donors.occupancy$zipped== "yes")] = donors.list$bins[which(donors.list$id == current.donor)]
-              
-            }else if (new.zip == -1){
-              #i.e zipping failed because the current donor as too much differences with the invading strand
-              # Therefore we know that the current donor is not good enough to lead to homologous recombination,
-              # We have to search for another potential donor, and remove the current donor from the list;
-              
-              #Dissociate all rad51 bound to this wrong donor
-              remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
-              occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
-              occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-              occupied.rad51$pos.microhomology = occupied.rad51$pos.microhomology[-remove.rad51]
-              
-              donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
-              donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
-              donors.occupancy$zipped = "no"
-              donors.occupancy$bins[which(donors.occupancy$donor.id==current.donor)] = "unknown"
-              donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
-              
-              zipped.fragments.list <- as.data.frame(matrix(0,0,3))
-              names(zipped.fragments.list ) = c("start", "end", "sequences")
-              unzipped.rad54 = pos.rad54
-              donors.list$invasion[which(donors.list$id == current.donor)] = "failed"
-              donors.blacklist = c(donors.blacklist, current.donor)
-              current.donor = ""
-              
-              if(length(occupied.rad51$donor.invasions) == 0){
-                occupied.rad51$bound = "unbound"
-                break
-              }
+            unzipped.rad54 = unzipped.rad54[which(unzipped.rad54 != pos)] #remove the current overlapped rad54 from the list
+            zipped.fragments.list = rbind(zipped.fragments.list, new.zip) # add the zipped fragment to list of all the zip
+            names(zipped.fragments.list) = c("start", "end", "sequences")
+            current.zip.start <- as.integer(new.zip[1])
+            current.zip.end <- as.integer(new.zip[2])
+            
+            donors.occupancy$zipped[current.zip.start : current.zip.end] = "yes" #set the state of zipped nucleotides as "yes
+            donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
+            donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
+            donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
+            donors.occupancy$bins[which(donors.occupancy$zipped== "yes")] = donors.list$bins[which(donors.list$id == current.donor)]
+            
+          }else if (new.zip == -1){
+            #i.e zipping failed because the current donor as too much differences with the invading strand
+            # Therefore we know that the current donor is not good enough to lead to homologous recombination,
+            # We have to search for another potential donor, and remove the current donor from the list;
+            
+            #Dissociate all rad51 bound to this wrong donor
+            remove.rad51 = which(occupied.rad51$donor.invasions == current.donor)
+            occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
+            occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
+            occupied.rad51$pos.microhomology = occupied.rad51$pos.microhomology[-remove.rad51]
+            
+            donors.occupancy$bound[which(donors.occupancy$donor.id==current.donor)] = "no"
+            donors.occupancy$bound.id[which(donors.occupancy$donor.id==current.donor)] = "unbound"
+            donors.occupancy$zipped = "no"
+            donors.occupancy$bins[which(donors.occupancy$donor.id==current.donor)] = "unknown"
+            donors.occupancy$donor.id[which(donors.occupancy$donor.id==current.donor)] = "unknown"
+            
+            zipped.fragments.list <- as.data.frame(matrix(0,0,3))
+            names(zipped.fragments.list ) = c("start", "end", "sequences")
+            unzipped.rad54 = pos.rad54
+            donors.list$invasion[which(donors.list$id == current.donor)] = "failed"
+            donors.blacklist = c(donors.blacklist, current.donor)
+            current.donor = ""
+            
+            if(length(occupied.rad51$donor.invasions) == 0){
+              occupied.rad51$bound = "unbound"
+              break
             }
           }
         }
@@ -659,7 +652,7 @@ for (trial in 1:test.replicates){
   
   saver=saver+1
 }#end process
-})
+#})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
