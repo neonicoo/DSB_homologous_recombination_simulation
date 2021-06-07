@@ -3,7 +3,8 @@
 rm(list=ls()) #clean global environment
 
 ###Set working directory
-setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+#setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = paste(getwd(), "/datas/", sep="")
@@ -50,12 +51,12 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 3 # How many times to simulate, replicates
-kon.group<-c(0.35) #binding probabilities for every binding try
+test.replicates = 5 # How many times to simulate, replicates
+kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-3)
-ke2.group<-c(1e-4)
+ke1.group<-c(1e-2)
+ke2.group<-c(1e-3)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand
@@ -545,7 +546,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos < nchar(invading.sequence)){
+        pos <= nchar(invading.sequence)){
     
     if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
       new.nt <- substr(donor.seq, pos, pos)
@@ -740,7 +741,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "first_zip_contact_time.txt";
   file = paste(dirnew_plots,"/first_zip_contact_time_boxplot.png",sep="")
   first.boxplot<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$first.zip != -1)),],
@@ -749,7 +749,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "half_detect.txt";
   file = paste(dirnew_plots,"/half_detect_boxplot.png",sep="")
   first.boxplot<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$half.detect != -1)),],
@@ -758,8 +757,8 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "start_extensions.txt";
   file = paste(dirnew_plots,"/start_extensions.png",sep="")
+  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
   extensions.boxplot<-
     ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),],
            aes(x=length, y=time.step, fill=length)) +
@@ -767,7 +766,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=extensions.boxplot, width = w, height = h)
   
-  fname = "ke_occurences.txt";
   file = paste(dirnew_plots,"/ke_occurences.png",sep="")
   ke.hist<-
     ggplot(extensions.stats[c(which(extensions.stats$ke!= -1)),],
@@ -902,8 +900,8 @@ for(kon in 1:length(kon.group)){
                   names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
                   occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
                   
-                  extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 3))
-                  names(extensions.stats) = c("length", "time.step", "ke")
+                  extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 4))
+                  names(extensions.stats) = c("length", "time.step", "ke", "clipping.pos")
                   extensions.stats$length = rep(invading.fragments$names, times = test.replicates)
                   
                   # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
@@ -1300,8 +1298,8 @@ for(kon in 1:length(kon.group)){
                         if(length(unzipped.rad54)<prop.rad54){
                           yy = runif(1)
                           ## KE1 :
-                          if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>200){ #do it every 10 time steps
-                            if(yy < ke1){
+                          if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+                            if(yy < ke1.prob){
                               extensions.stats$time.step[bigtracker] = time.step
                               extensions.stats$ke[bigtracker] = 1
                               break
@@ -1309,15 +1307,18 @@ for(kon in 1:length(kon.group)){
                             
                           }else{
                             ## KE2 :
-                            if(max(nchar(zipped.fragments.list$sequences))>200){
-                              if(yy<ke2.prob){
+                            zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
+                            if (zipping.window - sum(nchar(zipped.fragments.list$sequences)) > nchar(invading.sequence)*0.2 ){
+                              if(yy < ke2.prob){
                                 extensions.stats$time.step[bigtracker] = time.step
                                 extensions.stats$ke[bigtracker] = 2
+                                extensions.stats$clipping.pos[bigtracker] = max(as.integer(zipped.fragments.list$end))
                                 break
                               }
                             }
                           }
                         }
+                        
                         ############################################################################
                         ########################## Single runs #####################################
                         

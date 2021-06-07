@@ -187,8 +187,8 @@ occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 6))
 names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
 occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
 
-extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 3))
-names(extensions.stats) = c("length", "time.step", "ke")
+extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 4))
+names(extensions.stats) = c("length", "time.step", "ke", "clipping.pos")
 extensions.stats$length = rep(invading.fragments$names, times = test.replicates)
 
 # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
@@ -206,7 +206,7 @@ dirname=paste(num.time.steps, kon.name, koff1.name, koff2.name, ke1.name, ke2.na
 dirnew=paste(rootdir,dirname,sep="")
 
 if(file.exists(dirnew)){
-unlink(dirnew, recursive = TRUE)
+  unlink(dirnew, recursive = TRUE)
 }
 dir.create(dirnew)
 
@@ -313,7 +313,7 @@ for (trial in 1:test.replicates){
     prop.rad54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rad54) #number of rad54 to be placed into the invading strand ;
     if(prop.rad54<=1){prop.rad54=1}
     prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54) # number of rdh54 to be placed into the invading strand;
-    if(prop.rdh54<=1){prop.rdh54=1}  
+    if(prop.rdh54<=1){prop.rdh54=1}
     
     rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = prop.rad54, number.rdh54 = prop.rdh54, invading.sequence = invading.sequence) 
     pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
@@ -321,6 +321,9 @@ for (trial in 1:test.replicates){
     zipped.fragments.list <- as.data.frame(matrix(0,0,3)) #all the macrohomologies after zipping with start/end positions
     names(zipped.fragments.list ) = c("start", "end", "sequences")
     unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
+    
+    #probability of detection proportional to the length of invading strand :
+    crosslink.density <- 500
     
     # Loop through the time-steps
     for (time.step in 1:num.time.steps){
@@ -356,13 +359,13 @@ for (trial in 1:test.replicates){
         }
       }
       
-      ############# Dissociate large number of heterologies ####################
-  
+      ############# Dissociate large number of heterologies #############################
+      
       #Kind of zipping but for heterologies :
       # In the case where 200 or more hétérologies from the same bin are bound to the invading strand,
       # as there are heterologous, we simulate an SEI that will failed because of mismatches during zipping
       # and lead to the dissociation of these heterologies :
-  
+      
       heterologies.stats = as.data.frame(table(donors.occupancy$bins[which(donors.occupancy$bound.id == "heterology")]))
       if(nrow(heterologies.stats) > 0){
         names(heterologies.stats) = c("bins", "freq")
@@ -375,8 +378,8 @@ for (trial in 1:test.replicates){
         }
       }
       
-      ##########################################################################
-      ###################### KOFF1 #############################################
+      ############################################################################
+      ###################### KOFF1 ###############################################
       #simulate random dissociation(s)
       num.bound = length(occupied.rad51$donor.invasions)
       # print(num.bound)
@@ -391,8 +394,8 @@ for (trial in 1:test.replicates){
         occupied.rad51$bound = "unbound"
       }
       
-      ##########################################################################
-      ############################## Occupancy #################################
+      ############################################################################
+      ############################## Occupancy ###################################
       donors.occupancy$bound = "no"
       donors.occupancy$bound.id = "unbound"
       donors.occupancy$donor.id = "unknown"
@@ -408,14 +411,14 @@ for (trial in 1:test.replicates){
         donors.occupancy$donor.id[rad51.cover.index] = c(sapply(occupied.rad51$donor.invasions, function(x){rep(x, each = 8)}))
         donors.occupancy$bound.id[which(donors.occupancy$donor.id == "H")] = "heterology"
         donors.occupancy$bound.id[which(donors.occupancy$donor.id != "H" & donors.occupancy$donor.id != "unknown")] = "homology"
-          
+        
         donors.occupancy$bound[which(donors.occupancy$zipped == "yes")] = "yes"
         donors.occupancy$bound.id[which(donors.occupancy$zipped == "yes") ] = "homology"
         donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
         donors.occupancy$bins[which(donors.occupancy$zipped == "yes")] = donors.list$bins[which(donors.list$id == current.donor)] 
       }
-      ##########################################################################
-      ################################# Zipping ################################
+      ############################################################################
+      ################################# Zipping ##################################
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
       if(length(unzipped.rad54 > 0) && current.donor != "" &&
          donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
@@ -479,12 +482,12 @@ for (trial in 1:test.replicates){
         }
       }
       
-      ##########################################################################
-      ######################## KOFF2 ###########################################
+      ############################################################################
+      ######################## KOFF2 #############################################
       # Introduce at each time step, the probability of dissociation Koff2 for zipped sequences ;
       # If a macrohomology becomes un-zipped because of koff2,
       # All the processes of homologies searching and zipping have to be done again ;
-  
+      
       if(koff2.prob > 0 & dim(zipped.fragments.list)[1] != 0){
         row2remove <- c()
         for(i in 1:nrow(zipped.fragments.list)){
@@ -493,28 +496,28 @@ for (trial in 1:test.replicates){
             current.zip.start <- as.integer(zipped.fragments.list[i, ]$start)
             current.zip.end <- as.integer(zipped.fragments.list[i, ]$end)
             row2remove = c(row2remove, i)
-  
+            
             donors.occupancy$zipped[current.zip.start : current.zip.end] = "no" #the sequence is unzipped
             donors.occupancy$bound[current.zip.start : current.zip.end] = "no" #the sequence becomes unbound to donor
             donors.occupancy$bound.id[current.zip.start : current.zip.end] = "unbound" # the sequence is considered as heterologous again
             donors.occupancy$donor.id[current.zip.start : current.zip.end] = "unknown"
             donors.occupancy$bins[current.zip.start : current.zip.end] = "unknown"
-  
+            
             unzipped.rad54 = c(unzipped.rad54, current.zip.start) #the rad54 into the sequence are no more overlapped by any microhomology
             remove.rad51 <- which(occupied.rad51$pos.microhomology %in% (current.zip.start : current.zip.end))
-  
+            
             #remove binding sites from the donor
             occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
             occupied.rad51$pos.microhomology = occupied.rad51$pos.microhomology[-remove.rad51]
             occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-  
+            
             if(length(occupied.rad51$donor.invasions) == 0 | length(occupied.rad51$pos.microhomology) == 0){
               occupied.rad51$bound = "unbound"
               break
             }
           }
         }
-  
+        
         if(length(row2remove) > 0){
           zipped.fragments.list = zipped.fragments.list[-c(row2remove),]
           if(dim(zipped.fragments.list)[1] != 0){
@@ -526,8 +529,8 @@ for (trial in 1:test.replicates){
       if(length(which(donors.occupancy$zipped == "yes")) == 0){
         current.donor = ""
       }
-  
-      ##########################################################################
+      
+      ############################################################################
       
       #first homology to the real donor
       if(length(which(donors.occupancy$bound.id == "homology" & donors.occupancy$donor.id == real.id)) > 0 && first == 0){
@@ -557,8 +560,8 @@ for (trial in 1:test.replicates){
         }
       }
       
-      ##########################################################################
-      ####################### Prob detection ###################################
+      ############################################################################
+      ####################### Prob detection #####################################
       
       prob.detection.donors = rep(0, additional.donors+1)
       for (i in 1:length(donors.list$id)){
@@ -577,13 +580,13 @@ for (trial in 1:test.replicates){
         occupancy.firsts$half.detect[bigtracker] = time.step
       }
       
-      ##########################################################################
-      ######################## KE1 & KE2 #######################################
-      if(length(unzipped.rad54)<prop.rad54 & time.step%%10==0){
+      ############################################################################
+      ######################## KE1 & KE2 #########################################
+      if(length(unzipped.rad54)<prop.rad54){
         yy = runif(1)
         ## KE1 :
-        if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>200){ #do it every 10 time steps
-          if(yy < ke1){
+        if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+          if(yy < ke1.prob){
             extensions.stats$time.step[bigtracker] = time.step
             extensions.stats$ke[bigtracker] = 1
             break
@@ -591,17 +594,20 @@ for (trial in 1:test.replicates){
           
         }else{
           ## KE2 :
-          if(max(nchar(zipped.fragments.list$sequences))>200){
-            if(yy<ke2.prob){
+          zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
+          if (zipping.window - sum(nchar(zipped.fragments.list$sequences)) > nchar(invading.sequence)*0.2 ){
+            if(yy < ke2.prob){
               extensions.stats$time.step[bigtracker] = time.step
               extensions.stats$ke[bigtracker] = 2
+              extensions.stats$clipping.pos[bigtracker] = max(as.integer(zipped.fragments.list$end))
               break
             }
           }
         }
       }
-      ##########################################################################
-      ########################## Single runs ###################################
+      
+      ############################################################################
+      ########################## Single runs #####################################
       
       if(saver < 3 ){
         # tabulate occupancies vs. time step and length
@@ -610,7 +616,7 @@ for (trial in 1:test.replicates){
         binding.ts$homologies[binding.ts$time.step == time.step & binding.ts$length == fragment.type] = length(which(donors.occupancy$bound.id == "homology"))
       }
       
-      ##########################################################################
+      ############################################################################
       
       pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] = 
         pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] + prob.detection.homo
@@ -618,7 +624,7 @@ for (trial in 1:test.replicates){
       pop.time.series$zip[pop.time.series$time.step == time.step &  pop.time.series$length == fragment.type] = 
         pop.time.series$zip[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] + prob.detection.zip
       
-      ##########################################################################
+      ############################################################################
       
       for (i in 1:length(donors.list$id)){
         pop.time.series[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type, i+4] = 
@@ -632,8 +638,8 @@ for (trial in 1:test.replicates){
         chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] = 
           chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
       }
-  
-    #print(c(fragment.type, time.step, trial))
+      
+      #print(c(fragment.type, time.step, trial))
     }#next time step
   }#next fragment
   
@@ -648,7 +654,6 @@ for (trial in 1:test.replicates){
   
   saver=saver+1
 }#end process
-#})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)

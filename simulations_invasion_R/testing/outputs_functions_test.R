@@ -150,7 +150,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "first_zip_contact_time.txt";
   file = paste(dirnew_plots,"/first_zip_contact_time_boxplot.png",sep="")
   first.boxplot<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$first.zip != -1)),],
@@ -159,7 +158,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "half_detect.txt";
   file = paste(dirnew_plots,"/half_detect_boxplot.png",sep="")
   first.boxplot<-
     ggplot(occupancy.firsts[c(which(occupancy.firsts$half.detect != -1)),],
@@ -168,8 +166,8 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
-  fname = "start_extensions.txt";
   file = paste(dirnew_plots,"/start_extensions.png",sep="")
+  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
   extensions.boxplot<-
     ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),],
            aes(x=length, y=time.step, fill=length)) +
@@ -177,7 +175,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     stat_summary(fun = mean, geom = "point", shape = 8, size = 4)
   ggsave(file,plot=extensions.boxplot, width = w, height = h)
   
-  fname = "ke_occurences.txt";
   file = paste(dirnew_plots,"/ke_occurences.png",sep="")
   ke.hist<-
     ggplot(extensions.stats[c(which(extensions.stats$ke!= -1)),],

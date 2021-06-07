@@ -428,7 +428,7 @@ zipping <- function(rad54, zipping.list, donor, limit){
   
   while(pos %!in% pos.rdh54 && 
         pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos < nchar(invading.sequence)){
+        pos <= nchar(invading.sequence)){
     
     if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
       new.nt <- substr(donor.seq, pos, pos)
