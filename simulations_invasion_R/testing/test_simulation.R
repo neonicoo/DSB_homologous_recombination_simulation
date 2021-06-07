@@ -54,12 +54,12 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 5 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.1) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-2)
-ke2.group<-c(1e-3)
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
+ke1.group<-c(1e-3)
+ke2.group<-c(1e-4)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand
@@ -108,7 +108,7 @@ rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
 
 ################################################################################
 ############################ Single run simulation #############################
-#profvis({
+profvis({
 kon = 1; koff = 1; m = 1; sw = 1; koff2 = 1; rad54 = 1; rdh54 = 1; ke1 = 1; ke2 = 1; #for single Job run
 
 kon.prob=kon.group[kon]
@@ -585,6 +585,8 @@ for (trial in 1:test.replicates){
       if(length(unzipped.rad54)<prop.rad54){
         yy = runif(1)
         ## KE1 :
+        #KE1 is effective only if the last rad54 is overlapped and zipped,
+        # and if the total number of zipped nts is larger than 20% of the sequence length ;
         if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
           if(yy < ke1.prob){
             extensions.stats$time.step[bigtracker] = time.step
@@ -594,6 +596,8 @@ for (trial in 1:test.replicates){
           
         }else{
           ## KE2 :
+          #zipping.window : distance between the first and last zipped nucleotids ; 
+          #KE2 is effective only if the portion of zipped nts into the zipping window is larger than 20% of the sequence length;
           zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
           if (zipping.window - sum(nchar(zipped.fragments.list$sequences)) > nchar(invading.sequence)*0.2 ){
             if(yy < ke2.prob){
@@ -617,6 +621,7 @@ for (trial in 1:test.replicates){
       }
       
       ############################################################################
+      ################ Population time series and chromosomes bins ###############
       
       pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] = 
         pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] + prob.detection.homo
@@ -654,6 +659,7 @@ for (trial in 1:test.replicates){
   
   saver=saver+1
 }#end process
+})
 
 write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
 population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
