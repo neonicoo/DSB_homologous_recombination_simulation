@@ -25,8 +25,9 @@ source /usr/share/lmod/lmod/init/bash
 module load R/4.0.3
  
 ### execution du programme (a changer avec votre executable)
-EXECDIR=${HOME}/simulations4juin
-${EXECDIR}/main_simulation_no_plot.R
+EXECDIR=${HOME}/simulations7juin
+${EXECDIR}/main_simulation.R
 
 # fin
+
 
