@@ -1,3 +1,4 @@
+options(bitmapType = "cairo") #fix some graphical display issues with X11 (PSMN)
 rm(list=ls()) #clean global environment
 
 ###Set working directory
