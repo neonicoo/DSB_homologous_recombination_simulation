@@ -94,13 +94,13 @@ rdh54.group.names<-gsub("\\.", "", as.character(rdh54.group))
 # The comparison is made with the chromosome id and the start position for each bin 
 chr_pos_occurences = c()
 for (i in 2:ncol(sequences.bins)){
-chr_pos_occurences= c(chr_pos_occurences, 
-                      paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
+  chr_pos_occurences= c(chr_pos_occurences, 
+                        paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
 }
 chr_pos_contacts = c()
 for (i in 1:length(bins.id)){
-chr_pos_contacts= c(chr_pos_contacts, 
-                    paste(str_split(bins.id[i], "_")[[1]][1], str_split(bins.id[i], "_")[[1]][2], sep="_"))
+  chr_pos_contacts= c(chr_pos_contacts, 
+                      paste(str_split(bins.id[i], "_")[[1]][1], str_split(bins.id[i], "_")[[1]][2], sep="_"))
 }
 
 remove = which(chr_pos_occurences %!in% chr_pos_contacts)+1
@@ -426,7 +426,7 @@ for (trial in 1:test.replicates){
       if(length(unzipped.rad54 > 0) & current.donor != "" && donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
         
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
-    
+        
         for (pos in unzipped.rad54){
           new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
           

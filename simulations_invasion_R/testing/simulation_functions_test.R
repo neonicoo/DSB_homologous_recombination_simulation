@@ -12,12 +12,12 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
   # Takes into account distance search window, if they are specified ;
   # Additional positions not to be retained can be specified as parameters ;
   # Return a vector of indices of free binding sites ;
-
+  
   indices = 1:(nchar(invading.sequence) -7)
   if (occupied.rad51$bound=="unbound"){
     return(indices)
   }
-
+  
   remove = c()
   for (i in 0:7){
     remove = c(remove, (occupied.rad51$pos.microhomology - i), (occupied.rad51$pos.microhomology + i))
@@ -25,10 +25,10 @@ find.occupancies = function(lower.window ="none", upper.window = "none", additio
       remove = c(remove, (additional.removals - i), (additional.removals + i))
     }
   }
-
+  
   if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
   if (upper.window != "none"){remove=c(remove, upper.window:nchar(invading.sequence))} # same, but for the upstream sites
-
+  
   remove = remove[which(remove > 0)] #remove the negative and null indices
   return(indices[-remove])
 }
@@ -40,7 +40,7 @@ genome.wide.sei = function(initial.binding.tries){
   
   # Choose region of LY weighted by available microhomologies (MHs);
   # Dont let those already occupied be chosen (by the use of the find.occupancies() function) ;
-
+  
   if(occupied.rad51$bound=="unbound"){
     open.sites = 1:(nchar(invading.sequence) -7)
   }else{
@@ -85,7 +85,7 @@ genome.wide.sei = function(initial.binding.tries){
       break
     }
   }
-
+  
   # Choose if/which binds;
   # successes : list of sample positions among the matches where the probability of association is good enough to have a bond;
   # The probability of association is called 'Kon'.
@@ -108,7 +108,7 @@ genome.wide.sei = function(initial.binding.tries){
       # If we found a microhomology in a bin that contains a potential donor ,
       #   we consider a probability of 1/2 for this microhomology to homologous, and thus 1/2 to be heterologous in the other case.
       yy = runif(1)
-      if(yy <= max(nchar(donors.list$sequence))/bins.size){ #probability to be a donor 
+      if(yy <= 1/2){ #probability to be a donor 
         if(length(donor)>1){
           donor = sample(donor, size = 1) #rare case where we have more than one donor into a bin
           identities = c(identities, donor) #homology, bound to a potential donor
@@ -122,7 +122,7 @@ genome.wide.sei = function(initial.binding.tries){
       identities = c(identities, "H") #heterology
     }
   }
-
+  
   if (occupied.rad51$bound != "unbound"){
     remove = which(matches %in% occupied.rad51$pos.microhomology)
     if (length(remove)>0){
@@ -266,7 +266,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
     }
     bindings = c(bindings, current.bindings)
   }
- 
+  
   new.bindings$genome.bins = c(new.bindings$genome.bins, bins)
   new.bindings$pos.microhomology = c(new.bindings$pos.microhomology, bindings)
   new.bindings$donor.invasions  = c(new.bindings$donor.invasions, identities)
@@ -494,7 +494,7 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   }else{
     return(-1)
   }
-
+  
 }
 
 #########################################################################################################
