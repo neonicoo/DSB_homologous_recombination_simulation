@@ -108,7 +108,7 @@ genome.wide.sei = function(initial.binding.tries){
       # If we found a microhomology in a bin that contains a potential donor ,
       #   we consider a probability of 1/2 for this microhomology to homologous, and thus 1/2 to be heterologous in the other case.
       yy = runif(1)
-      if(yy <= 0.5){ #probability to be a donor 
+      if(yy <= max(nchar(donors.list$sequence))/bins.size){ #probability to be a donor 
         if(length(donor)>1){
           donor = sample(donor, size = 1) #rare case where we have more than one donor into a bin
           identities = c(identities, donor) #homology, bound to a potential donor
@@ -295,7 +295,7 @@ donors.generator <- function(template,realdonor.id, realdonor.location, bins, N 
       new.donor <- template
       new.donor.id = paste("donor", as.character(n), sep="")
       lower.limit <- floor(0.05*nchar(template))
-      upper.limit <- floor(0.5*nchar(template))
+      upper.limit <- floor(0.4*nchar(template))
       nb.snp <-sample(lower.limit:upper.limit, size = 1)
       snp.location <- sample(1:nchar(template), size = nb.snp, replace = FALSE)
       
@@ -443,5 +443,60 @@ zipping <- function(rad54, zipping.list, donor, limit){
 
 #########################################################################################################
 #########################################################################################################
+zipping2.0 <- function(rad54, zipping.list, donor, limit){
+  
+  #return code :
+  # new.zip : vector containing position stat and stop for the zipped fragment and its nucleotids sequence ;
+  # 0 : if the zipping can't occur ;
+  # -1 : the alignment is too bad, means that the current donor is not good enough and we have to change it (return to homology search step) ;
+  
+  #Check if the current rad54 is overlapped by an homologous microhomology ;
+  if(donors.occupancy$bound.id[rad54] != "homology"){
+    return(0)
+  }
+  
+  #initialize the portion of nucleotids to zip ;
+  # start : current rad54 ;
+  # stop : nearest rad54 or rdh54 from the start position ;
+  # fragment.to.zip : sequence of nts between start and stop ;
+  
+  start <- rad54
+  if(start == max(pos.rad54)){
+    stop <- nchar(invading.sequence)
+  }else{
+    stop = min(pos.rad54[pos.rad54>start], pos.rdh54[pos.rdh54>start])-1
+  }
+  
+  fragment.to.zip <- substr(invading.sequence, start = start, stop = stop)
+  #Minimum requiered length to be zipped : 16 nts ;
+  if(nchar(fragment.to.zip) < 16){
+    return(0)
+  }
+  
+  donor.seq = donors.list$sequence[which(donors.list$id == donor)] #sequence of the current  donor
+  
+  #Here we use the algorithm of Smith Waterman (sw) to make a local alignment of 2 strings (a & b) with different length;
+  # This algorithm give us a score which takes account the matches, the mismatches or the gaps between the 2 strings ;
+  # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
+  sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
+  
+  if(sw$similarity > 2/3){
+    #If the similarity score is good enough, we check the number of consecutive misalignments ;
+    # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
+    miss <- strsplit(sw$b_aligned, split = "")[[1]]
+    consecutive.miss <- ifelse(length(which(miss == "*"))>0, max(rle(miss)$length[which(rle(miss)$value=="*")]), 0)
+    if(consecutive.miss <= 5){
+      return(c(start, stop, fragment.to.zip))
+      
+    }else{
+      return(-1)
+    }
+  }else{
+    return(-1)
+  }
 
+}
+
+#########################################################################################################
+#########################################################################################################
 

@@ -13,6 +13,7 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(Rcpp)
+library(text.alignment)
 library(profvis)
 
 ################################################################################
@@ -45,6 +46,7 @@ sequences.bins <- read.csv("./LYS2/LY_occurences_per_8bp_(for_rev_donor)_with_bi
 # Import the experimental contacts of the left DSB 10kb with the genome wide :
 contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
 bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_pos), "_", as.character(contacts$end_pos), sep="")
+bins.size = 10000 
 contacts <- cbind(contacts, bins.id)
 colnames(contacts)[6] <- "frequency"
 colnames(contacts)[7] <- "id"
@@ -55,10 +57,10 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 25 # How many times to simulate, replicates
-kon.group<-c(0.6) #binding probabilities for every binding try
+test.replicates = 1 # How many times to simulate, replicates
+kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(2e-3)
 m.group = c(2) #bindings allowed to occur per tethering
@@ -426,7 +428,7 @@ for (trial in 1:test.replicates){
         if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
     
         for (pos in unzipped.rad54){
-          new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
+          new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
           
           if(length(new.zip) > 1){
             #i.e new.zip is a vector,
