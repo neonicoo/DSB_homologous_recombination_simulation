@@ -635,8 +635,8 @@ for (trial in 1:test.replicates){
       if(occupied.rad51$bound != "unbound"){
         occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
         names(occupied.bins) = c("bins", "freq")
-        
-        chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] = 
+
+        chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] =
           chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
       }
       
