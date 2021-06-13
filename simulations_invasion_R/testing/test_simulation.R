@@ -583,7 +583,7 @@ for (trial in 1:test.replicates){
         ## KE1 :
         #KE1 is effective only if the last rad54 is overlapped and zipped,
         # and if the total number of zipped nts is larger than 20% of the sequence length ;
-        if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+        if ( max(pos.rad54) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
           if(yy < ke1.prob){
             extensions.stats$time.step[bigtracker] = time.step
             extensions.stats$ke[bigtracker] = 1
