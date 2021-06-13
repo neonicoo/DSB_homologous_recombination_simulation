@@ -466,7 +466,7 @@
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect10389);fill:#c87137;fill-opacity:1;stroke:none"><tspan
          x="811.51953"
          y="262.6719"
-         id="tspan19212">Last rad54 fragment isn't zipped </tspan></text>
+         id="tspan11008">Last rad54 fragment isn't zipped </tspan></text>
     <text
        xml:space="preserve"
        transform="scale(0.26458333)"
@@ -479,11 +479,11 @@
        style="font-style:normal;font-weight:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797);fill:#2a7fff;fill-opacity:1;stroke:none"><tspan
          x="501.66016"
          y="399.60745"
-         id="tspan19214">Invading 
+         id="tspan11010">Invading 
 </tspan><tspan
          x="501.66016"
          y="422.94083"
-         id="tspan19216">single-end</tspan></text>
+         id="tspan11012">single-end</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-126.21749,-46.687283)"
@@ -491,11 +491,11 @@
        style="font-style:normal;font-weight:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797-1);fill:#c83737;fill-opacity:1;stroke:none"><tspan
          x="501.66016"
          y="399.60745"
-         id="tspan19218">Homologous 
+         id="tspan11014">Homologous 
 </tspan><tspan
          x="501.66016"
          y="422.94083"
-         id="tspan19220">donor</tspan></text>
+         id="tspan11016">donor</tspan></text>
     <text
        xml:space="preserve"
        transform="scale(0.26458333)"
@@ -607,25 +607,25 @@
        style="font-style:normal;font-weight:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect104815-6);fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="774.71289"
          y="294.53519"
-         id="tspan19224"><tspan
+         id="tspan11020"><tspan
            style="fill:#00aa00"
-           id="tspan19222">zipped / (zipped + non-zipped) &gt; 50%
+           id="tspan11018">zipped / (zipped + non-zipped) &gt; 50%
 </tspan></tspan><tspan
          x="774.71289"
          y="317.86856"
-         id="tspan19228"><tspan
+         id="tspan11024"><tspan
            style="fill:#00aa00"
-           id="tspan19226">                  +  
+           id="tspan11022">                  +  
 </tspan></tspan><tspan
          x="774.71289"
          y="341.20193"
-         id="tspan19236"><tspan
+         id="tspan11032"><tspan
            style="fill:#00aa00"
-           id="tspan19230">             yy &lt;</tspan><tspan
+           id="tspan11026">             yy &lt;</tspan><tspan
            style="fill:#00aa00"
-           id="tspan19232"> </tspan><tspan
+           id="tspan11028"> </tspan><tspan
            style="font-weight:bold;-inkscape-font-specification:'sans-serif Bold';fill:#00aa00"
-           id="tspan19234">Ke2 </tspan></tspan></text>
+           id="tspan11030">Ke2 </tspan></tspan></text>
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 9.2758899,94.098602 C 25.255201,97.060292 39.755703,106.3215 46.709861,121.60946 l 37.524342,-0.023 c 0.431474,-21.748348 21.881347,-21.39104 20.930917,-0.0817 l 18.59248,0.0272 c 0.37841,-21.811538 21.52975,-22.175318 21.33055,-0.12491 l 40.53804,0.19463"
@@ -815,11 +815,9 @@
        style="font-style:normal;font-weight:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect213549);fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="819.54297"
          y="318.65237"
-         id="tspan19242"><tspan
+         id="tspan11036"><tspan
            style="fill:#2a7fff"
-           id="tspan19238">Cutting SE at last zipped </tspan><tspan
-           style="fill:#2a7fff"
-           id="tspan19240">postion </tspan></tspan></text>
+           id="tspan11034">Cuts SE at last zipped position </tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-25.386482,81.351851)"
@@ -827,10 +825,10 @@
        style="font-style:normal;font-weight:normal;font-size:18.6667px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect213549-6);fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="819.54297"
          y="318.65237"
-         id="tspan19248"><tspan
+         id="tspan11042"><tspan
            style="fill:#2a7fff"
-           id="tspan19244">Start extension at the cut </tspan><tspan
+           id="tspan11038">Starts extension at the cut </tspan><tspan
            style="fill:#2a7fff"
-           id="tspan19246">postion </tspan></tspan></text>
+           id="tspan11040">position </tspan></tspan></text>
   </g>
 </svg>
