@@ -595,7 +595,7 @@ for (trial in 1:test.replicates){
           #zipping.window : distance between the first and last zipped nucleotids ; 
           #KE2 is effective only if the portion of zipped nts into the zipping window is larger than 20% of the sequence length;
           zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
-          if (zipping.window - sum(nchar(zipped.fragments.list$sequences)) > nchar(invading.sequence)*0.2 ){
+          if (sum(nchar(zipped.fragments.list$sequences)) / zipping.window  > 1/2){
             if(yy < ke2.prob){
               extensions.stats$time.step[bigtracker] = time.step
               extensions.stats$ke[bigtracker] = 2
