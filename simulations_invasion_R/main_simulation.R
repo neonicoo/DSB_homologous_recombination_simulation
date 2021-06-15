@@ -16,6 +16,7 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(Rcpp)
+library(text.alignment)
 
 ################################################################################
 ############################## Import the datas ################################
@@ -52,7 +53,7 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 5 # How many times to simulate, replicates
+test.replicates = 3 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
@@ -122,35 +123,6 @@ cppFunction(
   }
   return(indices);
 }")
-
-#########################################################################################################
-#########################################################################################################
-
-find.occupancies = function(lower.window ="none", upper.window = "none", additional.removals = "none"){
-  # Find the positions where there is no MH bounded ;
-  # Takes into account distance search window, if they are specified ;
-  # Additional positions not to be retained can be specified as parameters ;
-  # Return a vector of indices of free binding sites ;
-  
-  indices = 1:(nchar(invading.sequence) -7)
-  if (occupied.rad51$bound=="unbound"){
-    return(indices)
-  }
-  
-  remove = c()
-  for (i in 0:7){
-    remove = c(remove, (occupied.rad51$pos.microhomology - i), (occupied.rad51$pos.microhomology + i))
-    if(length(additional.removals) > 1){
-      remove = c(remove, (additional.removals - i), (additional.removals + i))
-    }
-  }
-  
-  if (lower.window != "none"){remove=c(remove, 0:lower.window)} #remove downstream sites of the search window
-  if (upper.window != "none"){remove=c(remove, upper.window:nchar(invading.sequence))} # same, but for the upstream sites
-  
-  remove = remove[which(remove > 0)] #remove the negative and null indices
-  return(indices[-remove])
-}
 
 #########################################################################################################
 #########################################################################################################
@@ -227,7 +199,7 @@ genome.wide.sei = function(initial.binding.tries){
       # If we found a microhomology in a bin that contains a potential donor ,
       #   we consider a probability of 1/2 for this microhomology to homologous, and thus 1/2 to be heterologous in the other case.
       yy = runif(1)
-      if(yy <= 0.5){ #probability to be a donor 
+      if(yy <= 1/2){ #probability to be a donor 
         if(length(donor)>1){
           donor = sample(donor, size = 1) #rare case where we have more than one donor into a bin
           identities = c(identities, donor) #homology, bound to a potential donor
@@ -414,7 +386,7 @@ donors.generator <- function(template,realdonor.id, realdonor.location, bins, N 
       new.donor <- template
       new.donor.id = paste("donor", as.character(n), sep="")
       lower.limit <- floor(0.05*nchar(template))
-      upper.limit <- floor(0.5*nchar(template))
+      upper.limit <- floor(0.4*nchar(template))
       nb.snp <-sample(lower.limit:upper.limit, size = 1)
       snp.location <- sample(1:nchar(template), size = nb.snp, replace = FALSE)
       
@@ -495,73 +467,63 @@ rad54.rdh54.placement <- function(number.rad54, number.rdh54, invading.sequence)
 
 #########################################################################################################
 #########################################################################################################
-zipping <- function(rad54, zipping.list, donor, limit){
+zipping2.0 <- function(rad54, zipping.list, donor, limit){
   
-  pos <- rad54
-  zip.indexe <- c()
-  zip.fragment <-"" 
-  donor.seq = donors.list$sequence[which(donors.list$id == donor)]
-  consecutive.mismatches <- 0
+  #return code :
+  # new.zip : vector containing position stat and stop for the zipped fragment and its nucleotids sequence ;
+  # 0 : if the zipping can't occur ;
+  # -1 : the alignment is too bad, means that the current donor is not good enough and we have to change it (return to homology search step) ;
   
-  # Check the length of the macrohomology 
-  downstream <- pos-8
-  upstream <- pos+8
-  if(downstream < 0){
-    upstream = upstream + abs(downstream)-1
-    downstream = 1
+  #Check if the current rad54 is overlapped by an homologous microhomology ;
+  if(donors.occupancy$bound.id[rad54] != "homology"){
+    return(0)
   }
   
-  if(sum(donors.occupancy$bound.id[(downstream):(upstream)] == "homology") < 15){
-    # before to start the zipped process we have to check if the current rad54 (pos) is overlapped by a big enough macrohomology ;
-    # We arbitrary fix the minimum length for a macrohomology at 15 nts (7nts homologies in downstream + current homologous position (rad54) + 7nts homologies in upstream) ;
-    # Something like 1 macrohomology ~= 2 microhomologies (at least) ;
-    return(0) #too unstable to be zipped
+  #initialize the portion of nucleotids to zip ;
+  # start : current rad54 ;
+  # stop : nearest rad54 or rdh54 from the start position ;
+  # fragment.to.zip : sequence of nts between start and stop ;
+  
+  start <- rad54
+  if(start == max(pos.rad54)){
+    stop <- nchar(invading.sequence)
+  }else{
+    stop = min(pos.rad54[pos.rad54>start], pos.rdh54[pos.rdh54>start])-1
   }
   
-  while(pos %!in% pos.rdh54 && 
-        pos %!in% pos.rad54[which(pos.rad54 != rad54)] && 
-        pos <= nchar(invading.sequence)){
-    
-    if(donors.occupancy$bound.id[pos] == "homology" && donors.occupancy$donor.id[pos] == donor){
-      new.nt <- substr(donor.seq, pos, pos)
-      zip.indexe = c(zip.indexe, pos)
-      zip.fragment = paste(zip.fragment, new.nt, sep="")
-      pos = pos + 1
-      consecutive.mismatches = 0
+  fragment.to.zip <- substr(invading.sequence, start = start, stop = stop)
+  #Minimum requiered length to be zipped : 16 nts ;
+  if(nchar(fragment.to.zip) < 16){
+    return(0)
+  }
+  
+  donor.seq = donors.list$sequence[which(donors.list$id == donor)] #sequence of the current  donor
+  
+  #Here we use the algorithm of Smith Waterman (sw) to make a local alignment of 2 strings (a & b) with different length;
+  # This algorithm give us a score which takes account the matches, the mismatches or the gaps between the 2 strings ;
+  # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
+  sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
+  
+  if(sw$similarity > 2/3){
+    #If the similarity score is good enough, we check the number of consecutive misalignments ;
+    # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
+    miss <- strsplit(sw$b_aligned, split = "")[[1]]
+    consecutive.miss <- ifelse(length(which(miss == "*"))>0, max(rle(miss)$length[which(rle(miss)$value=="*")]), 0)
+    if(consecutive.miss <= 5){
+      return(c(start, stop, fragment.to.zip))
       
     }else{
-      if (str_sub(string = invading.sequence, start = pos, end = pos) ==  str_sub(string = donor.seq, start = pos, end = pos)){
-        new.nt <- substr(donor.seq, pos, pos)
-        zip.indexe = c(zip.indexe, pos)
-        zip.fragment = paste(zip.fragment, new.nt, sep="")
-        pos = pos + 1
-        consecutive.mismatches = 0
-        
-      }else{
-        consecutive.mismatches = consecutive.mismatches + 1
-        if (consecutive.mismatches >= limit){
-          return(-1) # too much misalignment, this donor isn't good enough to lead an HR
-          
-        }else if (consecutive.mismatches < limit){
-          new.nt <- substr(donor.seq, pos, pos)
-          zip.indexe = c(zip.indexe, pos)
-          zip.fragment = paste(zip.fragment, new.nt, sep="")
-          pos = pos + 1
-        }
-      }
+      return(-1)
     }
+  }else{
+    return(-1)
   }
   
-  if(nchar(zip.fragment) > 16){
-    return(c(as.integer(zip.indexe[1]),  as.integer(tail(zip.indexe,1)), zip.fragment) )
-    
-  }else{
-    return(0) #zipped sequence is too short 
-  }
 }
 
 #########################################################################################################
 #########################################################################################################
+
 
 #########################################################################################################
 ################################Outputs functions #######################################################
@@ -1112,7 +1074,7 @@ for(kon in 1:length(kon.group)){
                           if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
                           
                           for (pos in unzipped.rad54){
-                            new.zip = zipping(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
+                            new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
                             
                             if(length(new.zip) > 1){
                               #i.e new.zip is a vector,
@@ -1267,7 +1229,7 @@ for(kon in 1:length(kon.group)){
                           ## KE1 :
                           #KE1 is effective only if the last rad54 is overlapped and zipped,
                           # and if the total number of zipped nts is larger than 20% of the sequence length ;
-                          if (tail(pos.rad54,1) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+                          if ( max(pos.rad54) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
                             if(yy < ke1.prob){
                               extensions.stats$time.step[bigtracker] = time.step
                               extensions.stats$ke[bigtracker] = 1
@@ -1279,7 +1241,7 @@ for(kon in 1:length(kon.group)){
                             #zipping.window : distance between the first and last zipped nucleotids ; 
                             #KE2 is effective only if the portion of zipped nts into the zipping window is larger than 20% of the sequence length;
                             zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
-                            if (zipping.window - sum(nchar(zipped.fragments.list$sequences)) > nchar(invading.sequence)*0.2 ){
+                            if (sum(nchar(zipped.fragments.list$sequences)) / zipping.window  > 1/2){
                               if(yy < ke2.prob){
                                 extensions.stats$time.step[bigtracker] = time.step
                                 extensions.stats$ke[bigtracker] = 2
@@ -1301,6 +1263,7 @@ for(kon in 1:length(kon.group)){
                         }
                         
                         ############################################################################
+                        ################ Population time series and chromosomes bins ###############
                         
                         pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] = 
                           pop.time.series$homologies[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type] + prob.detection.homo
@@ -1319,7 +1282,7 @@ for(kon in 1:length(kon.group)){
                           occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
                           names(occupied.bins) = c("bins", "freq")
                           
-                          chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] = 
+                          chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] =
                             chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
                         }
                         
@@ -1338,6 +1301,7 @@ for(kon in 1:length(kon.group)){
                     
                     saver=saver+1
                   }#end process
+                  #})
                   
                   write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
                   population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
