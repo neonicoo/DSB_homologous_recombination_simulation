@@ -57,7 +57,7 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 1 # How many times to simulate, replicates
+test.replicates = 30 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
@@ -423,9 +423,11 @@ for (trial in 1:test.replicates){
       ############################################################################
       ################################# Zipping ##################################
       # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-      if(length(unzipped.rad54 > 0) & current.donor != "" && donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
+      if(length(unzipped.rad54) > 0 & current.donor != "" && current.donor %!in% donors.blacklist){
         
-        if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
+        if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
+          donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
+          }
         
         for (pos in unzipped.rad54){
           new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
@@ -470,12 +472,13 @@ for (trial in 1:test.replicates){
             donors.blacklist = c(donors.blacklist, current.donor)
             current.donor = ""
             
-            if(length(occupied.rad51$donor.invasions) == 0){
-              occupied.rad51$bound = "unbound"
-              break
-            }
+            break
           }
         }
+      }
+      
+      if(length(occupied.rad51$donor.invasions) == 0){
+        occupied.rad51$bound = "unbound"
       }
       
       ############################################################################
@@ -526,6 +529,7 @@ for (trial in 1:test.replicates){
         current.donor = ""
       }
       
+      ############################################################################
       ############################################################################
       
       #first homology to the real donor

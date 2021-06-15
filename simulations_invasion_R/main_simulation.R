@@ -53,19 +53,20 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 3 # How many times to simulate, replicates
-kon.group<-c(0.5) #binding probabilities for every binding try
+test.replicates = 100 # How many times to simulate, replicates
+kon.group<-c(0.2) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(2e-3)
 m.group = c(2) #bindings allowed to occur per tethering
-search.window.group = c(250) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(12) #proportional to the length of invading strand
-rdh54.group <- c(2) #proportional to the number of rad54
-misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
-crosslink.density <- 500 #minimum density to get a probability of detection eguals to 1
-additional.donors <- 2 # Additional donors ( without 'real' donor(s))
+search.window.group = c(500) #the genomic distance of the tethering effect (per side)
+rad54.group <- c(15) #proportional to the length of invading strand
+rdh54.group <- c(5) #proportional to the number of rad54
+misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor
+crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
+additional.donors <- 5 # Additional donors ( without 'real' donor(s))
+
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
 # For example 0005 is really 0.005
@@ -1069,9 +1070,11 @@ for(kon in 1:length(kon.group)){
                         ############################################################################
                         ################################# Zipping ##################################
                         # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-                        if(length(unzipped.rad54 > 0) & current.donor != "" && donors.list$invasion[which(donors.list$id == current.donor)] != "failed"){
+                        if(length(unzipped.rad54) > 0 & current.donor != "" && current.donor %!in% donors.blacklist){
                           
-                          if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){donors.list$invasion[which(donors.list$id == current.donor)] ="yes"}
+                          if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
+                            donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
+                          }
                           
                           for (pos in unzipped.rad54){
                             new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
@@ -1116,12 +1119,13 @@ for(kon in 1:length(kon.group)){
                               donors.blacklist = c(donors.blacklist, current.donor)
                               current.donor = ""
                               
-                              if(length(occupied.rad51$donor.invasions) == 0){
-                                occupied.rad51$bound = "unbound"
-                                break
-                              }
+                              break
                             }
                           }
+                        }
+                        
+                        if(length(occupied.rad51$donor.invasions) == 0){
+                          occupied.rad51$bound = "unbound"
                         }
                         
                         ############################################################################
@@ -1172,6 +1176,7 @@ for(kon in 1:length(kon.group)){
                           current.donor = ""
                         }
                         
+                        ############################################################################
                         ############################################################################
                         
                         #first homology to the real donor
@@ -1285,7 +1290,7 @@ for(kon in 1:length(kon.group)){
                           chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] =
                             chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
                         }
-                        
+                       
                         #print(c(fragment.type, time.step, trial))
                       }#next time step
                     }#next fragment
