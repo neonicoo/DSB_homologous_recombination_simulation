@@ -57,12 +57,12 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 30 # How many times to simulate, replicates
+test.replicates = 5 # How many times to simulate, replicates
 kon.group<-c(0.5) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.05) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
-ke2.group<-c(2e-3)
+ke2.group<-c(1e-3)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(250) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand
@@ -583,11 +583,11 @@ for (trial in 1:test.replicates){
       ############################################################################
       ######################## KE1 & KE2 #########################################
       if(length(unzipped.rad54)<prop.rad54){
-        yy = runif(1)
         ## KE1 :
         #KE1 is effective only if the last rad54 is overlapped and zipped,
         # and if the total number of zipped nts is larger than 20% of the sequence length ;
         if ( max(pos.rad54) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+          yy = runif(1)
           if(yy < ke1.prob){
             extensions.stats$time.step[bigtracker] = time.step
             extensions.stats$ke[bigtracker] = 1
@@ -596,17 +596,22 @@ for (trial in 1:test.replicates){
           
         }else{
           ## KE2 :
-          #zipping.window : distance between the first and last zipped nucleotids ; 
-          #KE2 is effective only if the portion of zipped nts into the zipping window is larger than 20% of the sequence length;
-          zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
-          if (sum(nchar(zipped.fragments.list$sequences)) / zipping.window  > 1/2){
-            if(yy < ke2.prob){
-              extensions.stats$time.step[bigtracker] = time.step
-              extensions.stats$ke[bigtracker] = 2
-              extensions.stats$clipping.pos[bigtracker] = max(as.integer(zipped.fragments.list$end))
-              break
+          #For each zipped fragment larger than 32 nts, try KE2 probability, if it pass, start the extension at the end of the i-th zipped fragment ,
+          # and break the fragment loop (go to the next fragment)
+          stop <- FALSE
+          for(i in 1:nrow(zipped.fragments.list)){
+            if (nchar(zipped.fragments.list[i, ]$sequences) >= 32){
+              yy = runif(1)
+              if(yy < ke2.prob){
+                extensions.stats$time.step[bigtracker] = time.step
+                extensions.stats$ke[bigtracker] = 2
+                extensions.stats$clipping.pos[bigtracker] = as.integer(zipped.fragments.list[i, ]$end)
+                stop <- TRUE
+                break
+              }
             }
           }
+          if (stop){break}
         }
       }
       
