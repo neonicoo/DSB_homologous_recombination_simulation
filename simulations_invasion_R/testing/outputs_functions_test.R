@@ -6,21 +6,21 @@ single.runs <-function(dirnew_singles, binding.ts, saver, w=14, h=8){
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
   occ_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
-    labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Total Occupancy (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$bound)+1))
   ggsave(outname,plot=occ_plot, width = w, height = h)
   
   outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$heterologies)+1))
   ggsave(outname,plot=het_plot, width = w, height = h)
   
   outname=paste(dirnew_singles,"/Occupancy_Homologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$homologies)+1))
   ggsave(outname,plot=het_plot, width = w, height = h)
   
@@ -41,7 +41,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
   
   pop.plot<-
     ggplot(data = df) + geom_step(aes(x = time.step, y = homologies, color = length)) +
-    labs(x = "time step", y = "Probability of detection for homologies") + theme_minimal()+ theme(text = element_text(size = 14))+
+    labs(x = "time step", y = "Probability of detection for homologies") +  theme(text = element_text(size = 14))+
     scale_y_continuous(limits = c(0, max(df$homologies)+1))
   ggsave(outname, plot=pop.plot, width = w, height = h)
   
@@ -54,7 +54,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
   
   pop.plot<-
     ggplot(data = df) + geom_step(aes(x = time.step, y = zip, color = length)) +
-    labs(x = "time step", y = "Probability of detection for zips") + theme_minimal()+ theme(text = element_text(size = 14))+
+    labs(x = "time step", y = "Probability of detection for zips") + theme(text = element_text(size = 14))+
     scale_y_continuous(limits = c(0, max(df$zip)+1))
   ggsave(outname, plot=pop.plot, width = w, height = h)
   
@@ -69,7 +69,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
     pop.plot<-
       ggplot(data = df) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
       labs(x = "time step", y = paste("Probability of detection", as.character(donors.list$id[i]), sep = " ")) + 
-      theme_minimal()+ theme(text = element_text(size = 14))+
+      theme(text = element_text(size = 14))+
       scale_y_continuous(limits = c(0, max(df$prob.detect)+1))
     ggsave(outname, plot=pop.plot, width = w, height = h)
     
