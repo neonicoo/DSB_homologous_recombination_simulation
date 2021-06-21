@@ -16,33 +16,25 @@ sourceCpp("./simulations_invasion_R/testing/RCPP_functions.cpp")
 parallel::detectCores()
 
 #Simulation 0
-rad54.group <- c(1/10) 
+additional.donors = 1 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 1
-rad54.group <- c(1/1000) 
+additional.donors = 2
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 2
-rad54.group <- c(1/20) 
+additional.donors = 4 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 3
-rad54.group <- c(1/750) 
+additional.donors = 6 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 4
-rad54.group <- c(1/500) 
+additional.donors = 8 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
 
 #Simulation 5
-rad54.group <- c(1/200) 
-rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
-
-#Simulation 6
-rad54.group <- c(1/100) 
-rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
-
-#Simulation 7
-rad54.group <- c(1/50) 
+additional.donors = 10 
 rstudioapi::jobRunScript(path="./simulations_invasion_R/testing/Job_test.R", importEnv = TRUE)
