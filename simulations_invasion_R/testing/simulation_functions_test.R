@@ -480,12 +480,12 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity > 2/3){
+  if(sw$similarity >= 1/2){
     #If the similarity score is good enough, we check the number of consecutive misalignments ;
     # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
     miss <- strsplit(sw$b_aligned, split = "")[[1]]
     consecutive.miss <- ifelse(length(which(miss == "*"))>0, max(rle(miss)$length[which(rle(miss)$value=="*")]), 0)
-    if(consecutive.miss <= 5){
+    if(consecutive.miss <= limit){
       return(c(start, stop, fragment.to.zip))
       
     }else{
