@@ -15,16 +15,16 @@ def make_heatmap(dir_path):
     path = str(dir_path)+"/data/"
     df = pd.read_csv(path+"chromosomes_contacts.csv", header=0, sep=",")
     df = df.drop(df.columns[[0, 1]], axis=1)
-    nb_fragments = len(Counter(df["length"]))
+    fragments_list = list(Counter(df["length"]).keys())
+    nb_fragments = len(fragments_list)
     num_time_steps = int(len(df)/nb_fragments)
     
-    df500 = df[df["length"]== 500].iloc[:, 1:]
-    df500.index = range(num_time_steps)
-    df1000 = df[df["length"]== 1000].iloc[:, 1:]
-    df1000.index = range(num_time_steps)
-    df2000 = df[df["length"]== 2000].iloc[:, 1:]
-    df2000.index = range(num_time_steps)
-    dftotal = (df500+df1000+df2000)/3
+    df_dict_fragment = {}
+    for fragment in fragments_list:
+        df_dict_fragment["df%s" %fragment] = df[df["length"]== fragment].iloc[:, 1:]
+        df_dict_fragment["df%s" %fragment].index = range(num_time_steps)
+    
+    dftotal = sum(df_dict_fragment.values())/nb_fragments
     
     chr_vline = []
     for i,v in enumerate(dftotal.columns):
