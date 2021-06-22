@@ -102,17 +102,8 @@ if __name__ == "__main__" :
 		file.write(df.to_string())
 		file.close()
 
+	
 	elif (option == '2'):
-		fragment = input("Please input your nucleotides sequence fragment here : \n")
-		df = self_microhomologies(fragment)
-
-		file2save = input("Please enter the name for the output file that will contain the self occurences : \n")
-
-		file = open('./output_files/' + str(file2save) + "_self_micros.txt", 'w')
-		file.write(df.to_string())
-		file.close()
-
-	elif (option == '3'):
 		bin_size = int(input("Please enter the size for each bin : "))
 		fragment = input("Please input your nucleotides sequence fragment here : \n")
 
@@ -175,5 +166,15 @@ if __name__ == "__main__" :
 		file2save = "./output_files/" +str(file2save)+"_occurences_per_8bp_(for_rev_donor)_with_bins.csv"
 
 		df.to_csv(file2save, index=False)
+		
+	elif (option == '3'):
+		fragment = input("Please input your nucleotides sequence fragment here : \n")
+		df = self_microhomologies(fragment)
+
+		file2save = input("Please enter the name for the output file that will contain the self occurences : \n")
+
+		file = open('./output_files/' + str(file2save) + "_self_micros.txt", 'w')
+		file.write(df.to_string())
+		file.close()
 
 	print("\n\n --- DONE --- \n")
