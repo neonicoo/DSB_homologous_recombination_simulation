@@ -86,7 +86,7 @@ m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(15) #proportional to the length of invading strand
 rdh54.group <- c(4) #proportional to the number of rad54
-misalignments.cutoff <- 4 #How many mismatches are allowed before break the zipping phase for the current donor
+misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
 additional.donors <- 0 # Additional donors ( without 'real' donor(s))
 
@@ -528,7 +528,7 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity >= 2/3){
+  if(sw$similarity >= 5/8){
     #If the similarity score is good enough, we check the number of consecutive misalignments ;
     # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
     miss <- strsplit(sw$b_aligned, split = "")[[1]]
