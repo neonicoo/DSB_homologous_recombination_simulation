@@ -24,47 +24,71 @@ library(text.alignment)
 #Information concerning the 'real' or expected/experiental donor :
 real.id = "LYS"
 real.bin = "chr2_470001_480001"
-
-# genome-wide microhomology counts
-forward.sequences <- read.table("./L520x4/L520x4_occurences_per_8bp_(for_rev_donor).txt", sep="", header = TRUE)
-forward.sequences = forward.sequences[,c("start", "sequences", "total")]
-row.names(forward.sequences) = 1:nrow(forward.sequences)
-microhomology.probs = forward.sequences$total / sum(forward.sequences$total)
-
-# Name the DNA sequences of the invading strands:
 LY = (tolower("ATGACTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACATGACTTTTTACGCCCACAACAAGAACCTTATACGAAACAAGCTACATATTCGTTACAGCTACCTCAGCTCGATGTGCCTCATGATAGTTTTTCTAACAAATACGCTGTCGCTTTGAGTGTATGGGCTGCATTGATATATAGAGTAACCGGTGACGATGATATTGTTCTTTATATTGCGAATAACAAAATCTTAAGATTCAATATTCAACCAACGTGGTCATTTAATGAGCTGTATTCTACAATTAACAATGAGTTGAACAAGCTCAATTCTATTGAGGCCAATTTTTCCTTTGACGAGCTAGCTGAAAAAATTCAAAGTTGCCAAGATCTGGAAAGGACCCCTCAGTTGTTCCGTTTGGCCTTTTTGGAAAACCAAGATTTCAAATTAGACGAGTTCAAGCATCATTTAGTGGACTTTGCTTTGAATTTGGATACCAGTAATAATGCGCATGTTTTGAACTTAATTTATAACAGCTTACTGTATTCGAATGAAAGAGTAACCATTGTTGCGGACCAATTTACTCAATATTTGACTGCTGCGCTAAGCGATCCATCCAATTGCATAACTAAAATCTCTCTGATCACCGCATCATCCAAGGATAGTTTACCTGATCCAACTAAGAACTTGGGCTGGTGCGATTTCGTGGGGTGTATTCACGACATTTTCCAGGACAATGCTGAAGCCTTCCCAGAGAGAACCTGTGTTGTGGAGACTCCAACACTAAATTCCGACAAGTCCCGTTCTTTCACTTATCGCGACATCAACCGCACTTCTAACATAGTTGCCCATTATTTGATTAAAACAGGTATCAAAAGAGGTGATGTAGTGATGATCTATTCTTCTAGGGGTGTGGATTTGATGGTATGTGTGATGGGTGTCTTGAAAGCCGGCGCAACCTTTTCAGTTATCGACCCTGCATATCCCCCAGCCAGACAAACCATTTACTTAGGTGTTGCTAAACCACGTGGGTTGATTGTTATTAGAGCTGCTGGACAATTGGATCAACTAGTAGAAGATTACATCAATGATGAATTGGAGATTGTTTCAAGAATCAATTCCATCGCTATTCAAGAAAATGGTACCATTGAAGGTGGCAAATTGGACAATGGCGAGGATGTTTTGGCTCCATATGATCACTACAAAGACACCAGAACAGGTGTTGTAGTTGGACCAGATTCCAACCCAACCCTATCTTTCACATCTGGTTCCGAAGGTATTCCTAAGGGTGTTCTTGGTAGACATTTTTCCTTGGCTTATTATTTCAATTGGATGTCCAAAAGGTTCAACTTAACAGAAAATGATAAATTCACAATGCTGAGCGGTATTGCACATGATCCAATTCAAAGAGATATGTTTACACCATTATTTTTAGGTGCCCAATTGTATGTCCCTACTCAAGATGATATTGGTACACCGGGCCGTTTAGCGGAATGGATGAGTAAGTATGGTTGCACAGTTACCCATTTAACACCTGCCATGGGTCAATTACTTACTGCCCAAGCTACTACACCATTCCCTAAGTTACATCATGCGTTCTTTGTGGGTGACATTTTAACAAAACGTGATTGTCTGAGGTTACAAACCTTGGCAGAAAATTGCCGTATTGTTAATATGTACGGTACCACTGAAACACAGCGTGCAGTTTCTTATTTCGAAGTTAAATCAAAAAATGACGATCCAAACTTTTTGAAAAAATTGAAAGATGTCATGCCTGCTGGTAAAGGTATGTTGAACGTTCAGCTACTAGTTGTTAACAGGAACGATCGTACTCAAATATGTGGTATTGGCGAAATAGGTGAGATTTATGTTCGTGCAGGTGGTTTGGCCGAAGGTTATAGAGGATTACCAGAATTGAATAAAGAAAAATTTGTGAACAACTGGTTTGTTGAAAAAGATCACTGGAATTATTTGGATAAGGATAATGGTGAACCTTGGAGACAATTCTGGTTAGGTCCAAGAGATAGATTGTACAGAACGGGTGATTTAGGTCGTTATCTACCAAACGG"))
-L520x4 = (tolower("CTAACGAAAAGGTCTGGATAGAGAAGTTGGATAATCCAACTCTTTCAGTGTTACCACATGACTTTTTACGCCCACAACAAGAACCTTATACGAAACAAGCTACATATTCGTTACAGCTACCTCAGCTCGATGTGCCTCATGATAGTTTTTCTAACAAATACGCTGTCGCTTTGAGTGTATGGGCTGCATTGATATATAGAGTAACCGGTGACGATGATATTGTTCTTTATATTGCGAATAACAAAATCTTAAGATTCAATATTCAACCAACGTGGTCATTTAATGAGCTGTATTCTACAATTAACAATGAGTTGAACAAGCTCAATTCTATTGAGGCCAATTTTTCCTTTGACGAGCTAGCTGAAAAAATTCAAAGTTGCCAAGATCTGGAAAGGACCCCTCAGTTGTTCCGTTTGGCCTTTTTGGAAAACCAAGATTTCAAATTAGACGAGTTCAAGCATCATTTAGTGGACTTTGCTTTGAATTTGGATACCAGTAATAATGCGCATGTTTTGAACTTTTCAAACTTAAAATCCGCATCCTTCGTCATCTTTCAAGACAATTTATAACAGCTTACTGTATTCGAATGAAAGAGTAACCATTGTTGCGGACCAATTTACTCAATATTTGACTGCTGCGCTAAGCGATCCATCCAATTGCATAACTAAAATCTCTCTGATCACCGCATCATCCAAGGATAGTTTACCTGATCCAACTAAGAACTTGGGCTGGTGCGATTTCGTGGGGTGTATTCACGACATTTTCCAGGACAATGCTGAAGCCTTCCCAGAGAGAACCTGTGTTGTGGAGACTCCAACACTAAATTCCGACAAGTCCCGTTCTTTCACTTATCGCGACATCAACCGCACTTCTAACATAGTTGCCCATTATTTGATTAAAACAGGTATCAAAAGAGGTGATGTAGTGATGATCTATTCTTCTAGGGGTGTGGATTTGATGGTATGTGTGATGGGTGTCTTGAAAGCCGGCGCAACCTTTTCAGTTATCGACCCTGCATATCCCCCAGCCAGACAAACCATTTACTTAGGTGTTGCTAAACCACGTGGGTTGATTGTTATTAgtcgacCTGTTTTCGAAATTACCCTTTATGCGCGgagctcGAGCTGCTGGACAATTGGATCAACTAGTAGAAGATTACATCAATGATGAATTGGAGATTGTTTCAAGAATCAATTCCATCGCTATTCAAGAAAATGGTACCATTGAAGGTGGCAAATTGGACAATGGCGAGGATGTTTTGGCTCCATATGATCACTACAAAGACACCAGAACAGGTGTTGTAGTTGGACCAGATTCCAACCCAACCCTATCTTTCACATCTGGTTCCGAAGGTATTCCTAAGGGTGTTCTTGGTAGACATTTTTCCTTGGCTTATTATTTCAATTGGATGTCCAAAAGGTTCAACTTAACAGAAAATGATAAATTCACAATGCTGAGCGGTATTGCACATGATCCAATTCAAAGAGATATGTTTACACCATTATTTTTAGGTGCCCAATTGTATGTCCCTACTCAAGATGATATTGGTACACCGGGCCGTTTAGCGGAATGGATGAGTAAGTATGGTTGCACAGTTACCCATTTAACACCTGCCATGGGTCAATTACTTACTGCCCAAGCAGTTATTAGAGCCGAAGGGTAATGTTGATACTCCTAAAAATACTACACCATTCCCTAAGTTACATCATGCGTTCTTTGTGGGTGACATTTTAACAAAACGTGATTGTCTGAGGTTACAAACCTTGGCAGAAAATTGCCGTATTGTTAATATGTACGGTACCACTGAAACACAGCGTGCAGTTTCTTATTTCGAAGTTAAATCAAAAAATGACGATCCAAACTTTTTGAAAAAATTGAAAGATGTCATGCCTGCTGGTAAAGGTATGTTGAACGTTCAGCTACTAGTTGTTAACAGGAACGATCGTACTCAAATATGTGGTATTGGCGAAATAGGTGAGATTTATGTTCGTGCAGGTGGTTTGGCCGAAGGTTATAGAGGATTACCAGAATTGAATAAAGAAAAATTTGTGAACAACTGGTTTGTTGAAAAAGATCACTGGAATTATTTGGATAAGGATAATGGTGAACCTTGGAGACAATTCTGGTTAGGTCCAAGAGATAGATTGTACAGAACGGGTGATTTAGGTCGTTATCTACCAAACGG"))
-invading.fragments = list(names = c("2185"), sequences = c(L520x4))
 
-# genome-wide microhomology counts but with bins of 10kb
-sequences.bins <- read.csv("./L520x4/L520x4_per_8bp_(for_rev_donor)_with_bins.csv")[-1] #doesn't take the first column containing sequences
+invading.fragments <- list(names = c(), sequences = c(), type= c(), probs = c(), bins.probs = c())
 
-# Import the experimental contacts of the left DSB 10kb with the genome wide :
-contacts <- read.csv("./L520x4/leftDSB_contacts_100000_110000_10kb.csv")
+contacts <- read.csv("./LYS2/leftDSB_contacts_100000_110000_10kb.csv")
 bins.id <- paste(as.character(contacts$chrom), "_", as.character(contacts$start_pos), "_", as.character(contacts$end_pos), sep="")
 contacts <- cbind(contacts, bins.id)
 colnames(contacts)[6] <- "frequency"
 colnames(contacts)[7] <- "id"
 
+split.dirs<-list.dirs(path = "./LY_split_homologies", full.names = FALSE, recursive=FALSE)
+
+for (pp in split.dirs){
+  split.files <- list.files(paste("./LY_split_homologies/", pp, sep=""), full.names = TRUE, recursive = FALSE)
+  sequence <- readLines(paste("./LY_split_homologies/", pp, "/", pp, sep=""))
+  len <- nchar(sequence)
+  forward.sequences <- read.table(paste(split.files[grep(pattern=".txt", split.files)], sep = ""), sep="", header = TRUE)
+  probs = forward.sequences$total / sum(forward.sequences$total)
+  
+  sequences.bins <- read.csv(paste(split.files[grep(pattern=".csv", split.files)], sep = ""))[-1]
+  
+  chr_pos_occurences = c()
+  for (i in 2:ncol(sequences.bins)){
+    chr_pos_occurences= c(chr_pos_occurences, 
+                          paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
+  }
+  chr_pos_contacts = c()
+  for (i in 1:length(bins.id)){
+    chr_pos_contacts= c(chr_pos_contacts, 
+                        paste(str_split(bins.id[i], "_")[[1]][1], str_split(bins.id[i], "_")[[1]][2], sep="_"))
+  }
+  
+  remove = which(!(chr_pos_occurences %in% chr_pos_contacts))+1
+  sequences.bins <- subset(sequences.bins, select=-remove)
+  contacts <- subset(contacts, select=-remove)
+  sequences.contacts.bins = mapply("*", sequences.bins, contacts$frequency)
+  
+  invading.fragments$names = c(invading.fragments$name, as.character(len))
+  invading.fragments$type = c(invading.fragments$type, pp)
+  invading.fragments$sequences = c(invading.fragments$sequences, sequence)
+  invading.fragments$probs = c(invading.fragments$probs, list(probs))
+  invading.fragments$bins.probs = c(invading.fragments$bins.probs, list(sequences.contacts.bins))
+  
+  rm(sequences.bins, chr_pos_occurences, chr_pos_contacts, remove, sequences.contacts.bins)
+}
+
 ################################################################################
 ####################### Parameters #############################################
 
-num.time.steps = 800 # Length of simulation in time steps
+num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 10 # How many times to simulate, replicates
+test.replicates = 50 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
-koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
+koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(1e-3)
 m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(14) #proportional to the length of invading strand
-rdh54.group <- c(5) #proportional to the number of rad54
-misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
+rad54.group <- c(15) #proportional to the length of invading strand
+rdh54.group <- c(4) #proportional to the number of rad54
+misalignments.cutoff <- 4 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
-additional.donors <- 2 # Additional donors ( without 'real' donor(s))
+additional.donors <- 0 # Additional donors ( without 'real' donor(s))
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -504,7 +528,7 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity >= 1/2){
+  if(sw$similarity >= 2/3){
     #If the similarity score is good enough, we check the number of consecutive misalignments ;
     # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
     miss <- strsplit(sw$b_aligned, split = "")[[1]]
@@ -607,24 +631,8 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
 
 stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   
-  fname = "first_contact_time.txt"
-  final.firsts = as.data.frame(matrix(-1,test.replicates,length(invading.fragments$names)))
-  names(final.firsts) = c("2185")
-  final.firsts$`2185` = occupancy.firsts$first.bound[which(occupancy.firsts$length == "2185")]
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
-  
-  fname = "200_contact_time.txt"
-  final.twoh = as.data.frame(matrix(-1,test.replicates,length(invading.fragments$names)))
-  names(final.firsts) = c("2185")
-  final.twoh$`2185` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == "2185")]
-  write.table(final.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
-  
-  fname = "first_200_contact_time_diff.txt"
-  final.firsts.twoh = as.data.frame(matrix(-1,test.replicates,length(invading.fragments$names)))
-  names(final.firsts) = c("2185")
-  final.firsts.twoh$`2185` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == "2185")]
-  write.table(final.firsts.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
-  
+  fname = "occupancy_first.txt"
+  write.table(occupancy.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
   
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
   first.hist<-
@@ -706,30 +714,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
 #########################################################################################################
 #########################################################################################################
 
-
-################################################################################
-################### Creation of the chromosome contact frequency matrix ########
-# We have to check that the bins are the same between the 2 tables (sequences.bins and contacts) ;
-# For example, for LY sequences.bins we have 2 more bins than in the contacts dataframe, so we remove them ;
-# The comparison is made with the chromosome id and the start position for each bin 
-chr_pos_occurences = c()
-for (i in 2:ncol(sequences.bins)){
-  chr_pos_occurences= c(chr_pos_occurences, 
-                        paste(str_split(colnames(sequences.bins[i]), "_")[[1]][1], str_split(colnames(sequences.bins[i]), "_")[[1]][2], sep="_"))
-}
-chr_pos_contacts = c()
-for (i in 1:length(bins.id)){
-  chr_pos_contacts= c(chr_pos_contacts, 
-                      paste(str_split(bins.id[i], "_")[[1]][1], str_split(bins.id[i], "_")[[1]][2], sep="_"))
-}
-
-remove = which(chr_pos_occurences %!in% chr_pos_contacts)+1
-sequences.bins <- subset(sequences.bins, select=-remove)
-contacts <- subset(contacts, select=-remove)
-sequences.contacts.bins = mapply("*", sequences.bins, contacts$frequency)
-rm(sequences.bins, contacts, chr_pos_occurences, chr_pos_contacts, remove)
-
-#########################################################################################################
 ######################################### Simulation Start ##############################################
 #########################################################################################################
 
@@ -905,9 +889,9 @@ for(kon in 1:length(kon.group)){
                     # print(trial)
                     
                     if(saver < 3){
-                      binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,5))
+                      binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*length(invading.fragments$names),5))
                       names(binding.ts) = c('time.step', "length", "bound", "heterologies", "homologies")
-                      binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
+                      binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution), length(invading.fragments$names))
                       binding.ts$length = rep(invading.fragments$names, each = (num.time.steps / graph.resolution))
                     }
                     
@@ -921,6 +905,9 @@ for(kon in 1:length(kon.group)){
                       bigtracker = bigtracker +1
                       fragment.type = invading.fragments$names[fragment]
                       invading.sequence = invading.fragments$sequences[fragment]
+                      microhomology.probs = invading.fragments$probs[[fragment]]
+                      sequences.contacts.bins = invading.fragments$bins.probs[[fragment]]
+                      
                       
                       current.donor = ""
                       donors.blacklist = c()
@@ -949,23 +936,13 @@ for(kon in 1:length(kon.group)){
                       first.zip <- 0 #the first zipped fragment to the real donor
                       half.detect <- 0 #when the probability detection is equal to 0.5 for zipped fragment to the real donor
                       
-                      # We have to place randomly some rad54 and rdh54 in the invading fragment to induce the zipping ;
-                      # The number of rad54 depends of the length of the fragment,
-                      # and the number of rdh54 depends of the number of rad54 ;
-                      prop.rad54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rad54) #number of rad54 to be placed into the invading strand ;
-                      if(prop.rad54<=1){prop.rad54=1}
-                      prop.rdh54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rdh54) # number of rdh54 to be placed into the invading strand;
-                      if(prop.rdh54<=1){prop.rdh54=1}
-                      
-                      rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = prop.rad54, number.rdh54 = prop.rdh54, invading.sequence = invading.sequence) 
+                      rad54.rdh54.locations <- rad54.rdh54.placement(number.rad54 = nb.rad54, number.rdh54 = nb.rdh54, invading.sequence = invading.sequence) 
                       pos.rad54 <- rad54.rdh54.locations[[1]] #positions of rad54 in the invading strand;
                       pos.rdh54 <- rad54.rdh54.locations[[2]] #positions of rdh54 in the invading strand;
                       zipped.fragments.list <- as.data.frame(matrix(0,0,3)) #all the macrohomologies after zipping with start/end positions
                       names(zipped.fragments.list ) = c("start", "end", "sequences")
                       unzipped.rad54 <- pos.rad54 #positions of non-overlapped rad54
                       
-                      #probability of detection proportional to the length of invading strand :
-                      crosslink.density <- 500
                       
                       # Loop through the time-steps
                       for (time.step in 1:num.time.steps){
@@ -1221,7 +1198,7 @@ for(kon in 1:length(kon.group)){
                         
                         ############################################################################
                         ######################## KE1 & KE2 #########################################
-                        if(length(unzipped.rad54)<prop.rad54){
+                        if(length(unzipped.rad54)<nb.rad54){
                           ## KE1 :
                           #KE1 is effective only if the last rad54 is overlapped and zipped,
                           # and if the total number of zipped nts is larger than 20% of the sequence length ;
