@@ -53,19 +53,19 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 100 # How many times to simulate, replicates
-kon.group<-c(0.2) #binding probabilities for every binding try
-koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+test.replicates = 3 # How many times to simulate, replicates
+kon.group<-c(0.6) #binding probabilities for every binding try
+koff1.group<-c(0.3) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
 ke2.group<-c(2e-3)
 m.group = c(2) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(15) #proportional to the length of invading strand
-rdh54.group <- c(5) #proportional to the number of rad54
-misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor
+rad54.group <- c(12) #proportional to the length of invading strand
+rdh54.group <- c(4) #proportional to the number of rad54
+misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
-additional.donors <- 5 # Additional donors ( without 'real' donor(s))
+additional.donors <- 0 # Additional donors ( without 'real' donor(s))
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -505,12 +505,12 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity > 2/3){
+  if(sw$similarity >= 1/2){
     #If the similarity score is good enough, we check the number of consecutive misalignments ;
     # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
     miss <- strsplit(sw$b_aligned, split = "")[[1]]
     consecutive.miss <- ifelse(length(which(miss == "*"))>0, max(rle(miss)$length[which(rle(miss)$value=="*")]), 0)
-    if(consecutive.miss <= 5){
+    if(consecutive.miss <= limit){
       return(c(start, stop, fragment.to.zip))
       
     }else{
@@ -519,7 +519,6 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   }else{
     return(-1)
   }
-  
 }
 
 #########################################################################################################
@@ -534,21 +533,21 @@ single.runs <-function(dirnew_singles, binding.ts, saver, w=14, h=8){
   outname=paste(dirnew_singles,"/Total_Occupancy_",saver,".png",sep="")
   occ_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = bound, color = length)) +
-    labs(x = "time step", y = "Total Occupancy (bp)") + theme_minimal() + theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Total Occupancy (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$bound)+1))
   ggsave(outname,plot=occ_plot, width = w, height = h)
   
   outname=paste(dirnew_singles,"/Occupancy_Heterologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = heterologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Occupancy at Heterologies (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$heterologies)+1))
   ggsave(outname,plot=het_plot, width = w, height = h)
   
   outname=paste(dirnew_singles,"/Occupancy_Homologies_",saver,".png",sep="")
   het_plot<-
     ggplot(data = binding.ts) + geom_step(aes(x = time.step, y = homologies, color = length)) +
-    labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme_minimal()+ theme(text = element_text(size = 16))+
+    labs(x = "time step", y = "Occupancy at Homologies (bp)") + theme(text = element_text(size = 16))+
     scale_y_continuous(limits = c(0, max(binding.ts$homologies)+1))
   ggsave(outname,plot=het_plot, width = w, height = h)
   
@@ -569,7 +568,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
   
   pop.plot<-
     ggplot(data = df) + geom_step(aes(x = time.step, y = homologies, color = length)) +
-    labs(x = "time step", y = "Probability of detection for homologies") + theme_minimal()+ theme(text = element_text(size = 14))+
+    labs(x = "time step", y = "Probability of detection for homologies") +  theme(text = element_text(size = 14))+
     scale_y_continuous(limits = c(0, max(df$homologies)+1))
   ggsave(outname, plot=pop.plot, width = w, height = h)
   
@@ -582,7 +581,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
   
   pop.plot<-
     ggplot(data = df) + geom_step(aes(x = time.step, y = zip, color = length)) +
-    labs(x = "time step", y = "Probability of detection for zips") + theme_minimal()+ theme(text = element_text(size = 14))+
+    labs(x = "time step", y = "Probability of detection for zips") + theme(text = element_text(size = 14))+
     scale_y_continuous(limits = c(0, max(df$zip)+1))
   ggsave(outname, plot=pop.plot, width = w, height = h)
   
@@ -597,7 +596,7 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
     pop.plot<-
       ggplot(data = df) + geom_step(aes(x = time.step, y = prob.detect, color = length)) +
       labs(x = "time step", y = paste("Probability of detection", as.character(donors.list$id[i]), sep = " ")) + 
-      theme_minimal()+ theme(text = element_text(size = 14))+
+      theme(text = element_text(size = 14))+
       scale_y_continuous(limits = c(0, max(df$prob.detect)+1))
     ggsave(outname, plot=pop.plot, width = w, height = h)
     
@@ -1230,11 +1229,11 @@ for(kon in 1:length(kon.group)){
                         ############################################################################
                         ######################## KE1 & KE2 #########################################
                         if(length(unzipped.rad54)<prop.rad54){
-                          yy = runif(1)
                           ## KE1 :
                           #KE1 is effective only if the last rad54 is overlapped and zipped,
                           # and if the total number of zipped nts is larger than 20% of the sequence length ;
                           if ( max(pos.rad54) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+                            yy = runif(1)
                             if(yy < ke1.prob){
                               extensions.stats$time.step[bigtracker] = time.step
                               extensions.stats$ke[bigtracker] = 1
@@ -1243,17 +1242,22 @@ for(kon in 1:length(kon.group)){
                             
                           }else{
                             ## KE2 :
-                            #zipping.window : distance between the first and last zipped nucleotids ; 
-                            #KE2 is effective only if the portion of zipped nts into the zipping window is larger than 20% of the sequence length;
-                            zipping.window <- max(as.integer(zipped.fragments.list$end)) - min(as.integer(zipped.fragments.list$start))+1
-                            if (sum(nchar(zipped.fragments.list$sequences)) / zipping.window  > 1/2){
-                              if(yy < ke2.prob){
-                                extensions.stats$time.step[bigtracker] = time.step
-                                extensions.stats$ke[bigtracker] = 2
-                                extensions.stats$clipping.pos[bigtracker] = max(as.integer(zipped.fragments.list$end))
-                                break
+                            #For each zipped fragment larger than 32 nts, try KE2 probability, if it pass, start the extension at the end of the i-th zipped fragment ,
+                            # and break the fragment loop (go to the next fragment)
+                            stop <- FALSE
+                            for(i in 1:nrow(zipped.fragments.list)){
+                              if (nchar(zipped.fragments.list[i, ]$sequences) >= 32){
+                                yy = runif(1)
+                                if(yy < ke2.prob){
+                                  extensions.stats$time.step[bigtracker] = time.step
+                                  extensions.stats$ke[bigtracker] = 2
+                                  extensions.stats$clipping.pos[bigtracker] = as.integer(zipped.fragments.list[i, ]$end)
+                                  stop <- TRUE
+                                  break
+                                }
                               }
                             }
+                            if (stop){break}
                           }
                         }
                         
