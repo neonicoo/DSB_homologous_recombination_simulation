@@ -9,26 +9,27 @@ rm(list=ls())
 library(dplyr)
 
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
-# How many time steps did you use ?
-time.steps = 600
-# How many replicates did you use?
-test.replicates = 25
-# How many parameters combinations sets are there?
-num.parameters = 9
 
-resolution = 8
+resolution = 5
 while(time.steps%%resolution != 0){resoltion = resolution+1}
 
-# Get all off the paths to the directories underneath where you setwd
-run.dirs<-list.dirs(recursive=TRUE)
-# Only take the directories that start with the number of time steps, this might have to be adjusted
-rd<-grep(pattern=paste("^./", time.steps, sep=""),run.dirs)
-run.dirs<-run.dirs[rd]
+# # Get all off the paths to the directories underneath where you setwd
+# run.dirs<-list.dirs(recursive=TRUE)
+# # Only take the directories that start with the number of time steps, this might have to be adjusted
+# rd<-grep(pattern=paste("^./", time.steps, sep=""),run.dirs)
+# run.dirs<-run.dirs[rd]
+# 
+# # Grab the directories with data in their path
+# rdd<-grep(pattern="/data$",run.dirs)
+# run.dirs<-run.dirs[rdd]
+# 
 
-# Grab the directories with data in their path
-rdd<-grep(pattern="/data$",run.dirs)
-run.dirs<-run.dirs[rdd]
 
+
+run.dirs <- list.dirs(full.names = FALSE, recursive = FALSE)
+num.parameters <- length(run.dirs) # How many parameters combinations sets are there?
+time.steps <- as.integer(strsplit(run.dirs[1],"_")[[1]][1]) # How many time steps did you use ?
+test.replicates = length(list.files(path = paste("./", run.dirs[1], "/timeseries/", sep=""), full.names = FALSE, recursive = FALSE)) # How many replicates did you use?
 
 # construct the data structure that will save all the data
 plateau_data = as.data.frame(matrix(0,num.parameters,16))
@@ -36,7 +37,7 @@ names(plateau_data) = c("kon","koff1", "koff2", "ke1", "ke2", "tethering", "wind
                         "additionnal.donors", "time2000","time1000","time500","plat2000","plat1000","plat500")
 
 # file name and directory where you want the processed data to be stored. 
-processed_file = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/"
+processed_file = "/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/"
 
 ### TRY NOT TO CHANGE ANYTHING AFTER THIS LINE ###
 
@@ -47,10 +48,8 @@ parameter_counter = 0;
 for(pp in run.dirs){
   # Grab the parameter values
 
-  dir<-gsub("^./", "", pp)
-  dir<-gsub("/data$", "", dir)
 
-  ww<-strsplit(dir,"_")[[1]]
+  ww<-strsplit(pp,"_")[[1]]
   
   time.step<-noquote(ww[1])
   kon<-noquote(ww[2])
@@ -91,7 +90,7 @@ for(pp in run.dirs){
   plateau_data$additionnal.donors[parameter_counter] = donors
   
   # time series data for current parameter set
-  dat1<-read.table(paste(pp,"/pop_timeseries_homologies.txt",sep=""),header=T)
+  dat1<-read.table(paste("./", pp, "/data/pop_timeseries_homologies.txt", sep=""), header=T)
   names(dat1) = c("time.step", "length", "prob.detect")
   
   # doing names on dat show that we have time.step, prob.detect, length
@@ -194,6 +193,20 @@ for(pp in run.dirs){
     plateau_data$time500[parameter_counter] = -1
   }
 }
+
+
+# Remove rows containing only -1 :^
+rows2remove = c()
+for(i in 1:nrow(plateau_data)){
+  if(sum(plateau_data[i, 11:16]) <= -6){
+    rows2remove = c(rows2remove, i)
+  }
+}
+
+#print(length(rows2remove)) See how much is sparse the plateau_data, Lower is the number of row containing -1 better it is 
+plateau_data = plateau_data[-c(rows2remove),]
+rownames(plateau_data) = 1:nrow(plateau_data)
+
 
 # write the plateau data structure to a file in a directory called processed data. You can change this to your liking. 
 write.table(plateau_data, file=paste(processed_file, "plateau_data.txt", sep=""), sep="\t")
