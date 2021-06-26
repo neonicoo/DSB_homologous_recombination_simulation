@@ -6,31 +6,16 @@
 
 
 rm(list=ls())
-library(dplyr)
-
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
 
-resolution = 5
-while(time.steps%%resolution != 0){resoltion = resolution+1}
-
-# # Get all off the paths to the directories underneath where you setwd
-# run.dirs<-list.dirs(recursive=TRUE)
-# # Only take the directories that start with the number of time steps, this might have to be adjusted
-# rd<-grep(pattern=paste("^./", time.steps, sep=""),run.dirs)
-# run.dirs<-run.dirs[rd]
-# 
-# # Grab the directories with data in their path
-# rdd<-grep(pattern="/data$",run.dirs)
-# run.dirs<-run.dirs[rdd]
-# 
-
-
+resolution = 12
 
 run.dirs <- list.dirs(full.names = FALSE, recursive = FALSE)
 num.parameters <- length(run.dirs) # How many parameters combinations sets are there?
 time.steps <- as.integer(strsplit(run.dirs[1],"_")[[1]][1]) # How many time steps did you use ?
 test.replicates = length(list.files(path = paste("./", run.dirs[1], "/timeseries/", sep=""), full.names = FALSE, recursive = FALSE)) # How many replicates did you use?
 
+while(time.steps%%resolution != 0){resoltion = resolution+1}
 # construct the data structure that will save all the data
 plateau_data = as.data.frame(matrix(0,num.parameters,16))
 names(plateau_data) = c("kon","koff1", "koff2", "ke1", "ke2", "tethering", "window", "prop.rad54", "prop.rdh54", 
