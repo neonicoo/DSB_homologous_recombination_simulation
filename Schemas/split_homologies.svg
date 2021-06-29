@@ -9,7 +9,7 @@
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
    sodipodi:docname="split_homologies.svg"
-   inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/ke1.png"
+   inkscape:export-filename="/home/nicolas/Téléchargements/split_homologies.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -27,8 +27,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="1.0028968"
-     inkscape:cx="508.82509"
-     inkscape:cy="68.315711"
+     inkscape:cx="114.16927"
+     inkscape:cy="162.52919"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -877,48 +877,48 @@
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-128.00192,16.942916)"
        id="text11765"
-       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767)"><tspan
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767);fill:#0055d4"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42187">1040x2</tspan></text>
+         id="tspan4437">1040x2</tspan></text>
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-125.49458,27.559209)"
+       transform="matrix(0.26458333,0,0,0.26458333,-125.49458,27.540002)"
        id="text11765-6"
-       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9)"><tspan
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9);fill:#0055d4"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42189">520x4
+         id="tspan4439">520x4
 </tspan></text>
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-128.15901,48.899367)"
+       transform="matrix(0.26458333,0,0,0.26458333,-128.15901,47.490899)"
        id="text11765-6-3"
-       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-4)"><tspan
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-4);fill:#0055d4"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42191">130x16</tspan></text>
+         id="tspan4441">130x16</tspan></text>
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-125.4429,38.651965)"
+       transform="matrix(0.26458333,0,0,0.26458333,-125.4429,37.540002)"
        id="text11765-6-38"
-       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-3)"><tspan
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-3);fill:#0055d4"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42193">260x8
+         id="tspan4443">260x8
 </tspan><tspan
          x="514.17969"
          y="81.224609"
-         id="tspan42195">
+         id="tspan4445">
 </tspan></text>
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-125.30854,58.372084)"
+       transform="matrix(0.26458333,0,0,0.26458333,-125.30854,57.490899)"
        id="text11765-6-3-0"
-       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-4-6)"><tspan
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-9-4-6);fill:#0055d4"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42197">65x32</tspan></text>
+         id="tspan4447">65x32</tspan></text>
     <rect
        style="fill:#ff8080;fill-opacity:1;stroke:none;stroke-width:3.47852;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:22.6772;stroke-opacity:1"
        id="rect3811-3-8"
@@ -929,11 +929,13 @@
        ry="1.5" />
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-121.79248,6.942916)"
+       transform="matrix(0.26458333,0,0,0.26458333,-121.79248,6.7410443)"
        id="text11765-8"
        style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect11767-4)"><tspan
          x="514.17969"
          y="61.224609"
-         id="tspan42199">LYS2</tspan></text>
+         id="tspan4451"><tspan
+           style="fill:#d35f5f"
+           id="tspan4449">LYS2</tspan></tspan></text>
   </g>
 </svg>
