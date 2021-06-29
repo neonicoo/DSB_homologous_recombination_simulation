@@ -4,8 +4,8 @@ options(bitmapType = "cairo") #fix some graphical display issues with X11 (PSMN)
 rm(list=ls()) #clean global environment
 
 ###Set working directory
-setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
-#setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+#setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = paste(getwd(), "/datas/", sep="")
@@ -16,6 +16,7 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(Rcpp)
+library(profvis)
 library(text.alignment)
 
 ################################################################################
@@ -53,15 +54,15 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 3 # How many times to simulate, replicates
+test.replicates = 100 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.3) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
 ke1.group<-c(1e-2)
-ke2.group<-c(2e-3)
-m.group = c(2) #bindings allowed to occur per tethering
-search.window.group = c(500) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(12) #proportional to the length of invading strand
+ke2.group<-c(1e-3)
+m.group = c(4) #bindings allowed to occur per tethering
+search.window.group = c(400) #the genomic distance of the tethering effect (per side)
+rad54.group <- c(14) #proportional to the length of invading strand
 rdh54.group <- c(4) #proportional to the number of rad54
 misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
@@ -608,30 +609,29 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
 
 stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   
-  fname = "first_contact_time.txt"
-  final.firsts = as.data.frame(matrix(-1,test.replicates,3))
-  names(final.firsts) = c("500","1000","2000")
-  final.firsts$`500` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 500)]
-  final.firsts$`1000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 1000)]
-  final.firsts$`2000` = occupancy.firsts$first.bound[which(occupancy.firsts$length == 2000)]
-  write.table(final.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+  write.table(occupancy.firsts,file=paste(dirnew_data,"/", "occupancy_first.txt", sep = ""))
+  write.table(dloop.stats,file=paste(dirnew_data,"/", "dloop_invasions.txt", sep = ""))
+  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
   
-  fname = "200_contact_time.txt"
-  final.twoh = as.data.frame(matrix(-1,test.replicates,3))
-  names(final.twoh) = c("500","1000","2000")
-  final.twoh$`500` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 500)]
-  final.twoh$`1000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 1000)]
-  final.twoh$`2000` = occupancy.firsts$twoh.bound[which(occupancy.firsts$length == 2000)]
-  write.table(final.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
+  file = paste(dirnew_plots,"/dloop_invasion_count.png",sep="")
+  dloop.hist1 <- 
+    ggplot(dloop.stats, aes(x = as.character(time.step), y = count))+
+    geom_bar(
+      aes(fill = length), stat = "identity", color = "white",
+      position = position_dodge(0.6)
+    )+
+    fill_palette("cbp")
+  ggsave(file,plot=dloop.hist1, width = w, height = h)
   
-  fname = "first_200_contact_time_diff.txt"
-  final.firsts.twoh = as.data.frame(matrix(-1,test.replicates,3))
-  names(final.firsts.twoh) = c("500","1000","2000")
-  final.firsts.twoh$`500` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 500)]
-  final.firsts.twoh$`1000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 1000)]
-  final.firsts.twoh$`2000` = occupancy.firsts$first.twoh.time.diff[which(occupancy.firsts$length == 2000)]
-  write.table(final.firsts.twoh,file=paste(dirnew_data,"/", fname, sep = ""))
-  
+  file = paste(dirnew_plots,"/dloop_invasion_average_size.png",sep="")
+  dloop.hist2 <- 
+    ggplot(dloop.stats, aes(x = as.character(time.step), y = average.size))+
+    geom_bar(
+      aes(fill = length), stat = "identity", color = "white",
+      position = position_dodge(0.6)
+    )+
+    fill_palette("cbp")
+  ggsave(file,plot=dloop.hist2, width = w, height = h)
   
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
   first.hist<-
@@ -694,7 +694,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
   file = paste(dirnew_plots,"/start_extensions.png",sep="")
-  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
   extensions.boxplot<-
     ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),],
            aes(x=length, y=time.step, fill=length)) +
@@ -832,18 +831,25 @@ for(kon in 1:length(kon.group)){
                   #   the first zipped fragment between real donor and invading strand ;
                   #   the probability of detect (based on the experimental crosslink density) half-detect (~ 250/500 nts) ;
                   
-                  occupancy.firsts = as.data.frame(matrix(-1, 3*test.replicates, 6))
+                  occupancy.firsts = as.data.frame(matrix(-1, length(invading.fragments$names)*test.replicates, 6))
                   names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
                   occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
                   
-                  extensions.stats =as.data.frame(matrix(-1, 3*test.replicates, 4))
+                  # Saves the time step where the extension is started, store if it is ke1 or ke1 :
+                  extensions.stats =as.data.frame(matrix(-1, length(invading.fragments$names)*test.replicates, 4))
                   names(extensions.stats) = c("length", "time.step", "ke", "clipping.pos")
                   extensions.stats$length = rep(invading.fragments$names, times = test.replicates)
                   
+                  # Captures the number of dloops per single end fragment and their average size at time step 200, 400, 600:
+                  dloop.stats = as.data.frame(matrix(0, length(invading.fragments$names)*3, 4))
+                  names(dloop.stats) = c("length", "time.step", "count", "average.size")
+                  dloop.stats$length = rep(invading.fragments$names, times = 3)
+                  dloop.stats$time.step = rep(c(200, 400, 600), each= 3)
+                  
                   # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
-                  chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*3, length(bins.id)+2))
+                  chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*length(invading.fragments$names), length(bins.id)+2))
                   colnames(chromosome.contacts) = c("time.step", "length", bins.id)
-                  chromosome.contacts$time.step = rep(seq(1,num.time.steps,1),3)
+                  chromosome.contacts$time.step = rep(seq(1,num.time.steps,1),length(invading.fragments$names))
                   chromosome.contacts$length = rep(invading.fragments$names, each = num.time.steps)
                   
                   ################################################################################
@@ -1237,6 +1243,13 @@ for(kon in 1:length(kon.group)){
                             if(yy < ke1.prob){
                               extensions.stats$time.step[bigtracker] = time.step
                               extensions.stats$ke[bigtracker] = 1
+                              
+                              dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + nrow(zipped.fragments.list)
+                              
+                              dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + sum(nchar(zipped.fragments.list$sequences))
+                              
                               break
                             }
                             
@@ -1253,6 +1266,14 @@ for(kon in 1:length(kon.group)){
                                   extensions.stats$ke[bigtracker] = 2
                                   extensions.stats$clipping.pos[bigtracker] = as.integer(zipped.fragments.list[i, ]$end)
                                   stop <- TRUE
+                                  
+                                  dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                    dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + nrow(zipped.fragments.list)
+                                  
+                                  dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                    dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + sum(nchar(zipped.fragments.list$sequences))
+                                  
+                                  
                                   break
                                 }
                               }
@@ -1287,6 +1308,7 @@ for(kon in 1:length(kon.group)){
                             pop.time.series[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type, i+4] + prob.detection.donors[i]
                         }
                         
+                        ############################################################################
                         if(occupied.rad51$bound != "unbound"){
                           occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
                           names(occupied.bins) = c("bins", "freq")
@@ -1295,6 +1317,17 @@ for(kon in 1:length(kon.group)){
                             chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
                         }
                        
+                        ############################################################################
+                        if (time.step == 200 || time.step == 400 || time.step == 600){
+                          if (nrow(zipped.fragments.list) >0){
+                          dloop.stats$count[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] = 
+                            dloop.stats$count[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] + nrow(zipped.fragments.list)
+                  
+                          dloop.stats$average.size[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] = 
+                            dloop.stats$average.size[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] + sum(nchar(zipped.fragments.list$sequences))
+                          }
+                        }
+                        
                         #print(c(fragment.type, time.step, trial))
                       }#next time step
                     }#next fragment
@@ -1308,14 +1341,15 @@ for(kon in 1:length(kon.group)){
                       single.runs(dirnew_singles = dirnew_singles, binding.ts = binding.ts, saver = saver)
                     }
                     
+
                     saver=saver+1
                   }#end process
-                  #})
+                  
+                  dloop.stats$average.size[dloop.stats$count > 0] = dloop.stats$average.size[dloop.stats$count > 0] / dloop.stats$count[dloop.stats$count > 0]
                   
                   write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
                   population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
                   stats.plots(dirnew_plots = dirnew_contacts, occupancy.firsts = occupancy.firsts)
-                  
                 }
               }
             }

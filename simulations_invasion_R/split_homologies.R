@@ -631,8 +631,29 @@ population.time.series <- function(dirnew_data, dirnew_plots, donors.list, pop.t
 
 stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   
-  fname = "occupancy_first.txt"
-  write.table(occupancy.firsts,file=paste(dirnew_data,"/", fname, sep = ""))
+  write.table(occupancy.firsts,file=paste(dirnew_data,"/", "occupancy_first.txt", sep = ""))
+  write.table(dloop.stats,file=paste(dirnew_data,"/", "dloop_invasions.txt", sep = ""))
+  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
+  
+  file = paste(dirnew_plots,"/dloop_invasion_count.png",sep="")
+  dloop.hist1 <- 
+    ggplot(dloop.stats, aes(x = as.character(time.step), y = count))+
+    geom_bar(
+      aes(fill = length), stat = "identity", color = "white",
+      position = position_dodge(0.6)
+    )+
+    fill_palette("cbp")
+  ggsave(file,plot=dloop.hist1, width = w, height = h)
+  
+  file = paste(dirnew_plots,"/dloop_invasion_average_size.png",sep="")
+  dloop.hist2 <- 
+    ggplot(dloop.stats, aes(x = as.character(time.step), y = average.size))+
+    geom_bar(
+      aes(fill = length), stat = "identity", color = "white",
+      position = position_dodge(0.6)
+    )+
+    fill_palette("cbp")
+  ggsave(file,plot=dloop.hist2, width = w, height = h)
   
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
   first.hist<-
@@ -695,7 +716,6 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
   ggsave(file,plot=first.boxplot, width = w, height = h)
   
   file = paste(dirnew_plots,"/start_extensions.png",sep="")
-  write.table(extensions.stats,file=paste(dirnew_data,"/", "extensions_stats.txt", sep = ""))
   extensions.boxplot<-
     ggplot(extensions.stats[c(which(extensions.stats$time.step!= -1)),],
            aes(x=length, y=time.step, fill=length)) +
@@ -813,9 +833,16 @@ for(kon in 1:length(kon.group)){
                   names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
                   occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
                   
+                  # Saves the time step where the extension is started, store if it is ke1 or ke1 :
                   extensions.stats =as.data.frame(matrix(-1, length(invading.fragments$names)*test.replicates, 4))
                   names(extensions.stats) = c("length", "time.step", "ke", "clipping.pos")
                   extensions.stats$length = rep(invading.fragments$names, times = test.replicates)
+                  
+                  # Captures the number of dloops per single end fragment and their average size at time step 200, 400, 600:
+                  dloop.stats = as.data.frame(matrix(0, length(invading.fragments$names)*3, 4))
+                  names(dloop.stats) = c("length", "time.step", "count", "average.size")
+                  dloop.stats$length = rep(invading.fragments$names, times = 3)
+                  dloop.stats$time.step = rep(c(200, 400, 600), each= 3)
                   
                   # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
                   chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*length(invading.fragments$names), length(bins.id)+2))
@@ -1207,6 +1234,13 @@ for(kon in 1:length(kon.group)){
                             if(yy < ke1.prob){
                               extensions.stats$time.step[bigtracker] = time.step
                               extensions.stats$ke[bigtracker] = 1
+                              
+                              dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + nrow(zipped.fragments.list)
+                              
+                              dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + sum(nchar(zipped.fragments.list$sequences))
+                              
                               break
                             }
                             
@@ -1223,6 +1257,13 @@ for(kon in 1:length(kon.group)){
                                   extensions.stats$ke[bigtracker] = 2
                                   extensions.stats$clipping.pos[bigtracker] = as.integer(zipped.fragments.list[i, ]$end)
                                   stop <- TRUE
+                                  
+                                  dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                    dloop.stats$count[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + nrow(zipped.fragments.list)
+                                  
+                                  dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] = 
+                                    dloop.stats$average.size[which(dloop.stats$time.step>time.step & dloop.stats$length == fragment.type)[1]] + sum(nchar(zipped.fragments.list$sequences))
+                                  
                                   break
                                 }
                               }
@@ -1257,6 +1298,8 @@ for(kon in 1:length(kon.group)){
                             pop.time.series[pop.time.series$time.step == time.step & pop.time.series$length == fragment.type, i+4] + prob.detection.donors[i]
                         }
                         
+                        ############################################################################
+                        
                         if(occupied.rad51$bound != "unbound"){
                           occupied.bins = as.data.frame(table(occupied.rad51$genome.bins))
                           names(occupied.bins) = c("bins", "freq")
@@ -1265,6 +1308,17 @@ for(kon in 1:length(kon.group)){
                             chromosome.contacts[chromosome.contacts$time.step == time.step & chromosome.contacts$length == fragment.type, as.character(occupied.bins$bins)] + occupied.bins$freq
                         }
                        
+                        ############################################################################
+                        if (time.step == 200 || time.step == 400 || time.step == 600){
+                          if (nrow(zipped.fragments.list) >0){
+                            dloop.stats$count[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] = 
+                              dloop.stats$count[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] + nrow(zipped.fragments.list)
+                            
+                            dloop.stats$average.size[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] = 
+                              dloop.stats$average.size[dloop.stats$time.step == time.step & dloop.stats$length == fragment.type] + sum(nchar(zipped.fragments.list$sequences))
+                          }
+                        }
+                        
                         #print(c(fragment.type, time.step, trial))
                       }#next time step
                     }#next fragment
@@ -1280,7 +1334,7 @@ for(kon in 1:length(kon.group)){
                     
                     saver=saver+1
                   }#end process
-                  #})
+                  dloop.stats$average.size[dloop.stats$count > 0] = dloop.stats$average.size[dloop.stats$count > 0] / dloop.stats$count[dloop.stats$count > 0]
                   
                   write.csv(chromosome.contacts, file=paste(dirnew_data,"/chromosomes_contacts.csv",sep=""))
                   population.time.series(dirnew_data = dirnew_data, dirnew_plots = dirnew_pop, donors.list = donors.list, pop.time.series = pop.time.series)
