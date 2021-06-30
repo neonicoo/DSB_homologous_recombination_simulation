@@ -4,8 +4,8 @@ options(bitmapType = "cairo") #fix some graphical display issues with X11 (PSMN)
 rm(list=ls()) #clean global environment
 
 ###Set working directory
-setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
-#setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+#setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = paste(getwd(), "/datas/", sep="")
@@ -76,7 +76,7 @@ for (pp in split.dirs){
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 50 # How many times to simulate, replicates
+test.replicates = 20 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -640,9 +640,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     ggplot(dloop.stats, aes(x = as.character(time.step), y = count))+
     geom_bar(
       aes(fill = length), stat = "identity", color = "white",
-      position = position_dodge(0.6)
-    )+
-    fill_palette("cbp")
+      position = position_dodge(0.6))
   ggsave(file,plot=dloop.hist1, width = w, height = h)
   
   file = paste(dirnew_plots,"/dloop_invasion_average_size.png",sep="")
@@ -650,9 +648,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     ggplot(dloop.stats, aes(x = as.character(time.step), y = average.size))+
     geom_bar(
       aes(fill = length), stat = "identity", color = "white",
-      position = position_dodge(0.6)
-    )+
-    fill_palette("cbp")
+      position = position_dodge(0.6))
   ggsave(file,plot=dloop.hist2, width = w, height = h)
   
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
@@ -842,7 +838,7 @@ for(kon in 1:length(kon.group)){
                   dloop.stats = as.data.frame(matrix(0, length(invading.fragments$names)*3, 4))
                   names(dloop.stats) = c("length", "time.step", "count", "average.size")
                   dloop.stats$length = rep(invading.fragments$names, times = 3)
-                  dloop.stats$time.step = rep(c(200, 400, 600), each= 3)
+                  dloop.stats$time.step = rep(c(200, 400, 600), each= length(invading.fragments$names))
                   
                   # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
                   chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*length(invading.fragments$names), length(bins.id)+2))

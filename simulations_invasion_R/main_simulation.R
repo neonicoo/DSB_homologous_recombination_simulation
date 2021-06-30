@@ -618,9 +618,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     ggplot(dloop.stats, aes(x = as.character(time.step), y = count))+
     geom_bar(
       aes(fill = length), stat = "identity", color = "white",
-      position = position_dodge(0.6)
-    )+
-    fill_palette("cbp")
+      position = position_dodge(0.6))
   ggsave(file,plot=dloop.hist1, width = w, height = h)
   
   file = paste(dirnew_plots,"/dloop_invasion_average_size.png",sep="")
@@ -628,9 +626,7 @@ stats.plots <- function(dirnew_plots, occupancy.firsts, w=10, h=8){
     ggplot(dloop.stats, aes(x = as.character(time.step), y = average.size))+
     geom_bar(
       aes(fill = length), stat = "identity", color = "white",
-      position = position_dodge(0.6)
-    )+
-    fill_palette("cbp")
+      position = position_dodge(0.6))
   ggsave(file,plot=dloop.hist2, width = w, height = h)
   
   file = paste(dirnew_plots,"/first_contact_time_hist.png",sep="")
@@ -844,7 +840,7 @@ for(kon in 1:length(kon.group)){
                   dloop.stats = as.data.frame(matrix(0, length(invading.fragments$names)*3, 4))
                   names(dloop.stats) = c("length", "time.step", "count", "average.size")
                   dloop.stats$length = rep(invading.fragments$names, times = 3)
-                  dloop.stats$time.step = rep(c(200, 400, 600), each= 3)
+                  dloop.stats$time.step = rep(c(200, 400, 600), each= length(invading.fragments$names))
                   
                   # Dataframe with the number of time each bins for each chromosome is contacted during the searching phase 
                   chromosome.contacts <- as.data.frame(matrix(0,num.time.steps*length(invading.fragments$names), length(bins.id)+2))
