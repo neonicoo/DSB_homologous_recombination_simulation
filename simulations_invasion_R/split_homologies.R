@@ -4,8 +4,8 @@ options(bitmapType = "cairo") #fix some graphical display issues with X11 (PSMN)
 rm(list=ls()) #clean global environment
 
 ###Set working directory
-#setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
-setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+#setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = paste(getwd(), "/datas/", sep="")
@@ -76,7 +76,7 @@ for (pp in split.dirs){
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 20 # How many times to simulate, replicates
+test.replicates = 3 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
@@ -86,7 +86,7 @@ m.group = c(5) #bindings allowed to occur per tethering
 search.window.group = c(500) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(15) #proportional to the length of invading strand
 rdh54.group <- c(4) #proportional to the number of rad54
-misalignments.cutoff <- 5 #How many mismatches are allowed before break the zipping phase for the current donor
+misalignments.cutoff <- 2/3 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
 additional.donors <- 0 # Additional donors ( without 'real' donor(s))
 
@@ -256,7 +256,7 @@ genome.wide.sei = function(initial.binding.tries){
 
 new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, kon.prob){
   
-  genome.bindings = which(occupied.rad51$donor.invasions %!in% donors.blacklist) #list of all bound MHs with the whole genome (genome.wide.sei step)
+  genome.bindings = 1:length(occupied.rad51$donor.invasions) #list of all bound MHs with the whole genome (genome.wide.sei step)
   new.bindings = list(bound=occupied.rad51$bound, strand = "negative", genome.bins = c(), donor.invasions = c(), pos.microhomology = c()) #initialize the list that will be return (copy of an empty occupied.rad51 list)
   
   # Check for unbound sites.
@@ -401,8 +401,7 @@ new.microhomologizer = function(occupied.rad51, window, bindings.per.tethering, 
 #########################################################################################################
 
 donors.generator <- function(template,realdonor.id, realdonor.location, bins, N = 0){
-  new.donors.list<-list(sequence = c(template), bins = c(realdonor.location), id = c(realdonor.id), 
-                        invasion = c("no", rep("no", times = N)), mutations = c(0))
+  new.donors.list<-list(sequence = c(template), bins = c(realdonor.location), id = c(realdonor.id), mutations = c(0))
   
   bases <- c("a", "t", "g", "c")
   if(N >= 1){
@@ -491,7 +490,7 @@ rad54.rdh54.placement <- function(number.rad54, number.rdh54, invading.sequence)
 
 #########################################################################################################
 #########################################################################################################
-zipping2.0 <- function(rad54, zipping.list, donor, limit){
+zipping <- function(rad54, donor, limit){
   
   #return code :
   # new.zip : vector containing position stat and stop for the zipped fragment and its nucleotids sequence ;
@@ -528,17 +527,9 @@ zipping2.0 <- function(rad54, zipping.list, donor, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity >= 5/8){
-    #If the similarity score is good enough, we check the number of consecutive misalignments ;
-    # We decide arbitrary that if there are more than 5 CONSECUTIVE misalignments, the fragment can't be zipped because of its instability ;
-    miss <- strsplit(sw$b_aligned, split = "")[[1]]
-    consecutive.miss <- ifelse(length(which(miss == "*"))>0, max(rle(miss)$length[which(rle(miss)$value=="*")]), 0)
-    if(consecutive.miss <= limit){
-      return(c(start, stop, fragment.to.zip))
-      
-    }else{
-      return(-1)
-    }
+  if(sw$similarity >= limit){
+    return(c(start, stop, fragment.to.zip))
+    
   }else{
     return(-1)
   }
@@ -933,9 +924,6 @@ for(kon in 1:length(kon.group)){
                       
                       
                       current.donor = ""
-                      donors.blacklist = c()
-                      donors.list$invasion = rep("no", additional.donors+1)
-                      
                       SEI.binding.tries = floor((nchar(invading.sequence)-7)/8)
                       
                       occupied.rad51$bound = "unbound"
@@ -1059,17 +1047,14 @@ for(kon in 1:length(kon.group)){
                           donors.occupancy$donor.id[which(donors.occupancy$zipped == "yes") ] = current.donor
                           donors.occupancy$bins[which(donors.occupancy$zipped == "yes")] = donors.list$bins[which(donors.list$id == current.donor)] 
                         }
+                        
                         ############################################################################
                         ################################# Zipping ##################################
                         # When the twoh microhomology state is enable, the zipping occurs until all rad54 are zipped;
-                        if(length(unzipped.rad54) > 0 & current.donor != "" && current.donor %!in% donors.blacklist){
-                          
-                          if (donors.list$invasion[which(donors.list$id == current.donor)] =="no"){
-                            donors.list$invasion[which(donors.list$id == current.donor)] ="yes"
-                          }
+                        if(length(unzipped.rad54) > 0 & current.donor != ""){
                           
                           for (pos in unzipped.rad54){
-                            new.zip = zipping2.0(pos, zipped.fragments.list, donor= current.donor, limit = misalignments.cutoff)
+                            new.zip = zipping(pos, donor= current.donor, limit = misalignments.cutoff)
                             
                             if(length(new.zip) > 1){
                               #i.e new.zip is a vector,
@@ -1107,8 +1092,6 @@ for(kon in 1:length(kon.group)){
                               zipped.fragments.list <- as.data.frame(matrix(0,0,3))
                               names(zipped.fragments.list ) = c("start", "end", "sequences")
                               unzipped.rad54 = pos.rad54
-                              donors.list$invasion[which(donors.list$id == current.donor)] = "failed"
-                              donors.blacklist = c(donors.blacklist, current.donor)
                               current.donor = ""
                               
                               break
@@ -1192,7 +1175,7 @@ for(kon in 1:length(kon.group)){
                         
                         if(current.donor == ""){
                           for (candidate.donor in unique(donors.occupancy$donor.id)){
-                            if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200 && candidate.donor %!in% donors.blacklist){
+                            if(candidate.donor != "unknown" && candidate.donor != "H" && length(which(donors.occupancy$donor.id == candidate.donor)) >= 200){
                               
                               current.donor = candidate.donor
                             }
