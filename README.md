@@ -12,3 +12,5 @@ The goal of this project is to develop and perform a computational  stochastic m
 <img title = "check_before_zipping" src="./Schemas/check_before_zipping.svg">
 <img title = "zipping" src="./Schemas/zipping.svg" >
 <img titlte = "koff2" src="./Schemas/koff2.svg" >
+<img titlte = "ke1" src="./Schemas/ke1.svg" >
+<img titlte = "ke2" src="./Schemas/ke2.svg" >
