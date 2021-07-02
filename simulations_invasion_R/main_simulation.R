@@ -54,7 +54,7 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 100 # How many times to simulate, replicates
+test.replicates = 1 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
 koff1.group<-c(0.2) # dissociation probabilities for each bound particle
 koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
@@ -62,11 +62,11 @@ ke1.group<-c(1e-3) #extension probability if last Rad54 of the SE is zipped
 ke2.group<-c(1e-4) #extension probability for each zipped fragment 
 m.group = c(4) #bindings allowed to occur per tethering
 search.window.group = c(400) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(12) #proportional to the length of invading strand
+rad54.group <- c(12) #proportional to the length of invading strand (LY)
 rdh54.group <- c(4) #proportional to the number of rad54
 misalignments.cutoff <- 5/8 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
-additional.donors <- 0 # Additional donors ( without 'real' donor(s))
+additional.donors <- 2 # Additional donors ( without 'real' donor(s))
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -949,7 +949,7 @@ for(kon in 1:length(kon.group)){
                       half.detect <- 0 #when the probability detection is equal to 0.5 for zipped fragment to the real donor
                       
                       # We have to place randomly some rad54 and rdh54 in the invading fragment to induce the zipping ;
-                      # The number of rad54 depends of the length of the fragment,
+                      # The number of rad54 depends of the length of the fragment (default is LY = 2 kb),
                       # and the number of rdh54 depends of the number of rad54 ;
                       prop.rad54 <- floor((as.integer(fragment.type)/max(as.integer(invading.fragments$names)))*nb.rad54) #number of rad54 to be placed into the invading strand ;
                       if(prop.rad54<=1){prop.rad54=1}
@@ -1000,24 +1000,6 @@ for(kon in 1:length(kon.group)){
                           }
                         }
                         
-                        ############# Dissociate large number of heterologies #############################
-                        
-                        #Kind of zipping but for heterologies :
-                        # In the case where 200 or more heterologies from the same bin are bound to the invading strand,
-                        # as there are heterologous, we simulate an SEI that will failed because of mismatches during zipping
-                        # and lead to the dissociation of these heterologies :
-                        
-                        heterologies.stats = as.data.frame(table(donors.occupancy$bins[which(donors.occupancy$bound.id == "heterology")]))
-                        if(nrow(heterologies.stats) > 0){
-                          names(heterologies.stats) = c("bins", "freq")
-                          heterologies.stats = heterologies.stats %>% filter(freq >= 200)
-                          remove.rad51 = which(occupied.rad51$genome.bins %in% as.character(heterologies.stats$bins))
-                          if(length(remove.rad51)>0){
-                            occupied.rad51$genome.bins = occupied.rad51$genome.bins[-remove.rad51]
-                            occupied.rad51$donor.invasions = occupied.rad51$donor.invasions[-remove.rad51]
-                            occupied.rad51$pos.microhomology = occupied.rad51$pos.microhomology[-remove.rad51]
-                          }
-                        }
                         
                         ############################################################################
                         ###################### KOFF1 ###############################################
