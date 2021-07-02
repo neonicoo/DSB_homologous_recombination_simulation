@@ -54,19 +54,19 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 20 # How many times to simulate, replicates
+test.replicates = 100 # How many times to simulate, replicates
 kon.group<-c(0.6) #binding probabilities for every binding try
-koff1.group<-c(0.4) # dissociation probabilities for each bound particle
-koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
-ke1.group<-c(1e-2)
-ke2.group<-c(1e-3)
+koff1.group<-c(0.2) # dissociation probabilities for each bound particle
+koff2.group<-c(0.01) #dissociation probabilities for each zipped fragments
+ke1.group<-c(1e-3) #extension probability if last Rad54 of the SE is zipped
+ke2.group<-c(1e-4) #extension probability for each zipped fragment 
 m.group = c(4) #bindings allowed to occur per tethering
 search.window.group = c(400) #the genomic distance of the tethering effect (per side)
-rad54.group <- c(14) #proportional to the length of invading strand
+rad54.group <- c(12) #proportional to the length of invading strand
 rdh54.group <- c(4) #proportional to the number of rad54
-misalignments.cutoff <- 2/3 #How many mismatches are allowed before break the zipping phase for the current donor
+misalignments.cutoff <- 5/8 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
-additional.donors <- 2 # Additional donors ( without 'real' donor(s))
+additional.donors <- 0 # Additional donors ( without 'real' donor(s))
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -87,6 +87,8 @@ rdh54.group.names<-gsub("\\.", "", as.character(rdh54.group))
 
 #########################################################################################################
 #########################################################################################################
+
+#cpp function (old find.occupancies) to improve time computation (lot of for loop)
 
 cppFunction(
   "IntegerVector find_occupancies_remastered(const IntegerVector occupiedRAD51, const IntegerVector additional_removals, int lower_window = 1,  int upper_window = 0, int n = 2069){
@@ -387,7 +389,7 @@ donors.generator <- function(template,realdonor.id, realdonor.location, bins, N 
       new.donor <- template
       new.donor.id = paste("donor", as.character(n), sep="")
       lower.limit <- floor(0.05*nchar(template))
-      upper.limit <- floor(0.4*nchar(template))
+      upper.limit <- floor(0.3*nchar(template))
       nb.snp <-sample(lower.limit:upper.limit, size = 1)
       snp.location <- sample(1:nchar(template), size = nb.snp, replace = FALSE)
       
@@ -1001,7 +1003,7 @@ for(kon in 1:length(kon.group)){
                         ############# Dissociate large number of heterologies #############################
                         
                         #Kind of zipping but for heterologies :
-                        # In the case where 200 or more hétérologies from the same bin are bound to the invading strand,
+                        # In the case where 200 or more heterologies from the same bin are bound to the invading strand,
                         # as there are heterologous, we simulate an SEI that will failed because of mismatches during zipping
                         # and lead to the dissociation of these heterologies :
                         
