@@ -4,8 +4,8 @@ options(bitmapType = "cairo") #fix some graphical display issues with X11 (PSMN)
 rm(list=ls()) #clean global environment
 
 ###Set working directory
-#setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
-setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
+#setwd("/mnt/5EA60736A6070E69/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/")
 
 # Directory where you want to save timeseries and plots. Need the slash at the end if you want sub-directories underneath. 
 rootdir = paste(getwd(), "/datas/", sep="")
@@ -55,19 +55,19 @@ colnames(contacts)[7] <- "id"
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
-test.replicates = 120 # How many times to simulate, replicates
+test.replicates = 100 # How many times to simulate, replicates
 kon.group<-c(0.8) #binding probabilities for every binding try
 koff1.group<-c(0.4) # dissociation probabilities for each bound particle
 koff2.group<-c(0.02) #dissociation probabilities for each zipped fragments
-ke1.group<-c(5e-3) #extension probability if last Rad54 of the SE is zipped
-ke2.group<-c(7e-4) #extension probability for each zipped fragment 
+ke1.group<-c(1e-3) #extension probability if last Rad54 of the SE is zipped
+ke2.group<-c(2e-4) #extension probability for each zipped fragment 
 m.group = c(4) #bindings allowed to occur per tethering
 search.window.group = c(400) #the genomic distance of the tethering effect (per side)
 rad54.group <- c(12) #proportional to the length of invading strand (LY)
 rdh54.group <- c(4) #proportional to the number of rad54
-misalignments.cutoff <- 0.6 #How many mismatches are allowed before break the zipping phase for the current donor
+misalignments.cutoff <- 6 #How many mismatches are allowed before break the zipping phase for the current donor
 crosslink.density <- 500 #minimum density to get a probability of detection equals to 1
-donors.group <- c(2) # Additional donors ( without 'real' donor(s))
+donors.group <- c(3) # Additional donors ( without 'real' donor(s))
 
 
 # Since the data needs to be outputted to files with human-readable names,we have to label the parameters with strings.
@@ -511,10 +511,40 @@ zipping <- function(rad54, limit){
   #Here we use the algorithm of Smith Waterman (sw) to make a local alignment of 2 strings (a & b) with different length;
   # This algorithm give us a score which takes account the matches, the mismatches or the gaps between the 2 strings ;
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
-  sw <- smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*")
+  sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity >= limit){
-    return( c(start, nchar(fragment.to.zip), donor))
+  if(sw$similarity >= 0.625){
+    
+    #Now check for consecutive misalignment between SE fragment to zip and its donor :
+    # Fix a cutoff in the changeable parameters at the beginning of the simulation , for example limit = 6,
+    # 2 aligned string from the smith waterman algorithm : sw$a_aligned (the donor) and sw$b_aligned (fragment to zip)
+    # '*' represents a mismatch or a gap 
+    # Therefor count the number of consecutive '*' between a_aligned and b_aligned, stop if the counter reach the limit value 
+    # only zip to the last position value (whre we stop the count of consecutive mismatches)
+    
+    count.stars.b <- 0 #count of '*' but only for b_aligned (useful to know the exact position of the end of the zipped  fragment)
+    consecutive.miss <- 0 # number of consecutive misalignment (sum of consecutive '*' in a_aligned and b_aligned)
+    pos <- 1 # current position
+    
+    while (consecutive.miss <= limit & pos < nchar(sw$b_aligned)){
+      str_a = substr(x = sw$a_aligned, start = pos, stop = pos)
+      str_b = substr(x = sw$b_aligned, start = pos, stop = pos)
+      if (str_a == '*'){
+        consecutive.miss = consecutive.miss + 1
+        pos = pos +1
+      }else if (str_b == '*'){
+        consecutive.miss = consecutive.miss + 1
+        count.stars.b = count.stars.b + 1
+        pos = pos +1
+      }else{
+        consecutive.miss = 0
+        pos = pos + 1
+      }
+    }
+    
+    cut.pos <- pos - count.stars.b #I.E. the position of the last nucleotide o be zipped ;
+
+    return( c(start, cut.pos, donor))
 
   }else{
     return(0)
@@ -1169,7 +1199,7 @@ for(kon in 1:length(kon.group)){
                             ## KE1 :
                             #KE1 is effective only if the last rad54 is overlapped and zipped,
                             # and if the total number of zipped nts is larger than 20% of the sequence length ;
-                            if ( max(pos.rad54) %!in% unzipped.rad54 & length(which(donors.occupancy$zipped=="yes"))>0.2*nchar(invading.sequence)){
+                            if (max(pos.rad54) %in% occupied.rad54$pos.zip){
                               yy = runif(1)
                               if(yy < ke1.prob){
                                 extensions.stats$time.step[bigtracker] = time.step
@@ -1186,11 +1216,11 @@ for(kon in 1:length(kon.group)){
                               
                             }else{
                               ## KE2 :
-                              #For each zipped fragment larger than 32 nts, try KE2 probability, if it pass, start the extension at the end of the i-th zipped fragment ,
+                              #For each zipped fragment larger than 16 nts (2x 8 nts microhomologies), try KE2 probability, if it pass, start the extension at the end of the i-th zipped fragment ,
                               # and break the fragment loop (go to the next fragment)
                               stop <- FALSE
                               for(i in 1:length(occupied.rad54$zip.size)){
-                                if (occupied.rad54$zip.size[i] >= 32){
+                                if (occupied.rad54$zip.size[i] >= 16){
                                   yy = runif(1)
                                   if(yy < ke2.prob){
                                     extensions.stats$time.step[bigtracker] = time.step
