@@ -851,8 +851,8 @@ for(kon in 1:length(kon.group)){
                     #   the number of time steps between the first and the two hundredth ;
                     #   the first zipped fragment between real donor and invading strand ;
                     
-                    occupancy.firsts = as.data.frame(matrix(-1, length(invading.fragments$names)*test.replicates, 5))
-                    names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip")
+                    occupancy.firsts = as.data.frame(matrix(-1, length(invading.fragments$names)*test.replicates, 6))
+                    names(occupancy.firsts) = c("length", "first.bound", "twoh.bound", "first.twoh.time.diff", "first.zip", "half.detect")
                     occupancy.firsts$length = rep(invading.fragments$names, times = test.replicates)
                     
                     # Saves the time step where the extension is started, store if it is ke1 or ke1 :
@@ -938,9 +938,9 @@ for(kon in 1:length(kon.group)){
                       # print(trial)
                       
                       if(saver < 3){
-                        binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*3,5))
+                        binding.ts = as.data.frame(matrix(0, (num.time.steps/graph.resolution)*length(invading.fragments$names),5))
                         names(binding.ts) = c('time.step', "length", "bound", "heterologies", "homologies")
-                        binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution),3)
+                        binding.ts$time.step = rep(seq(1,num.time.steps, graph.resolution), length(invading.fragments$names))
                         binding.ts$length = rep(invading.fragments$names, each = (num.time.steps / graph.resolution))
                       }
                       
@@ -954,6 +954,8 @@ for(kon in 1:length(kon.group)){
                         bigtracker = bigtracker +1
                         fragment.type = invading.fragments$names[fragment]
                         invading.sequence = invading.fragments$sequences[fragment]
+                        microhomology.probs = invading.fragments$probs[[fragment]]
+                        sequences.contacts.bins = invading.fragments$bins.probs[[fragment]]
                         
                         SEI.binding.tries = floor((nchar(invading.sequence)-7)/8)
                         
