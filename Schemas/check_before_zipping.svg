@@ -286,16 +286,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="762.02648"
-     inkscape:cy="257.48754"
+     inkscape:cx="530.71429"
+     inkscape:cy="78.571429"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1043"
-     inkscape:window-x="1920"
-     inkscape:window-y="0"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
      inkscape:window-maximized="1"
      inkscape:pagecheckerboard="0"
      inkscape:snap-global="false" />
@@ -315,6 +315,136 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <g
+       id="g5383-7-6-5-0-3-2-6-2"
+       style="fill:#d4aa00"
+       transform="translate(49.490342,22.426222)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <g
+         id="g83760-3-2-7-4-1">
+        <g
+           id="g5383-7-6-9-0-9-9-5-0"
+           style="fill:#d4aa00"
+           transform="translate(-9.3635631,-66.388105)">
+          <g
+             id="g5754-2-3-3-5-1-5-1"
+             transform="translate(16.142156,-23.759184)">
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-62-62-0-4-52-8-3-4-9-5-3"
+               cx="-149.0378"
+               cy="-124.49987"
+               rx="2.2375395"
+               ry="2.1621335"
+               transform="rotate(-179.91857)" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250058"
+               id="path1932-9-6-4-10-6-8-7-3-6-6-7"
+               cx="-146.02956"
+               cy="-118.38781"
+               rx="2.2379999"
+               ry="2.1619713"
+               transform="rotate(-179.91857)" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-1-7-1-06-9-4-9-9-3-0-7"
+               cx="-152.0291"
+               cy="-118.37913"
+               rx="2.2375395"
+               ry="2.1621335"
+               transform="rotate(-179.91857)" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-62-7-5-0-4-1-0-4-4-6-6-6"
+               cx="157.8607"
+               cy="118.59506"
+               rx="2.2375395"
+               ry="2.1621335" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-9-0-6-4-4-3-0-9-9-8-2-3"
+               cx="160.8607"
+               cy="124.71156"
+               rx="2.2375395"
+               ry="2.1621335" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-1-9-9-87-3-3-8-9-5-4-6-9"
+               cx="154.8607"
+               cy="124.71156"
+               rx="2.2375395"
+               ry="2.1621335" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-62-6-8-08-73-1-6-1-5-6-9-1"
+               cx="-165.54181"
+               cy="-126.45701"
+               rx="2.2375398"
+               ry="2.1621335"
+               transform="rotate(179.39828)" />
+            <ellipse
+               style="fill:#d4aa00;stroke-width:0.250068"
+               id="path1932-9-06-7-6-47-5-8-9-7-6-9-0"
+               cx="-162.6062"
+               cy="-120.30935"
+               rx="2.2375398"
+               ry="2.1621335"
+               transform="rotate(179.39828)" />
+          </g>
+        </g>
+        <g
+           id="g83499-8-4-3-7-2-4"
+           transform="translate(30.468491,-90.147289)">
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250068"
+             id="path1932-62-62-0-4-52-5-2-9-2-9-1"
+             cx="-149.0378"
+             cy="-124.49987"
+             rx="2.2375395"
+             ry="2.1621335"
+             transform="rotate(-179.91857)" />
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250058"
+             id="path1932-9-6-4-10-6-2-0-0-7-6-1"
+             cx="-146.02956"
+             cy="-118.38781"
+             rx="2.2379999"
+             ry="2.1619713"
+             transform="rotate(-179.91857)" />
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250068"
+             id="path1932-1-7-1-06-9-8-6-7-4-5-8"
+             cx="-152.0291"
+             cy="-118.37913"
+             rx="2.2375395"
+             ry="2.1621335"
+             transform="rotate(-179.91857)" />
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250068"
+             id="path1932-62-7-5-0-4-1-3-5-2-1-5-6"
+             cx="157.8607"
+             cy="118.59506"
+             rx="2.2375395"
+             ry="2.1621335" />
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250068"
+             id="path1932-9-0-6-4-4-3-6-9-7-0-3-4"
+             cx="160.8607"
+             cy="124.71156"
+             rx="2.2375395"
+             ry="2.1621335" />
+          <ellipse
+             style="fill:#d4aa00;stroke-width:0.250068"
+             id="path1932-1-9-9-87-3-3-7-5-2-0-8-3"
+             cx="154.8607"
+             cy="124.71156"
+             rx="2.2375395"
+             ry="2.1621335" />
+        </g>
+      </g>
+    </g>
     <image
        width="61.748894"
        height="59.799831"
@@ -324,7 +454,10 @@
        x="98.573563"
        y="164.17862"
        clip-path="url(#clipPath18033-3)"
-       transform="matrix(0.23218337,0,0,0.2624846,22.601236,33.593326)" />
+       transform="matrix(0.27675825,0,0,0.28628177,39.395183,-16.382747)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <image
        width="370.41666"
        height="370.41666"
@@ -334,52 +467,77 @@
        x="-47.413807"
        y="-34.68895"
        clip-path="url(#clipPath18105)"
-       transform="matrix(0.03864295,0,0,0.04158923,179.53288,77.609833)" />
+       transform="matrix(0.04515644,0,0,0.04535975,176.47872,6.86109)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        id="text26700"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect26702)"
-       transform="translate(19.535149,-81.888007)"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect26702)"
+       transform="translate(43.877504,-127.66729)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="41.847656"
-         y="164.99979"
-         id="tspan52093"><tspan
+         y="165.31191"
+         id="tspan37276"><tspan
            style="fill:#008000"
-           id="tspan52091">Rad54 is overlapped by a big enough </tspan></tspan><tspan
+           id="tspan37274">Rad54' s bound to donor
+</tspan></tspan><tspan
          x="41.847656"
-         y="169.85049"
-         id="tspan52097"><tspan
+         y="170.60357"
+         id="tspan37280"><tspan
            style="fill:#008000"
-           id="tspan52095">macrohomology (&gt;16bp)</tspan></tspan></text>
+           id="tspan37278">   --&gt; D-Loop can occur
+</tspan></tspan><tspan
+         x="41.847656"
+         y="175.38418"
+         id="tspan37284"><tspan
+           style="fill:#008000"
+           id="tspan37282"> </tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text26700-2"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect26702-1)"
-       transform="translate(143.78176,-78.837333)"><tspan
+       transform="translate(143.09644,-150.41217)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="41.847656"
          y="165.31191"
-         id="tspan52101"><tspan
+         id="tspan37288"><tspan
            style="fill:#ff2a2a"
-           id="tspan52099">Rad54 is not Overlapped</tspan></tspan></text>
+           id="tspan37286">Rad54's not bound</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text3496-43"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-2);fill:#d4aa00"
-       transform="translate(70.173886,-108.7866)"><tspan
+       transform="translate(70.173886,-108.7866)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.69668"
-         id="tspan52103">Rad51</tspan></text>
+         id="tspan37290">Rad51</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4-1"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-96);fill:#d45500"
-       transform="translate(-125.75753,-91.323038)"><tspan
+       transform="translate(-125.75753,-91.323038)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.69668"
-         id="tspan52105">Rad54</tspan></text>
+         id="tspan37292">Rad54</tspan></text>
     <g
        id="g5383-7-6-5-4"
        style="fill:#d4aa00"
-       transform="translate(-63.180934,22.426222)">
+       transform="translate(-63.180934,22.426222)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g83760-1">
         <g
@@ -506,7 +664,10 @@
     <g
        id="g5383-7-6-5-0-0"
        style="fill:#d4aa00"
-       transform="translate(-21.180933,22.426222)">
+       transform="translate(-21.180933,22.426222)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g83760-3-8">
         <g
@@ -569,105 +730,107 @@
       </g>
     </g>
     <g
-       id="g5383-7-6-5-0-9-4"
+       id="g5383-7-6-9-0-5-7"
        style="fill:#d4aa00"
-       transform="translate(-121.82681,22.426222)">
+       transform="translate(-131.19037,-43.961883)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
-         id="g83760-3-0-8">
-        <g
-           id="g5383-7-6-9-0-5-7"
-           style="fill:#d4aa00"
-           transform="translate(-9.3635631,-66.388105)">
-          <g
-             id="g5754-2-3-3-0-3"
-             transform="translate(16.142156,-23.759184)">
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-7-5-0-4-1-0-4-6-1"
-               cx="157.8607"
-               cy="118.59506"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-0-6-4-4-3-0-9-2-4"
-               cx="160.8607"
-               cy="124.71156"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-6-8-08-73-1-6-1-2-7"
-               cx="-165.54181"
-               cy="-126.45701"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-06-7-6-47-5-8-9-5-0"
-               cx="-162.6062"
-               cy="-120.30935"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-          </g>
-        </g>
-        <g
-           id="g83499-8-4-39-7"
-           transform="translate(30.468491,-90.147289)">
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-62-0-4-52-5-2-1-8"
-             cx="-149.0378"
-             cy="-124.49987"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250058"
-             id="path1932-9-6-4-10-6-2-0-8-9"
-             cx="-146.02956"
-             cy="-118.38781"
-             rx="2.2379999"
-             ry="2.1619713"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-7-1-06-9-8-6-8-9"
-             cx="-152.0291"
-             cy="-118.37913"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-7-5-0-4-1-3-5-7-3"
-             cx="157.8607"
-             cy="118.59506"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-9-0-6-4-4-3-6-9-0-9"
-             cx="160.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-9-9-87-3-3-7-5-5-4"
-             cx="154.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-        </g>
+         id="g5754-2-3-3-0-3"
+         transform="translate(16.142156,-23.759184)">
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-62-7-5-0-4-1-0-4-6-1"
+           cx="157.8607"
+           cy="118.59506"
+           rx="2.2375395"
+           ry="2.1621335" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-9-0-6-4-4-3-0-9-2-4"
+           cx="160.8607"
+           cy="124.71156"
+           rx="2.2375395"
+           ry="2.1621335" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-62-6-8-08-73-1-6-1-2-7"
+           cx="-165.54181"
+           cy="-126.45701"
+           rx="2.2375398"
+           ry="2.1621335"
+           transform="rotate(179.39828)" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-9-06-7-6-47-5-8-9-5-0"
+           cx="-162.6062"
+           cy="-120.30935"
+           rx="2.2375398"
+           ry="2.1621335"
+           transform="rotate(179.39828)" />
       </g>
+    </g>
+    <g
+       id="g83499-8-4-39-7"
+       transform="translate(-91.358319,-67.721067)"
+       style="fill:#d4aa00"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-62-62-0-4-52-5-2-1-8"
+         cx="-149.0378"
+         cy="-124.49987"
+         rx="2.2375395"
+         ry="2.1621335"
+         transform="rotate(-179.91857)" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250058"
+         id="path1932-9-6-4-10-6-2-0-8-9"
+         cx="-146.02956"
+         cy="-118.38781"
+         rx="2.2379999"
+         ry="2.1619713"
+         transform="rotate(-179.91857)" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-1-7-1-06-9-8-6-8-9"
+         cx="-152.0291"
+         cy="-118.37913"
+         rx="2.2375395"
+         ry="2.1621335"
+         transform="rotate(-179.91857)" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-62-7-5-0-4-1-3-5-7-3"
+         cx="157.8607"
+         cy="118.59506"
+         rx="2.2375395"
+         ry="2.1621335" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-9-0-6-4-4-3-6-9-0-9"
+         cx="160.8607"
+         cy="124.71156"
+         rx="2.2375395"
+         ry="2.1621335" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-1-9-9-87-3-3-7-5-5-4"
+         cx="154.8607"
+         cy="124.71156"
+         rx="2.2375395"
+         ry="2.1621335" />
     </g>
     <g
        id="g5383-7-6-5-0-3-2-6"
        style="fill:#d4aa00"
-       transform="translate(90.516219,22.426222)">
+       transform="translate(90.516219,22.426222)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g83760-3-2-7-4">
         <g
@@ -794,7 +957,10 @@
     <g
        id="g5383-7-6-5-0-0-2"
        style="fill:#d4aa00"
-       transform="rotate(-71.885992,168.56853,38.798209)">
+       transform="rotate(-71.885992,168.56853,38.798209)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g83760-3-8-6">
         <g
@@ -863,7 +1029,10 @@
        cy="-130.64165"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(141.63768)" />
+       transform="rotate(141.63768)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250058"
        id="path1932-9-6-4-10-6-8-7-38-8-4"
@@ -871,7 +1040,10 @@
        cy="-125.90153"
        rx="2.2379999"
        ry="2.1619713"
-       transform="rotate(141.63768)" />
+       transform="rotate(141.63768)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-1-7-1-06-9-4-9-5-7-9"
@@ -879,7 +1051,10 @@
        cy="-125.00549"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(141.63768)" />
+       transform="rotate(141.63768)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <g
        id="g83499-8-4-5-4-3"
        transform="rotate(-38.443753,103.33744,60.300731)"
@@ -887,7 +1062,10 @@
     <g
        id="g5383-7-6-5-0-0-2-0-5"
        style="fill:#d4aa00"
-       transform="rotate(71.104705,169.43637,62.640503)">
+       transform="rotate(71.104705,169.43637,62.640503)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g83760-3-8-6-0-4">
         <g
@@ -949,7 +1127,10 @@
        cy="139.29938"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(-38.443753)" />
+       transform="rotate(-38.443753)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-7-5-0-4-1-0-4-0-6-4-9"
@@ -957,7 +1138,10 @@
        cy="140.46649"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(-38.443753)" />
+       transform="rotate(-38.443753)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-7-5-0-4-1-0-4-0-6-4-0"
@@ -965,7 +1149,10 @@
        cy="144.65082"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(-38.443753)" />
+       transform="rotate(-38.443753)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-7-5-0-4-1-0-4-0-6-4-43"
@@ -973,7 +1160,10 @@
        cy="145.61499"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(-38.443753)" />
+       transform="rotate(-38.443753)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-7-5-0-4-1-0-4-0-6-4-34"
@@ -981,23 +1171,35 @@
        cy="161.42188"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(-38.443753)" />
+       transform="rotate(-38.443753)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.740598;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-1"
        cx="79.024765"
        cy="53.827614"
-       r="6" />
+       r="6"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.740598;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-1"
        cx="178.48936"
        cy="25.294603"
-       r="6" />
+       r="6"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#d35f5f;stroke-width:2.00788;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 11.003941,56.343753 C 284.3086,56.062453 284.3086,56.062453 284.3086,56.062453"
-       id="path33834" />
+       id="path33834"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-62-0-4-52-8-3-2-0-5-9"
@@ -1005,7 +1207,10 @@
        cy="-125.15806"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(141.63768)" />
+       transform="rotate(141.63768)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-62-62-0-4-52-8-3-2-0-5-4"
@@ -1013,203 +1218,44 @@
        cy="-129.09285"
        rx="2.2375395"
        ry="2.1621335"
-       transform="rotate(141.63768)" />
+       transform="rotate(141.63768)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#2a7ff0;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 11,17.056874 c 23.02555,1.004556 13.792165,19.744069 26.682188,36.870539 l 119.563522,-0.008 c 2.9879,-37.971033 38.5557,-37.246647 40,-0.004 l 86.98349,-0.005"
        id="path30093"
-       sodipodi:nodetypes="ccccc" />
-    <g
-       id="g13859-5"
-       transform="matrix(0.87209548,0,0,0.92053123,19.621832,-16.423332)">
-      <path
-         style="opacity:0.999;fill:none;stroke:#000000;stroke-width:0.789561;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.57912, 0.789561;stroke-dashoffset:0;stroke-opacity:1"
-         d="m 25.595628,71.22101 c 0.267139,17.38296 0.267139,17.38296 0.267139,17.38296"
-         id="path3022-93-3" />
-      <path
-         style="opacity:0.999;fill:none;stroke:#000000;stroke-width:0.803278;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.60656, 0.803278;stroke-dashoffset:0;stroke-opacity:1"
-         d="m 127.66283,71.26894 c 0.27684,17.36261 0.27684,17.36261 0.27684,17.36261"
-         id="path3022-0-68-8" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:0.370683px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 25.850788,88.556528 c 30.5348,5.75799 42.467049,6.718858 46.979117,14.742252"
-         id="path3612-1"
-         sodipodi:nodetypes="cc" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:0.377127px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="M 127.94899,88.573788 C 111.99844,90.840914 76.1706,93.729178 72.829905,103.29878"
-         id="path3614-1"
-         sodipodi:nodetypes="cc" />
-    </g>
-    <g
-       id="g5383-7-6-5-0-3-2-6-2"
-       style="fill:#d4aa00"
-       transform="translate(49.490342,22.426222)">
-      <g
-         id="g83760-3-2-7-4-1">
-        <g
-           id="g5383-7-6-9-0-9-9-5-0"
-           style="fill:#d4aa00"
-           transform="translate(-9.3635631,-66.388105)">
-          <g
-             id="g5754-2-3-3-5-1-5-1"
-             transform="translate(16.142156,-23.759184)">
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-62-0-4-52-8-3-4-9-5-3"
-               cx="-149.0378"
-               cy="-124.49987"
-               rx="2.2375395"
-               ry="2.1621335"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250058"
-               id="path1932-9-6-4-10-6-8-7-3-6-6-7"
-               cx="-146.02956"
-               cy="-118.38781"
-               rx="2.2379999"
-               ry="2.1619713"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-1-7-1-06-9-4-9-9-3-0-7"
-               cx="-152.0291"
-               cy="-118.37913"
-               rx="2.2375395"
-               ry="2.1621335"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-7-5-0-4-1-0-4-4-6-6-6"
-               cx="157.8607"
-               cy="118.59506"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-0-6-4-4-3-0-9-9-8-2-3"
-               cx="160.8607"
-               cy="124.71156"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-1-9-9-87-3-3-8-9-5-4-6-9"
-               cx="154.8607"
-               cy="124.71156"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-6-8-08-73-1-6-1-5-6-9-1"
-               cx="-165.54181"
-               cy="-126.45701"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-06-7-6-47-5-8-9-7-6-9-0"
-               cx="-162.6062"
-               cy="-120.30935"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-          </g>
-        </g>
-        <g
-           id="g83499-8-4-3-7-2-4"
-           transform="translate(30.468491,-90.147289)">
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-62-0-4-52-5-2-9-2-9-1"
-             cx="-149.0378"
-             cy="-124.49987"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250058"
-             id="path1932-9-6-4-10-6-2-0-0-7-6-1"
-             cx="-146.02956"
-             cy="-118.38781"
-             rx="2.2379999"
-             ry="2.1619713"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-7-1-06-9-8-6-7-4-5-8"
-             cx="-152.0291"
-             cy="-118.37913"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-7-5-0-4-1-3-5-2-1-5-6"
-             cx="157.8607"
-             cy="118.59506"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-9-0-6-4-4-3-6-9-7-0-3-4"
-             cx="160.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-9-9-87-3-3-7-5-2-0-8-3"
-             cx="154.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-        </g>
-      </g>
-    </g>
-    <g
-       id="g13859-3-3"
-       transform="matrix(0.87259797,0,0,0.92053375,118.77478,-16.423511)">
-      <path
-         style="opacity:0.999;fill:none;stroke:#000000;stroke-width:0.789561;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.57912, 0.789561;stroke-dashoffset:0;stroke-opacity:1"
-         d="m 25.595628,71.22101 c 0.267139,17.38296 0.267139,17.38296 0.267139,17.38296"
-         id="path3022-93-7-1" />
-      <path
-         style="opacity:0.999;fill:none;stroke:#000000;stroke-width:0.803278;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.60656, 0.803278;stroke-dashoffset:0;stroke-opacity:1"
-         d="m 127.66283,71.26894 c 0.27684,17.36261 0.27684,17.36261 0.27684,17.36261"
-         id="path3022-0-68-3-5" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:0.370683px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 25.850788,88.556528 c 30.5348,5.75799 42.467049,6.718858 46.979117,14.742252"
-         id="path3612-4-8"
-         sodipodi:nodetypes="cc" />
-      <path
-         style="fill:none;stroke:#000000;stroke-width:0.377127px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="M 127.94899,88.573788 C 111.99844,90.840914 76.1706,93.729178 72.829905,103.29878"
-         id="path3614-7-1"
-         sodipodi:nodetypes="cc" />
-    </g>
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        id="text3490"
        style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;white-space:pre;shape-inside:url(#rect3492-7);fill:#2a7fff"
-       transform="translate(-25.463337,-138.581)"><tspan
+       transform="translate(-25.463337,-138.581)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="35.367188"
          y="151.79733"
-         id="tspan52109"><tspan
+         id="tspan37296"><tspan
            style="font-size:4.23333px;font-family:aakar;-inkscape-font-specification:'aakar, Normal'"
-           id="tspan52107">Invading stand</tspan></tspan></text>
+           id="tspan37294">Invading stand</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text13627-0-9-3"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.76389px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect13629-1-1-1);opacity:0.998;fill:#d35f5f"
-       transform="matrix(2,0,0,2.0000001,-75.081591,-140.75331)"><tspan
+       transform="matrix(2,0,0,2.0000001,-75.081591,-140.75331)"
+       inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/g5383-7-6-5-0-3-2-6-2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="42.527344"
          y="103.09188"
-         id="tspan52113">Donor strand<tspan
+         id="tspan37300">Donor strand<tspan
    style="shape-inside:url(#rect13629-1-1-1);opacity:0.998"
-   id="tspan52111">
+   id="tspan37298">
 </tspan></tspan></text>
   </g>
 </svg>
