@@ -8,7 +8,7 @@
 rm(list=ls())
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
 
-resolution = 12
+resolution = 10
 
 run.dirs <- list.dirs(full.names = FALSE, recursive = FALSE)
 num.parameters <- length(run.dirs) # How many parameters combinations sets are there?
@@ -178,20 +178,6 @@ for(pp in run.dirs){
     plateau_data$time500[parameter_counter] = -1
   }
 }
-
-
-# Remove rows containing only -1 :^
-rows2remove = c()
-for(i in 1:nrow(plateau_data)){
-  if(sum(plateau_data[i, 11:16]) <= -6){
-    rows2remove = c(rows2remove, i)
-  }
-}
-
-#print(length(rows2remove)) See how much is sparse the plateau_data, Lower is the number of row containing -1 better it is 
-plateau_data = plateau_data[-c(rows2remove),]
-rownames(plateau_data) = 1:nrow(plateau_data)
-
 
 # write the plateau data structure to a file in a directory called processed data. You can change this to your liking. 
 write.table(plateau_data, file=paste(processed_file, "plateau_data.txt", sep=""), sep="\t")
