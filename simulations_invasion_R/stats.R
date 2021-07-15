@@ -93,4 +93,4 @@ for(pp in run.dirs){
 }
 
 # write the plateau data structure to a file in a directory called processed data. You can change this to your liking. 
-write.table(stats.simulation, file=paste(processed_file, "stats.simulation.txt", sep=""), sep="\t")
+write.table(stats.simulation, file=paste(processed_file, "stats_simulation.txt", sep=""), sep="\t")
