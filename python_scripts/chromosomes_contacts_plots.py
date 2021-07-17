@@ -33,7 +33,7 @@ def make_heatmap(dir_path):
     
     plt.figure(figsize = (30,20))
     df_filtered = copy.deepcopy(dftotal)
-    df_filtered[dftotal < 5/3 ]= np.nan
+    df_filtered[dftotal < 3 ]= np.nan
     #sns.color_palette("mako", as_cmap=True)
     ax = sns.heatmap(df_filtered, cmap = "rocket_r")
     #ax.vlines(chr_vline, *ax.get_xlim(), color="green", linewidth =1, linestyle="-")
