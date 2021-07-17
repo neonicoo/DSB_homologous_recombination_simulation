@@ -1,5 +1,6 @@
-### Compute some stats in order to compare all the simulation population time series 
+#! /usr/bin/env Rscript
 
+## Compute some stats in order to compare all the simulation population time series 
 
 rm(list=ls())
 setwd("/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/datas0/")
@@ -87,7 +88,7 @@ for(pp in run.dirs){
   stats.simulation$quantile75[parameter_counter] = quantiles[[1]]
   stats.simulation$sd[parameter_counter] = sd
   stats.simulation$max[parameter_counter] = max
-  stats.simulation$time.max[parameter_counter] = time.max
+  stats.simulation$time.max[parameter_counter] = ifelse(length(time.max) >1, sample(time.max), time.max)
   stats.simulation$delta.max[parameter_counter] = delta.max
   
 }

@@ -1,3 +1,5 @@
+#! /usr/bin/env Rscript
+
 # Finding plateau from population time series data over many
 #   parameter sets
 
