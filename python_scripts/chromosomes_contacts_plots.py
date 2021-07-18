@@ -19,26 +19,24 @@ def make_heatmap(dir_path):
     nb_fragments = len(fragments_list)
     num_time_steps = int(len(df)/nb_fragments)
     
+    chr_vline = []
+    for i,v in enumerate(df.columns[1:]):
+        if (v.split("_")[1] == '1'):
+            chr_vline.append(i)
+            
     df_dict_fragment = {}
     for fragment in fragments_list:
         df_dict_fragment["df%s" %fragment] = df[df["length"]== fragment].iloc[:, 1:]
         df_dict_fragment["df%s" %fragment].index = range(num_time_steps)
-    
-    dftotal = sum(df_dict_fragment.values())/nb_fragments
-    
-    chr_vline = []
-    for i,v in enumerate(dftotal.columns):
-        if (v.split("_")[1] == '1'):
-            chr_vline.append(i)
-    
-    plt.figure(figsize = (30,20))
-    df_filtered = copy.deepcopy(dftotal)
-    df_filtered[dftotal < 3 ]= np.nan
-    #sns.color_palette("mako", as_cmap=True)
-    ax = sns.heatmap(df_filtered, cmap = "rocket_r")
-    #ax.vlines(chr_vline, *ax.get_xlim(), color="green", linewidth =1, linestyle="-")
-    plt.savefig(path + "chromosomes_contact_heatmap.jpg", dpi = 200)
-    plt.close()
+        
+        plt.figure(figsize = (30,20))
+        df_filtered = copy.deepcopy(df_dict_fragment["df%s" %fragment])
+        df_filtered[df_dict_fragment["df%s" %fragment] < 3 ]= np.nan
+        #sns.color_palette("mako", as_cmap=True)
+        ax = sns.heatmap(df_filtered, cmap = "rocket_r")
+        #ax.vlines(chr_vline, *ax.get_xlim(), color="green", linewidth =1, linestyle="-")
+        plt.savefig(path + "chromosomes_contact_heatmap_" + str(fragment) + ".jpg", dpi = 200)
+        plt.close()
     
     print(dir_path)
 
