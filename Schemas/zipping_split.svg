@@ -7,7 +7,7 @@
    id="svg27265"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
    sodipodi:docname="zipping_split.svg"
-   inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
+   inkscape:export-filename="/home/nicolas/Téléchargements/zipping_split.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -87,8 +87,8 @@
     <rect
        x="248.36648"
        y="307.38238"
-       width="317.94338"
-       height="50.521561"
+       width="233.16732"
+       height="83.941124"
        id="rect265475" />
     <rect
        x="207.08293"
@@ -632,7 +632,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="513.66257"
+     inkscape:cx="295.46962"
      inkscape:cy="193.94929"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -710,13 +710,13 @@
        inkscape:export-ydpi="96"><tspan
          x="266.30273"
          y="265.49808"
-         id="tspan15551">atgcatgagctttac<tspan
+         id="tspan25997">atgcatgagctttac<tspan
    style="fill:#37c837"
-   id="tspan15545">aggcatat</tspan>agttacgtagctc<tspan
+   id="tspan25991">aggcatat</tspan>agttacgtagctc<tspan
    style="fill:#37c837"
-   id="tspan15547">ttgtacgc</tspan>cgatgggacatgcgatt<tspan
+   id="tspan25993">ttgtacgc</tspan>cgatgggacatgcgatt<tspan
    style="fill:#37c837"
-   id="tspan15549">gccaata</tspan>taaa</tspan></text>
+   id="tspan25995">gccaata</tspan>taaa</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:4.93889px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;fill:#d35f5f;stroke-width:0.264583"
@@ -746,13 +746,16 @@
        inkscape:export-ydpi="96"><tspan
          x="248.36719"
          y="321.53906"
-         id="tspan15555">if <tspan
+         id="tspan26001">if <tspan
    style="font-weight:bold"
-   id="tspan15553">Smith Waterman</tspan> score &gt; 2/3
-</tspan><tspan
+   id="tspan25999">Smith Waterman</tspan> score is </tspan><tspan
          x="248.36719"
          y="341.53906"
-         id="tspan15557">   --&gt; zipping</tspan></text>
+         id="tspan26003">good enough
+</tspan><tspan
+         x="248.36719"
+         y="361.53906"
+         id="tspan26005">   --&gt; zipping</tspan></text>
     <text
        xml:space="preserve"
        id="text13627-0-9-3-74-7"
@@ -763,7 +766,7 @@
        inkscape:export-ydpi="96"><tspan
          x="42.527344"
          y="103.40401"
-         id="tspan15559">Donor strand
+         id="tspan26007">Donor strand
 </tspan></text>
     <text
        xml:space="preserve"
@@ -777,9 +780,9 @@
        inkscape:export-ydpi="96"><tspan
          x="44.87517"
          y="147.8286"
-         id="tspan15563"><tspan
+         id="tspan26011"><tspan
            style="font-size:4.23333px;font-family:aakar;-inkscape-font-specification:'aakar, Normal';text-align:center;text-anchor:middle"
-           id="tspan15561">Splited singe-end</tspan></tspan></text>
+           id="tspan26009">Splited singe-end</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text3490-8-4"
@@ -790,9 +793,9 @@
        inkscape:export-ydpi="96"><tspan
          x="35.367188"
          y="151.79733"
-         id="tspan15567"><tspan
+         id="tspan26015"><tspan
            style="font-size:4.23333px"
-           id="tspan15565">Heterologies</tspan></tspan></text>
+           id="tspan26013">Heterologies</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4"
@@ -803,7 +806,7 @@
        inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.91409"
-         id="tspan15569">Rad54</tspan></text>
+         id="tspan26017">Rad54</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4-2"
@@ -814,9 +817,9 @@
        inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.91409"
-         id="tspan15573"><tspan
+         id="tspan26021"><tspan
            style="fill:#de8787"
-           id="tspan15571">Rdh54</tspan></tspan></text>
+           id="tspan26019">Rdh54</tspan></tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-96"
