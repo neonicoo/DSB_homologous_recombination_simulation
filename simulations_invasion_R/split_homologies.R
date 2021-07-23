@@ -533,7 +533,7 @@ zipping <- function(rad54, limit){
   # This score is called "similary" and is normalized by the length of the string we want to align (b) ;
   sw <- as.data.frame(smith_waterman(a=donor.seq, b=fragment.to.zip, edit_mark = "*"))
   
-  if(sw$similarity >= 0.625){
+  if(sw$similarity >= 0.75){
     
     #Now check for consecutive misalignment between SE fragment to zip and its donor :
     # Fix a cutoff in the changeable parameters at the beginning of the simulation , for example limit = 6,
