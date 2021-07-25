@@ -51,7 +51,7 @@ colnames(contacts)[7] <- "id"
 
 ################################################################################
 ####################### Parameters #############################################
-profvis({
+#profvis({
 num.time.steps = 600 # Length of simulation in time steps
 graph.resolution = 1 #save occupancy data at every nth time step. Plots will have this resolution at the x-axis 
 
@@ -1324,4 +1324,4 @@ for(kon in 1:length(kon.group)){
     }
   }
 }
-})
+#})
