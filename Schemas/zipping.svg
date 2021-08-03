@@ -7,9 +7,9 @@
    id="svg27265"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
    sodipodi:docname="zipping.svg"
-   inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/zipping.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+   inkscape:export-xdpi="150"
+   inkscape:export-ydpi="150"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -498,8 +498,8 @@
     <rect
        x="248.36649"
        y="307.38239"
-       width="232.99687"
-       height="70.628803"
+       width="218.73444"
+       height="99.316051"
        id="rect265475" />
     <rect
        x="42.527008"
@@ -584,8 +584,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="502.55089"
-     inkscape:cy="216.17264"
+     inkscape:cx="317.69297"
+     inkscape:cy="172.73608"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -614,6 +614,95 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <g
+       id="g4561"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="translate(-3.0081439,-6.9154638)">
+      <g
+         id="g5754-2-3-4-9"
+         transform="translate(-28.365837,-42.491996)"
+         style="fill:#d4aa00">
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-62-62-0-4-52-8-33-2"
+           cx="-149.0378"
+           cy="-124.49987"
+           rx="2.2375395"
+           ry="2.1621335"
+           transform="rotate(-179.91857)" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250058"
+           id="path1932-9-6-4-10-6-8-3-2"
+           cx="-146.02956"
+           cy="-118.38781"
+           rx="2.2379999"
+           ry="2.1619713"
+           transform="rotate(-179.91857)" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-1-7-1-06-9-4-8-8"
+           cx="-152.0291"
+           cy="-118.37913"
+           rx="2.2375395"
+           ry="2.1621335"
+           transform="rotate(-179.91857)" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-62-7-5-0-4-1-0-6-9"
+           cx="157.8607"
+           cy="118.59506"
+           rx="2.2375395"
+           ry="2.1621335" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-9-0-6-4-4-3-0-0-7"
+           cx="160.8607"
+           cy="124.71156"
+           rx="2.2375395"
+           ry="2.1621335" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-1-9-9-87-3-3-8-4-3"
+           cx="154.8607"
+           cy="124.71156"
+           rx="2.2375395"
+           ry="2.1621335" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-62-6-8-08-73-1-6-8-6"
+           cx="-165.54181"
+           cy="-126.45701"
+           rx="2.2375398"
+           ry="2.1621335"
+           transform="rotate(179.39828)" />
+        <ellipse
+           style="fill:#d4aa00;stroke-width:0.250068"
+           id="path1932-9-06-7-6-47-5-8-8-1"
+           cx="-162.6062"
+           cy="-120.30935"
+           rx="2.2375398"
+           ry="2.1621335"
+           transform="rotate(179.39828)" />
+      </g>
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250068"
+         id="path1932-62-62-0-4-52-5-97-9"
+         cx="-144.30142"
+         cy="-82.014542"
+         rx="2.2375395"
+         ry="2.1621335"
+         transform="rotate(-179.91857)" />
+      <ellipse
+         style="fill:#d4aa00;stroke-width:0.250058"
+         id="path1932-9-6-4-10-6-2-7-3"
+         cx="-141.29318"
+         cy="-75.902481"
+         rx="2.2379999"
+         ry="2.1619713"
+         transform="rotate(-179.91857)" />
+    </g>
     <text
        xml:space="preserve"
        style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
@@ -661,67 +750,69 @@
        inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,10.194325,-48.941706)"
+       transform="matrix(0.26458333,0,0,0.26458333,13.096379,-52.800048)"
        id="text265473"
-       style="font-size:16px;line-height:0.85;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect265475)"
+       style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect265475)"
        inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
        inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
-         x="248.36719"
-         y="318.33906"
-         id="tspan42444"><tspan
+       inkscape:export-ydpi="96"
+       x="254.62109"
+       y="0"><tspan
+         x="250.40625"
+         y="321.53906"
+         id="tspan283800"><tspan
+           style="text-align:center;text-anchor:middle;fill:#2ca02c"
+           id="tspan283794">if </tspan><tspan
+           style="font-weight:bold;text-align:center;text-anchor:middle;fill:#2ca02c"
+           id="tspan283796">Smith Waterman</tspan><tspan
+           style="text-align:center;text-anchor:middle"
+           id="tspan283798"> score </tspan></tspan><tspan
+         x="293.66406"
+         y="341.53906"
+         id="tspan283806"><tspan
+           style="text-align:center;text-anchor:middle"
+           id="tspan283802">is good enough</tspan><tspan
            style="fill:#2ca02c"
-           id="tspan42438">if </tspan><tspan
-           style="font-weight:bold;fill:#2ca02c"
-           id="tspan42440">Smith Waterman</tspan><tspan
-           style="fill:#2ca02c"
-           id="tspan42442"> score is </tspan></tspan><tspan
-         x="248.36719"
-         y="331.93907"
-         id="tspan42448"><tspan
-           style="fill:#2ca02c"
-           id="tspan42446">good enough 
+           id="tspan283804"> 
 </tspan></tspan><tspan
-         x="248.36719"
-         y="345.53907"
-         id="tspan42452"><tspan
+         x="357.73438"
+         y="361.53906"
+         id="tspan283810"><tspan
            style="fill:#2ca02c"
-           id="tspan42450">   
+           id="tspan283808">
 </tspan></tspan><tspan
-         x="248.36719"
-         y="359.13908"
-         id="tspan42458"><tspan
+         x="309.94141"
+         y="381.53906"
+         id="tspan283816"><tspan
            style="fill:#2ca02c"
-           id="tspan42454">--&gt;</tspan><tspan
-           style="font-weight:bold;fill:#2ca02c"
-           id="tspan42456"> Zipping</tspan></tspan></text>
+           id="tspan283812">--&gt; Zipping </tspan><tspan
+           style="text-align:center;text-anchor:middle;fill:#2ca02c"
+           id="tspan283814"> </tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text13627-0-9-3-74-7"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect13629-1-1-1-3-3);opacity:0.998;fill:#d35f5f"
-       transform="matrix(2,0,0,2.0000001,-77.090824,-125.77759)"
+       transform="matrix(2,0,0,2.0000001,-69.690407,-124.97578)"
        inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          x="42.527344"
          y="103.40401"
-         id="tspan42460">Donor strand
+         id="tspan283818">Donor strand
 </tspan></text>
     <text
        xml:space="preserve"
        id="text3490-8-2"
-       style="font-size:10.5833px;line-height:0.5;font-family:sans-serif;-inkscape-font-specification:sans-serif;white-space:pre;shape-inside:url(#rect3492-97-45);fill:#2a7fff"
-       transform="translate(-36.77488,-109.57522)"
+       style="font-size:4.23333px;line-height:0.5;font-family:sans-serif;-inkscape-font-specification:sans-serif;white-space:pre;shape-inside:url(#rect3492-97-45);fill:#2a7fff"
+       transform="translate(-19.79046,-105.45004)"
        x="16.993263"
        y="0"
        inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
-         x="44.87517"
-         y="147.8286"
-         id="tspan42464"><tspan
-           style="font-size:4.23333px;font-family:aakar;-inkscape-font-specification:'aakar, Normal';text-align:center;text-anchor:middle"
-           id="tspan42462">Splited singe-end</tspan></tspan></text>
+         x="35.367188"
+         y="144.5916"
+         id="tspan283820">invading NPF</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4"
@@ -732,7 +823,7 @@
        inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.91409"
-         id="tspan42466">Rad54</tspan></text>
+         id="tspan283822">Rad54</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4-2"
@@ -743,7 +834,7 @@
        inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.91409"
-         id="tspan42468">Rad54 or Rdh54</tspan></text>
+         id="tspan283824">Rad54 or Rdh54</tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-96"
@@ -851,164 +942,15 @@
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
     <g
-       id="g5383-7-6-5-8"
+       id="g5383-7-6-9-6"
        style="fill:#d4aa00"
-       transform="translate(7.8817755,40.739823)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96">
+       transform="translate(-1.4817876,-25.648282)">
       <g
-         id="g83760-9">
-        <g
-           id="g5383-7-6-9-6"
-           style="fill:#d4aa00"
-           transform="translate(-9.3635631,-66.388105)">
-          <g
-             id="g5754-2-3-4"
-             transform="translate(16.142156,-23.759184)">
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-62-0-4-52-8-33"
-               cx="-149.0378"
-               cy="-124.49987"
-               rx="2.2375395"
-               ry="2.1621335"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250058"
-               id="path1932-9-6-4-10-6-8-3"
-               cx="-146.02956"
-               cy="-118.38781"
-               rx="2.2379999"
-               ry="2.1619713"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-1-7-1-06-9-4-8"
-               cx="-152.0291"
-               cy="-118.37913"
-               rx="2.2375395"
-               ry="2.1621335"
-               transform="rotate(-179.91857)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-7-5-0-4-1-0-6"
-               cx="157.8607"
-               cy="118.59506"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-0-6-4-4-3-0-0"
-               cx="160.8607"
-               cy="124.71156"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-1-9-9-87-3-3-8-4"
-               cx="154.8607"
-               cy="124.71156"
-               rx="2.2375395"
-               ry="2.1621335" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-62-6-8-08-73-1-6-8"
-               cx="-165.54181"
-               cy="-126.45701"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-            <ellipse
-               style="fill:#d4aa00;stroke-width:0.250068"
-               id="path1932-9-06-7-6-47-5-8-8"
-               cx="-162.6062"
-               cy="-120.30935"
-               rx="2.2375398"
-               ry="2.1621335"
-               transform="rotate(179.39828)" />
-          </g>
-        </g>
-        <g
-           id="g83499-8-8"
-           transform="translate(30.468491,-90.147289)">
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-62-0-4-52-5-97"
-             cx="-149.0378"
-             cy="-124.49987"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250058"
-             id="path1932-9-6-4-10-6-2-7"
-             cx="-146.02956"
-             cy="-118.38781"
-             rx="2.2379999"
-             ry="2.1619713"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-7-1-06-9-8-64"
-             cx="-152.0291"
-             cy="-118.37913"
-             rx="2.2375395"
-             ry="2.1621335"
-             transform="rotate(-179.91857)" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-62-7-5-0-4-1-3-3"
-             cx="157.8607"
-             cy="118.59506"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-9-0-6-4-4-3-6-0"
-             cx="160.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-          <ellipse
-             style="fill:#d4aa00;stroke-width:0.250068"
-             id="path1932-1-9-9-87-3-3-7-3"
-             cx="154.8607"
-             cy="124.71156"
-             rx="2.2375395"
-             ry="2.1621335" />
-        </g>
-      </g>
-    </g>
-    <path
-       style="fill:none;stroke:#2a7ff0;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 9.8097983,41.813813 C 23.756026,42.627912 30.62027,48.056747 31.100958,71.492208 l 86.074342,0.0913 88.3627,0.12407"
-       id="path1118-1-0"
-       sodipodi:nodetypes="cccc"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="fill:none;stroke:#d35f5f;stroke-width:1.99881;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 9.7181423,73.793988 c 214.4703877,0.3331 195.6188777,0.13717 195.6188777,0.13717"
-       id="path1522-6-9"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <g
-       id="g4561"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
-       transform="translate(-3.0081439,-6.9154638)">
-      <g
-         id="g5754-2-3-4-9"
-         transform="translate(-28.365837,-42.491996)"
-         style="fill:#d4aa00">
+         id="g5754-2-3-4"
+         transform="translate(16.142156,-23.759184)">
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-62-62-0-4-52-8-33-2"
+           id="path1932-62-62-0-4-52-8-33"
            cx="-149.0378"
            cy="-124.49987"
            rx="2.2375395"
@@ -1016,7 +958,7 @@
            transform="rotate(-179.91857)" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250058"
-           id="path1932-9-6-4-10-6-8-3-2"
+           id="path1932-9-6-4-10-6-8-3"
            cx="-146.02956"
            cy="-118.38781"
            rx="2.2379999"
@@ -1024,7 +966,7 @@
            transform="rotate(-179.91857)" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-1-7-1-06-9-4-8-8"
+           id="path1932-1-7-1-06-9-4-8"
            cx="-152.0291"
            cy="-118.37913"
            rx="2.2375395"
@@ -1032,28 +974,28 @@
            transform="rotate(-179.91857)" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-62-7-5-0-4-1-0-6-9"
+           id="path1932-62-7-5-0-4-1-0-6"
            cx="157.8607"
            cy="118.59506"
            rx="2.2375395"
            ry="2.1621335" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-9-0-6-4-4-3-0-0-7"
+           id="path1932-9-0-6-4-4-3-0-0"
            cx="160.8607"
            cy="124.71156"
            rx="2.2375395"
            ry="2.1621335" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-1-9-9-87-3-3-8-4-3"
+           id="path1932-1-9-9-87-3-3-8-4"
            cx="154.8607"
            cy="124.71156"
            rx="2.2375395"
            ry="2.1621335" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-62-6-8-08-73-1-6-8-6"
+           id="path1932-62-6-8-08-73-1-6-8"
            cx="-165.54181"
            cy="-126.45701"
            rx="2.2375398"
@@ -1061,30 +1003,30 @@
            transform="rotate(179.39828)" />
         <ellipse
            style="fill:#d4aa00;stroke-width:0.250068"
-           id="path1932-9-06-7-6-47-5-8-8-1"
+           id="path1932-9-06-7-6-47-5-8-8"
            cx="-162.6062"
            cy="-120.30935"
            rx="2.2375398"
            ry="2.1621335"
            transform="rotate(179.39828)" />
       </g>
-      <ellipse
-         style="fill:#d4aa00;stroke-width:0.250068"
-         id="path1932-62-62-0-4-52-5-97-9"
-         cx="-144.30142"
-         cy="-82.014542"
-         rx="2.2375395"
-         ry="2.1621335"
-         transform="rotate(-179.91857)" />
-      <ellipse
-         style="fill:#d4aa00;stroke-width:0.250058"
-         id="path1932-9-6-4-10-6-2-7-3"
-         cx="-141.29318"
-         cy="-75.902481"
-         rx="2.2379999"
-         ry="2.1619713"
-         transform="rotate(-179.91857)" />
     </g>
+    <path
+       style="fill:none;stroke:#2a7ff0;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 16.676336,41.813813 c 13.946228,0.814099 18.497597,6.242934 18.978285,29.678395 l 81.520679,0.0913 69.82796,0.12407"
+       id="path1118-1-0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       style="fill:none;stroke:#d35f5f;stroke-width:1.99881;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 16.288333,73.793988 C 230.75872,74.127088 182.738,73.931158 182.738,73.931158"
+       id="path1522-6-9"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <image
        width="30.456989"
        height="39.294304"
@@ -1131,17 +1073,33 @@
        inkscape:export-ydpi="96"><tspan
          x="266.30273"
          y="265.49808"
-         id="tspan42480">atg<tspan
+         id="tspan283848">tg<tspan
    style="fill:#ff0000"
-   id="tspan42470">t</tspan>atgagctttacgtacaa<tspan
+   id="tspan283826">a</tspan>atgactacgtacaa<tspan
    style="fill:#ff0000"
-   id="tspan42472">g</tspan>agttacg<tspan
-   style="fill:#ff0000"
-   id="tspan42474">a</tspan>agctcgctccgatc<tspan
-   style="fill:#ff0000"
-   id="tspan42476">t</tspan>atgggacatgcgattggcat<tspan
-   style="fill:#ff0000"
-   id="tspan42478">tg</tspan>taaa</tspan></text>
+   id="tspan283828">g</tspan><tspan
+   dx="0.85000384"
+   style="letter-spacing:-0.85px"
+   id="tspan283830">agtta</tspan><tspan
+   style="letter-spacing:-0.85px;word-spacing:0px"
+   id="tspan283832">cg</tspan><tspan
+   dx="0.88999772"
+   style="letter-spacing:-1.74px;fill:#ff0000"
+   id="tspan283834">a</tspan>a<tspan
+   dx="-1.7399702"
+   id="tspan283836">gctgctccgatc</tspan><tspan
+   dx="-1.6200086"
+   style="letter-spacing:1.62px;fill:#ff0000"
+   id="tspan283838">t</tspan><tspan
+   style="letter-spacing:1.62px"
+   id="tspan283840">a</tspan><tspan
+   dx="1.6199846"
+   id="tspan283842">tgggacatgcgattgcat</tspan><tspan
+   dx="-0.79996234"
+   style="letter-spacing:0.8px;fill:#ff0000"
+   id="tspan283844">tg</tspan><tspan
+   style="letter-spacing:0.8px"
+   id="tspan283846">taa</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:4.93889px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;fill:#d35f5f;stroke-width:0.264583"
@@ -1156,9 +1114,9 @@
          style="font-size:4.93889px;fill:#d35f5f;stroke-width:0.264583"
          x="14.165436"
          y="19.770836"
-         dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">atgcatgagctttacgtacaa<tspan
+         dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">tgcatgactacgtacaa<tspan
    style="word-spacing:-0.105833px"
-   id="tspan142486">ta</tspan>gttacgtagctcgctccgatcgatgggacatgcgattggcatgctaaa</tspan></text>
+   id="tspan142486">ta</tspan>gttacgtagctgctccgatcgatgggacatgcgattgcatgctaa</tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-9"
@@ -1187,9 +1145,9 @@
        inkscape:export-ydpi="96"><tspan
          x="197.19141"
          y="155.91409"
-         id="tspan42484"><tspan
+         id="tspan283852"><tspan
            style="fill:#aa8800"
-           id="tspan42482">Rad51
+           id="tspan283850">Rad51
 </tspan></tspan></text>
   </g>
 </svg>
