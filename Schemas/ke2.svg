@@ -8,10 +8,10 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="ke2 (copie).svg"
-   inkscape:export-filename="/home/nicolas/Documents/INSA/Stage4BiM/DSB_homologous_recombination_simulation/Schemas/ke2.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   sodipodi:docname="ke2.svg"
+   inkscape:export-filename="/home/nicolas/Téléchargements/ke2.png"
+   inkscape:export-xdpi="150"
+   inkscape:export-ydpi="150"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -608,6 +608,20 @@
        width="368.24744"
        height="27.613741"
        id="rect213549-6-4" />
+    <marker
+       style="overflow:visible"
+       id="TriangleOutS"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="TriangleOutS"
+       inkscape:isstock="true">
+      <path
+         transform="scale(0.2)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path1171" />
+    </marker>
   </defs>
   <g
      inkscape:label="Calque 1"
@@ -615,7 +629,10 @@
      id="layer1">
     <g
        id="g497-5-7"
-       transform="translate(-1.3480101,15.081778)">
+       transform="translate(-1.3480101,15.081778)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <ellipse
          style="fill:#d4aa00;stroke-width:0.250068"
          id="path1932-62-62-7-8-6-9-91-44-5-5"
@@ -724,44 +741,65 @@
     </g>
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 135.06014,63.527509 -29.06964,0.0147 c 0.95043,-21.30935 -20.499486,-21.66665 -20.930956,0.0817 l -37.52435,0.023 C 40.58104,48.358899 26.080538,39.097689 10.101223,36.135999"
+       d="m 135.06014,62.998342 -29.06964,0.0147 c 0.95043,-21.30935 -20.499486,-21.66665 -20.930956,0.0817 l -37.52435,0.023 C 40.58104,47.829732 26.080538,38.568522 10.101223,35.606832"
        id="path1362"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-44.457014,-60.660368)"
        id="text10387"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect10389);fill:#c87137;fill-opacity:1;stroke:none"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect10389);fill:#c87137;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="811.51953"
          y="260.3125"
-         id="tspan24695">Last rad54 
+         id="tspan2081">Last rad54 
 </tspan><tspan
          x="811.51953"
          y="280.3125"
-         id="tspan24697">fragment isn't zipped </tspan></text>
+         id="tspan2083">fragment isn't zipped </tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,5.000002,0)"
        id="text43715"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect43717);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect43717);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,5.000002,0)"
        id="text4730"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4732);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect4732);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,5.000002,0)"
        id="text16611"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect16613);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect16613);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,5.000002,0)"
        id="text15016"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect15018);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect15018);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <g
        id="g1024-9-8"
-       transform="matrix(0.88559541,0,0,1.0075337,3.6154084,-69.123349)">
+       transform="matrix(0.88559541,0,0,1.0075337,3.6154084,-69.123349)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <ellipse
          style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.784034;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="path25868-9-2-1"
@@ -774,7 +812,10 @@
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,5.000002,0)"
        id="text175157"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect175159);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect175159);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <image
        width="61.748894"
        height="59.799831"
@@ -784,7 +825,10 @@
        x="98.573563"
        y="164.17862"
        clip-path="url(#clipPath18033-5-0)"
-       transform="matrix(0.37081906,0,0,0.3835793,62.079472,1.0072551)" />
+       transform="matrix(0.37081906,0,0,0.3835793,62.079472,1.0072551)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <image
        width="370.41666"
        height="370.41666"
@@ -794,31 +838,40 @@
        x="-47.413807"
        y="-34.68895"
        clip-path="url(#clipPath18105-3-3)"
-       transform="matrix(0.06050359,0,0,0.06077602,48.539024,65.985179)" />
+       transform="matrix(0.06050359,0,0,0.06077602,48.539024,65.985179)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,156.0163,21.338454)"
        id="text8961"
        style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect8963);fill:#000000;fill-opacity:1;stroke:none"
        x="247.875"
-       y="0"><tspan
+       y="0"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="-371.9707"
          y="209.32227"
-         id="tspan24701"><tspan
+         id="tspan2087"><tspan
            style="text-align:center;text-anchor:middle;fill:#ff2a2a"
-           id="tspan24699">yy &gt;= ke2 </tspan></tspan></text>
+           id="tspan2085">yy &gt;= ke2 </tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,223.5315,21.85687)"
        id="text8961-3-6"
        style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect8963-5-5);fill:#008000;fill-opacity:1;stroke:none"
        x="423.09766"
-       y="0"><tspan
+       y="0"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="-378.58203"
          y="209.32227"
-         id="tspan24705"><tspan
+         id="tspan2091"><tspan
            style="text-align:center;text-anchor:middle"
-           id="tspan24703">yy &lt; ke2 
+           id="tspan2089">yy &lt; ke2 
 </tspan></tspan></text>
     <rect
        style="fill:#d35f5f;fill-opacity:1;stroke:none;stroke-width:5.2705;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:22.6772;stroke-opacity:1"
@@ -827,36 +880,48 @@
        height="3"
        x="8.6782856"
        y="65.43718"
-       ry="1.5" />
+       ry="1.5"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-124.2317,-77.698226)"
        id="text48795-4"
-       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797-5);fill:#2a7fff;fill-opacity:1;stroke:none"><tspan
+       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797-5);fill:#2a7fff;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="501.66016"
          y="397.24805"
-         id="tspan24707">Invading 
+         id="tspan2093">Invading 
 </tspan><tspan
          x="501.66016"
          y="417.24805"
-         id="tspan24709">single-end</tspan></text>
+         id="tspan2095">single-end</tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,-124.23583,-47.013978)"
        id="text48795-2-8"
-       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797-1-9);fill:#c83737;fill-opacity:1;stroke:none"><tspan
+       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect48797-1-9);fill:#c83737;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="501.66016"
          y="397.24805"
-         id="tspan24711">Homologous 
+         id="tspan2097">Homologous 
 </tspan><tspan
          x="501.66016"
          y="417.24805"
-         id="tspan24713">donor</tspan></text>
+         id="tspan2099">donor</tspan></text>
     <path
        d="M 243.28645,16.089261 C 202.46337,28.650169 171.37509,2.2228721 153.44214,43.618009"
        style="fill:none;stroke:#2a7fff;stroke-width:2.8338;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path97664-2"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <image
        width="24.95327"
        height="20"
@@ -867,26 +932,44 @@
        y="-4.7458353"
        transform="rotate(13.611369)"
        inkscape:transform-center-x="22.883973"
-       inkscape:transform-center-y="0.27328566" />
+       inkscape:transform-center-y="0.27328566"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:2.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 159.76453,42.007559 c 3.05931,1.21317 3.05931,1.21317 3.05931,1.21317"
-       id="path139690-1-93" />
+       id="path139690-1-93"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:2.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 142.50457,49.036549 c 3.05931,1.21317 3.05931,1.21317 3.05931,1.21317"
-       id="path139690-1-9-6" />
+       id="path139690-1-9-6"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:2.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 151.70246,53.026359 c 3.05931,1.21316 3.05931,1.21316 3.05931,1.21316"
-       id="path139690-1-7-0" />
+       id="path139690-1-7-0"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="fill:none;stroke:#2a7fff;stroke-width:2.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 148.08559,32.210784 c 3.05931,1.213165 3.05931,1.213165 3.05931,1.213165"
-       id="path139690-1-9-6-2" />
+       id="path139690-1-9-6-2"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <g
        id="g48407-8-1"
-       transform="translate(0.2127948,-10.093827)">
+       transform="translate(0.2127948,-10.093827)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <g
          id="g18913"
          transform="translate(2.1166667)">
@@ -918,21 +1001,29 @@
        id="image17600-5-6-6"
        x="59.582134"
        y="-130.28354"
-       transform="rotate(90.329028)" />
-    <path
-       style="fill:none;stroke:#2a7fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0.6;stroke-opacity:1"
-       d="m 139.17792,63.518139 61.53755,0.12936"
-       id="path139690"
-       sodipodi:nodetypes="cc" />
+       transform="rotate(90.329028)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-52.450533,-24.572799)"
+       transform="matrix(0.26458333,0,0,0.26458333,-52.450533,-26.1603)"
        id="text213547-5"
-       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect213549-6-4);fill:#000000;fill-opacity:1;stroke:none"><tspan
+       style="font-style:normal;font-weight:normal;font-size:16px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect213549-6-4);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          x="819.54297"
          y="316.29297"
-         id="tspan24717"><tspan
+         id="tspan2103"><tspan
            style="fill:#2a7fff"
-           id="tspan24715">Starts extension at the cut position </tspan></tspan></text>
+           id="tspan2101">Starts extension at the cut position </tspan></tspan></text>
+    <path
+       style="fill:none;stroke:#2a7fff;stroke-width:2.50000007;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5.00000014,5.00000014;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#TriangleOutS)"
+       d="m 139.76593,63.006316 c 60.27319,0.115049 60.27319,0.115049 60.27319,0.115049"
+       id="path139690"
+       inkscape:export-filename="/home/nicolas/Téléchargements/ke1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
   </g>
 </svg>
