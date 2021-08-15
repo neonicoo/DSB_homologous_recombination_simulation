@@ -504,8 +504,8 @@
     <rect
        x="42.527008"
        y="101.53031"
-       width="14.129547"
-       height="2.5173743"
+       width="17.313951"
+       height="4.482443"
        id="rect13629-1-1-1-3-3" />
     <rect
        x="35.366833"
@@ -528,8 +528,8 @@
     <rect
        x="197.19118"
        y="151.95068"
-       width="38.759453"
-       height="18.308091"
+       width="46.00364"
+       height="18.013534"
        id="rect3498-8-8-8-9" />
     <marker
        style="overflow:visible"
@@ -584,7 +584,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="317.69297"
+     inkscape:cx="309.10668"
      inkscape:cy="172.73608"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -616,9 +616,9 @@
      id="layer1">
     <g
        id="g4561"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"
        transform="translate(-3.0081439,-6.9154638)">
       <g
          id="g5754-2-3-4-9"
@@ -708,7 +708,10 @@
        style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
        x="252.85805"
        y="110.95689"
-       id="text29908"><tspan
+       id="text29908"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          sodipodi:role="line"
          id="tspan29906"
          x="252.85805"
@@ -718,16 +721,19 @@
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,8.5098689,-38.972078)"
        id="text75552"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect75554);fill:#000000;fill-opacity:1;stroke:none" />
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect75554);fill:#000000;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-6-0"
        cx="151.44138"
        cy="72.705101"
        r="5"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <image
        width="61.748894"
        height="59.799831"
@@ -738,119 +744,121 @@
        y="164.17862"
        clip-path="url(#clipPath18033-3-3)"
        transform="matrix(0.34594782,0,0,0.35785222,18.81053,-33.955564)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="opacity:0.999;fill:#217821;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.8,0.4;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Arrow2Mend)"
        d="m 150.38976,6.797647 c 0.0966,54.472171 0.0966,54.472171 0.0966,54.472171"
        id="path3022-0-68"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,13.096379,-52.800048)"
        id="text265473"
        style="font-size:16px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect265475)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"
        x="254.62109"
        y="0"><tspan
-         x="250.40625"
-         y="321.53906"
-         id="tspan283800"><tspan
-           style="text-align:center;text-anchor:middle;fill:#2ca02c"
-           id="tspan283794">if </tspan><tspan
-           style="font-weight:bold;text-align:center;text-anchor:middle;fill:#2ca02c"
-           id="tspan283796">Smith Waterman</tspan><tspan
-           style="text-align:center;text-anchor:middle"
-           id="tspan283798"> score </tspan></tspan><tspan
-         x="293.66406"
-         y="341.53906"
-         id="tspan283806"><tspan
-           style="text-align:center;text-anchor:middle"
-           id="tspan283802">is good enough</tspan><tspan
-           style="fill:#2ca02c"
-           id="tspan283804"> 
+         x="260.56363"
+         y="323.89847"
+         id="tspan94610"><tspan
+           style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
+           id="tspan94604">if </tspan><tspan
+           style="font-weight:bold;font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
+           id="tspan94606">Smith Waterman</tspan><tspan
+           style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
+           id="tspan94608"> </tspan></tspan><tspan
+         x="254.93992"
+         y="347.23184"
+         id="tspan94616"><tspan
+           style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
+           id="tspan94612">score is good enough</tspan><tspan
+           style="font-size:18.6667px"
+           id="tspan94614"> 
 </tspan></tspan><tspan
          x="357.73438"
-         y="361.53906"
-         id="tspan283810"><tspan
-           style="fill:#2ca02c"
-           id="tspan283808">
+         y="370.56522"
+         id="tspan94620"><tspan
+           style="font-size:18.6667px"
+           id="tspan94618">
 </tspan></tspan><tspan
-         x="309.94141"
-         y="381.53906"
-         id="tspan283816"><tspan
-           style="fill:#2ca02c"
-           id="tspan283812">--&gt; Zipping </tspan><tspan
-           style="text-align:center;text-anchor:middle;fill:#2ca02c"
-           id="tspan283814"> </tspan></tspan></text>
+         x="302.39964"
+         y="393.89859"
+         id="tspan94628"><tspan
+           style="font-size:18.6667px"
+           id="tspan94622">--&gt; Zipping</tspan><tspan
+           style="fill:#008000"
+           id="tspan94624"> </tspan><tspan
+           style="text-align:center;text-anchor:middle;fill:#008000"
+           id="tspan94626"> </tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text13627-0-9-3-74-7"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect13629-1-1-1-3-3);opacity:0.998;fill:#d35f5f"
-       transform="matrix(2,0,0,2.0000001,-69.690407,-124.97578)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.46944px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect13629-1-1-1-3-3);opacity:0.998;fill:#d35f5f"
+       transform="matrix(2,0,0,2.0000001,-70.748741,-124.97578)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="42.527344"
-         y="103.40401"
-         id="tspan283818">Donor strand
+         y="103.71613"
+         id="tspan94630">Donor strand
 </tspan></text>
     <text
        xml:space="preserve"
        id="text3490-8-2"
-       style="font-size:4.23333px;line-height:0.5;font-family:sans-serif;-inkscape-font-specification:sans-serif;white-space:pre;shape-inside:url(#rect3492-97-45);fill:#2a7fff"
-       transform="translate(-19.79046,-105.45004)"
+       style="font-size:4.93889px;line-height:0.5;font-family:sans-serif;-inkscape-font-specification:sans-serif;white-space:pre;shape-inside:url(#rect3492-97-45);fill:#2a7fff"
+       transform="translate(-20.848794,-106.50838)"
        x="16.993263"
        y="0"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="35.367188"
-         y="144.5916"
-         id="tspan283820">invading NPF</tspan></text>
+         y="144.95127"
+         id="tspan94632">Invading NPF</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.47906px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-8);fill:#d45500"
-       transform="matrix(0.96540055,0,0,0.92530343,-136.61402,-61.470273)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.22557px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-8);fill:#d45500"
+       transform="matrix(0.96540055,0,0,0.92530343,-135.55568,-61.99944)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="155.91409"
-         id="tspan283822">Rad54</tspan></text>
+         y="156.57458"
+         id="tspan94634">Rad54</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4-2"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.47906px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-8-9);fill:#d45500"
-       transform="matrix(0.96540055,0,0,0.92530343,-46.391369,-61.470273)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.22557px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-8-9);fill:#d45500"
+       transform="matrix(0.96540055,0,0,0.92530343,-46.391369,-61.99944)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="155.91409"
-         id="tspan283824">Rad54 or Rdh54</tspan></text>
+         y="156.57458"
+         id="tspan94636">Rad54 or Rdh54</tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-96"
        cx="59.591293"
        cy="72.705101"
        r="5"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <g
        id="g5383-7-7-2-8"
        style="fill:#d4aa00"
        transform="translate(-132.06655,-25.586098)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96">
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <g
          id="g5754-9-6-5"
          transform="translate(16.142156,-23.759184)">
@@ -908,9 +916,9 @@
        cy="64.385254"
        rx="2.2375395"
        ry="2.1619713"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-1-7-0-1-1-9"
@@ -918,9 +926,9 @@
        cy="82.479088"
        rx="2.2375395"
        ry="2.1621335"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250068"
        id="path1932-9-0-6-87-6-0-0"
@@ -928,9 +936,9 @@
        cy="62.602699"
        rx="2.2375395"
        ry="2.1621335"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <ellipse
        style="fill:#d4aa00;stroke-width:0.250058"
        id="path1932-9-6-689-5-2-3-2"
@@ -938,13 +946,16 @@
        cy="80.685921"
        rx="2.2375395"
        ry="2.1619713"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <g
        id="g5383-7-6-9-6"
        style="fill:#d4aa00"
-       transform="translate(-1.4817876,-25.648282)">
+       transform="translate(-1.4817876,-25.648282)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <g
          id="g5754-2-3-4"
          transform="translate(16.142156,-23.759184)">
@@ -1016,17 +1027,17 @@
        d="m 16.676336,41.813813 c 13.946228,0.814099 18.497597,6.242934 18.978285,29.678395 l 81.520679,0.0913 69.82796,0.12407"
        id="path1118-1-0"
        sodipodi:nodetypes="cccc"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="fill:none;stroke:#d35f5f;stroke-width:1.99881;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 16.288333,73.793988 C 230.75872,74.127088 182.738,73.931158 182.738,73.931158"
        id="path1522-6-9"
        sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <image
        width="30.456989"
        height="39.294304"
@@ -1036,9 +1047,9 @@
        x="57.804817"
        y="-112.83009"
        transform="matrix(0.02335805,0.99972716,-0.99985446,0.01706058,0,0)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <image
        width="6.9988647"
        height="16.247364"
@@ -1048,74 +1059,77 @@
        x="69.112434"
        y="-80.843582"
        transform="rotate(89.995997)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <path
        style="opacity:0.999;fill:#217821;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.8,0.4;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#marker1050)"
        d="m 58.954667,6.8185097 c 0.09742,54.4717893 0.09742,54.4717893 0.09742,54.4717893"
        id="path3022-93"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <text
        xml:space="preserve"
        transform="scale(0.26458333)"
        id="text32718"
-       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect32720)" />
+       style="fill:black;fill-opacity:1;line-height:1.25;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;white-space:pre;shape-inside:url(#rect32720)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-56.437322,-54.666026)"
+       transform="matrix(0.26458333,0,0,0.26458333,-59.083157,-55.195193)"
        id="text19055"
-       style="font-size:18.6667px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect19057-7);fill:#2a7fff"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       style="font-size:21.3333px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;white-space:pre;shape-inside:url(#rect19057-7);fill:#2a7fff"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="266.30273"
-         y="265.49808"
-         id="tspan283848">tg<tspan
+         y="267.85739"
+         id="tspan94660">tg<tspan
    style="fill:#ff0000"
-   id="tspan283826">a</tspan>atgactacgtacaa<tspan
+   id="tspan94638">a</tspan>atgactacgtacaa<tspan
    style="fill:#ff0000"
-   id="tspan283828">g</tspan><tspan
-   dx="0.85000384"
+   id="tspan94640">g</tspan><tspan
+   dx="0.84999621"
    style="letter-spacing:-0.85px"
-   id="tspan283830">agtta</tspan><tspan
+   id="tspan94642">agtta</tspan><tspan
    style="letter-spacing:-0.85px;word-spacing:0px"
-   id="tspan283832">cg</tspan><tspan
-   dx="0.88999772"
+   id="tspan94644">cg</tspan><tspan
+   dx="0.89000535"
    style="letter-spacing:-1.74px;fill:#ff0000"
-   id="tspan283834">a</tspan>a<tspan
-   dx="-1.7399702"
-   id="tspan283836">gctgctccgatc</tspan><tspan
-   dx="-1.6200086"
+   id="tspan94646">a</tspan><tspan
+   dx="-1.7399797"
+   id="tspan94648">a</tspan>gctgctccgatc<tspan
+   dx="-1.6199914"
    style="letter-spacing:1.62px;fill:#ff0000"
-   id="tspan283838">t</tspan><tspan
+   id="tspan94650">t</tspan><tspan
    style="letter-spacing:1.62px"
-   id="tspan283840">a</tspan><tspan
-   dx="1.6199846"
-   id="tspan283842">tgggacatgcgattgcat</tspan><tspan
-   dx="-0.79996234"
+   id="tspan94652">a</tspan><tspan
+   dx="1.6200056"
+   id="tspan94654">tgggacatgcgattgcat</tspan><tspan
+   dx="-0.80003721"
    style="letter-spacing:0.8px;fill:#ff0000"
-   id="tspan283844">tg</tspan><tspan
+   id="tspan94656">tg</tspan><tspan
    style="letter-spacing:0.8px"
-   id="tspan283846">taa</tspan></tspan></text>
+   id="tspan94658">taa</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.93889px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;fill:#d35f5f;stroke-width:0.264583"
-       x="14.165436"
+       style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;fill:#d35f5f;stroke-width:0.264583"
+       x="11.519605"
        y="19.770836"
        id="text38569"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          sodipodi:role="line"
          id="tspan38567"
-         style="font-size:4.93889px;fill:#d35f5f;stroke-width:0.264583"
-         x="14.165436"
+         style="font-size:5.64444px;fill:#d35f5f;stroke-width:0.264583"
+         x="11.519605"
          y="19.770836"
          dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">tgcatgactacgtacaa<tspan
-   style="word-spacing:-0.105833px"
+   style="font-size:5.64444px;word-spacing:-0.105833px"
    id="tspan142486">ta</tspan>gttacgtagctgctccgatcgatgggacatgcgattgcatgctaa</tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -1123,31 +1137,33 @@
        cx="59.043724"
        cy="15.303221"
        r="5"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-6-0-9"
        cx="150.47742"
        cy="15.303221"
        r="5"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <text
        xml:space="preserve"
        id="text3496-4-27"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.47906px;line-height:1.25;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect3498-8-8-8-1);fill:#d45500"
-       transform="matrix(0.96540055,0,0,0.92530343,-3.0963233,-78.344953)"
-       inkscape:export-filename="/home/nicolas/Téléchargements/zipping_v2.png"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96"><tspan
+       transform="matrix(0.96540055,0,0,0.92530343,-25.517666,-79.820569)"
+       inkscape:export-filename="/home/nicolas/Téléchargements/zipping.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="155.91409"
-         id="tspan283852"><tspan
+         y="156.57458"
+         id="tspan94666"><tspan
+           style="font-size:5.22557px"
+           id="tspan94662">Rad51</tspan><tspan
            style="fill:#aa8800"
-           id="tspan283850">Rad51
+           id="tspan94664">
 </tspan></tspan></text>
   </g>
 </svg>
