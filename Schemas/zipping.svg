@@ -585,15 +585,15 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
      inkscape:cx="309.10668"
-     inkscape:cy="172.73608"
+     inkscape:cy="172.23101"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1011"
+     inkscape:window-height="1015"
      inkscape:window-x="0"
-     inkscape:window-y="32"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="false"
      inkscape:pagecheckerboard="0"
@@ -766,36 +766,36 @@
        y="0"><tspan
          x="260.56363"
          y="323.89847"
-         id="tspan94610"><tspan
+         id="tspan40949"><tspan
            style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
-           id="tspan94604">if </tspan><tspan
+           id="tspan40943">if </tspan><tspan
            style="font-weight:bold;font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
-           id="tspan94606">Smith Waterman</tspan><tspan
+           id="tspan40945">Smith Waterman</tspan><tspan
            style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
-           id="tspan94608"> </tspan></tspan><tspan
+           id="tspan40947"> </tspan></tspan><tspan
          x="254.93992"
          y="347.23184"
-         id="tspan94616"><tspan
+         id="tspan40955"><tspan
            style="font-size:18.6667px;text-align:center;text-anchor:middle;fill:#008000"
-           id="tspan94612">score is good enough</tspan><tspan
+           id="tspan40951">score is good enough</tspan><tspan
            style="font-size:18.6667px"
-           id="tspan94614"> 
+           id="tspan40953"> 
 </tspan></tspan><tspan
          x="357.73438"
          y="370.56522"
-         id="tspan94620"><tspan
+         id="tspan40959"><tspan
            style="font-size:18.6667px"
-           id="tspan94618">
+           id="tspan40957">
 </tspan></tspan><tspan
          x="302.39964"
          y="393.89859"
-         id="tspan94628"><tspan
+         id="tspan40967"><tspan
            style="font-size:18.6667px"
-           id="tspan94622">--&gt; Zipping</tspan><tspan
+           id="tspan40961">--&gt; Zipping</tspan><tspan
            style="fill:#008000"
-           id="tspan94624"> </tspan><tspan
+           id="tspan40963"> </tspan><tspan
            style="text-align:center;text-anchor:middle;fill:#008000"
-           id="tspan94626"> </tspan></tspan></text>
+           id="tspan40965"> </tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text13627-0-9-3-74-7"
@@ -806,7 +806,7 @@
        inkscape:export-ydpi="300"><tspan
          x="42.527344"
          y="103.71613"
-         id="tspan94630">Donor strand
+         id="tspan40969">Donor strand
 </tspan></text>
     <text
        xml:space="preserve"
@@ -820,7 +820,7 @@
        inkscape:export-ydpi="300"><tspan
          x="35.367188"
          y="144.95127"
-         id="tspan94632">Invading NPF</tspan></text>
+         id="tspan40971">Invading NPF</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4"
@@ -830,8 +830,8 @@
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="156.57458"
-         id="tspan94634">Rad54</tspan></text>
+         y="156.09841"
+         id="tspan40973">Rad54</tspan></text>
     <text
        xml:space="preserve"
        id="text3496-4-2"
@@ -841,8 +841,8 @@
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="156.57458"
-         id="tspan94636">Rad54 or Rdh54</tspan></text>
+         y="156.09841"
+         id="tspan40975">Rad54 or Rdh54</tspan></text>
     <circle
        style="opacity:0.998;fill:#ff9955;stroke:none;stroke-width:0.675174;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path25868-9-3-96"
@@ -1087,33 +1087,33 @@
        inkscape:export-ydpi="300"><tspan
          x="266.30273"
          y="267.85739"
-         id="tspan94660">tg<tspan
+         id="tspan40999">tg<tspan
    style="fill:#ff0000"
-   id="tspan94638">a</tspan>atgactacgtacaa<tspan
+   id="tspan40977">a</tspan>atgactacgtacaa<tspan
    style="fill:#ff0000"
-   id="tspan94640">g</tspan><tspan
+   id="tspan40979">g</tspan><tspan
    dx="0.84999621"
    style="letter-spacing:-0.85px"
-   id="tspan94642">agtta</tspan><tspan
+   id="tspan40981">agtta</tspan><tspan
    style="letter-spacing:-0.85px;word-spacing:0px"
-   id="tspan94644">cg</tspan><tspan
+   id="tspan40983">cg</tspan><tspan
    dx="0.89000535"
    style="letter-spacing:-1.74px;fill:#ff0000"
-   id="tspan94646">a</tspan><tspan
+   id="tspan40985">a</tspan><tspan
    dx="-1.7399797"
-   id="tspan94648">a</tspan>gctgctccgatc<tspan
+   id="tspan40987">a</tspan>gctgctccgatc<tspan
    dx="-1.6199914"
    style="letter-spacing:1.62px;fill:#ff0000"
-   id="tspan94650">t</tspan><tspan
+   id="tspan40989">t</tspan><tspan
    style="letter-spacing:1.62px"
-   id="tspan94652">a</tspan><tspan
+   id="tspan40991">a</tspan><tspan
    dx="1.6200056"
-   id="tspan94654">tgggacatgcgattgcat</tspan><tspan
+   id="tspan40993">tgggacatgcgattgcat</tspan><tspan
    dx="-0.80003721"
    style="letter-spacing:0.8px;fill:#ff0000"
-   id="tspan94656">tg</tspan><tspan
+   id="tspan40995">tg</tspan><tspan
    style="letter-spacing:0.8px"
-   id="tspan94658">taa</tspan></tspan></text>
+   id="tspan40997">taa</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:5.64444px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;fill:#d35f5f;stroke-width:0.264583"
@@ -1158,12 +1158,12 @@
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300"><tspan
          x="197.19141"
-         y="156.57458"
-         id="tspan94666"><tspan
-           style="font-size:5.22557px"
-           id="tspan94662">Rad51</tspan><tspan
+         y="156.09841"
+         id="tspan41005"><tspan
+           style="font-size:5.22557px;fill:#aa8800"
+           id="tspan41001">Rad51</tspan><tspan
            style="fill:#aa8800"
-           id="tspan94664">
+           id="tspan41003">
 </tspan></tspan></text>
   </g>
 </svg>
